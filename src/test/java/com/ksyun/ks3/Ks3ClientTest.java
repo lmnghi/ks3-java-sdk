@@ -40,7 +40,7 @@ import com.ksyun.ks3.dto.PartETag;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
-import com.ksyun.ks3.http.Ks3HttpClient;
+import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.Ks3Client;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
@@ -62,17 +62,11 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
-	private Ks3Client client = new Ks3Client();
+	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ","ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
 
 	@Before
 	public void init() {
 		ClientConfig config = ClientConfig.getConfig();
-		config.setAccessKeyId("2HITWMQXL2VBB3XMAEHQ");
-		config.setAccessKeySecret(
-				"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
-/*		ClientConfig.getInstance().setAccessKeyId("WRHLHOZQD3OY3VTROMGQ");
-		ClientConfig.getInstance().setAccessKeySECRET(
-				"dWSmyMmVcpahaZphUdyVz11myMIoCAsOKeZ6wi4T");*/
 	}
 
 	// @Test

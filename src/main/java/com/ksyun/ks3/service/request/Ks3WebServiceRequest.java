@@ -53,7 +53,6 @@ import com.ksyun.ks3.utils.RequestUtils;
 public abstract class Ks3WebServiceRequest {
 	private static final Log log = LogFactory
 			.getLog(Ks3WebServiceRequest.class);
-	private Authorization auth;
 	private ClientConfig config = ClientConfig.getConfig();
 	private String url;
 	private HttpMethod httpMethod;
@@ -196,14 +195,6 @@ public abstract class Ks3WebServiceRequest {
 					.encodeAsString(((MD5DigestCalculatingInputStream) requestBody)
 							.getMd5Digest()));
 		}
-		try {
-			this.addHeader(HttpHeaders.Authorization.toString(),
-					AuthUtils.calcAuthorization(auth, this));
-		} catch (Exception e) {
-			throw new Ks3ClientException(
-					"calculate user authorization has occured an exception ("
-							+ e + ")", e);
-		}
 		for (Entry<String, String> aHeader : header.entrySet()) {
 			if (!httpRequest.containsHeader(aHeader.getKey()))
 				httpRequest.addHeader(aHeader.getKey(), aHeader.getValue());
@@ -268,13 +259,6 @@ public abstract class Ks3WebServiceRequest {
 		this.setContentMD5("");
 		this.setContentType("text/plain");
 		this.setDate(new Date());
-		try {
-			auth = new Authorization(config.getStr(ClientConfig.ACCESS_KEY_ID),
-					config.getStr(ClientConfig.ACCESS_KEY_SECRET));
-		} catch (NullPointerException e) {
-			throw new Ks3ClientException(
-					"please set accessKeyId and accessKeySecret in ClieanConfig");
-		}
 	}
 
 	protected abstract void configHttpRequest();

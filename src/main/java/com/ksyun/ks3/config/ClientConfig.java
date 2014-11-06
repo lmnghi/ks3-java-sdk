@@ -101,21 +101,13 @@ public class ClientConfig {
 	public static final String IS_PREEMPTIVE_BASIC_PROXY_AUTH = "httpclient.isPreemptiveBasicProxyAuth";
 	
 	/**
-	 * accessKeyId
-	 */
-	public static final String ACCESS_KEY_ID = "authorization.accessKeyId";
-	/**
-	 * accessKeySecret
-	 */
-	public static final String ACCESS_KEY_SECRET = "authorization.accessKeySecret";
-	/**
 	 * Ks3服务地址
 	 */
 	public static final String END_POINT = "ks3client.endpoint";
 	/**
-	 * ks3 client模式  0：正常模式       1：每执行一次操作都会清空accesskeyid和accesskeysecret信息
+	 * ks3 client auth加载器
 	 */
-	public static final String CLIENT_MODEL = "ks3client.model";
+	public static final String CLIENT_SIGNER = "ks3client.signer";
 	/**
 	 * 配置加载器列表
 	 */
@@ -222,17 +214,5 @@ public class ClientConfig {
 		if ("null".equals(value))
 			value = null;
 		config.put(key.toLowerCase(), value);
-	}
-	/**
-	 * 设置AccessKeyId
-	 */
-	public void setAccessKeyId(String value) {
-		set(ClientConfig.ACCESS_KEY_ID, value);
-	}
-	/**
-	 * 设置AccessKeySecret
-	 */
-	public void setAccessKeySecret(String value) {
-		set(ClientConfig.ACCESS_KEY_SECRET, value);
 	}
 }

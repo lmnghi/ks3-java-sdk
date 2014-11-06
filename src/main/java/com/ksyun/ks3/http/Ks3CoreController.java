@@ -13,11 +13,14 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 import com.ksyun.ks3.config.ClientConfig;
+import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.Ks3WebServiceResponse;
+import com.ksyun.ks3.signer.Signer;
+import com.ksyun.ks3.utils.AuthUtils;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 import com.ksyun.ks3.utils.Timer;
@@ -29,22 +32,20 @@ import com.ksyun.ks3.utils.Timer;
  * 
  * @description ks3 sdk Ks3WebServiceRequest执行，K3WebServiceResponse解析核心控制器
  **/
-public class Ks3HttpClient {
-	private static final Log log = LogFactory.getLog(Ks3HttpClient.class);
+public class Ks3CoreController {
+	private static final Log log = LogFactory.getLog(Ks3CoreController.class);
 	private HttpClient client = new HttpClientFactory().createHttpClient();
 
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
-			Ks3WebServiceRequest request, Class<X> clazz) {
+			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
 		try {
-			ClientConfig config = ClientConfig.getConfig();
-			if (StringUtils.isBlank(config.getStr(ClientConfig.ACCESS_KEY_ID))
-					|| StringUtils.isBlank(config
-							.getStr(ClientConfig.ACCESS_KEY_SECRET)))
+			if (StringUtils.isBlank(auth.getAccessKeyId())
+					|| StringUtils.isBlank(auth.getAccessKeySecret()))
 				throw new Ks3ClientException(
 						"client not login!AccessKeyId or AccessKeySecret is blank");
 			if (request == null || clazz == null)
 				throw new IllegalArgumentException();
-			Y result = doExecute(request, clazz);
+			Y result = doExecute(auth, request, clazz);
 			return result;
 		} catch (Exception e) {
 			// 异常格式转化统一
@@ -63,22 +64,28 @@ public class Ks3HttpClient {
 				throw exception;
 			}
 		} finally {
-			ClientConfig config = ClientConfig.getConfig();
-			// 客户端模式为1的话自动清理accesskeyid和accesskeysecret
-			if ("1".equals(config.getStr(ClientConfig.CLIENT_MODEL))) {
-				config.set(ClientConfig.ACCESS_KEY_ID, null);
-				config.set(ClientConfig.ACCESS_KEY_SECRET, null);
-			}
 			System.out.println();
 		}
 	}
 
 	private <X extends Ks3WebServiceResponse<Y>, Y> Y doExecute(
-			Ks3WebServiceRequest request, Class<X> clazz) {
+			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
 		Timer.start();
 		HttpResponse response = null;
 		HttpRequestBase httpRequest = request.getHttpRequest();
 		log.info("finished convert httprequest : " + Timer.end());
+		try {
+			String signerString = ClientConfig.getConfig().getStr(
+					ClientConfig.CLIENT_SIGNER);
+			Signer signer = (Signer) Class.forName(signerString).newInstance();
+			httpRequest.addHeader(HttpHeaders.Authorization.toString(),
+					signer.calculate(auth, request));
+		} catch (Exception e) {
+			throw new Ks3ClientException(
+					"calculate user authorization has occured an exception ("
+							+ e + ")", e);
+		}
+		log.info("finished calculate authorization: " + Timer.end());
 		try {
 			response = client.execute(httpRequest);
 			log.info("finished send request to ks3 service and recive response from the service : "
