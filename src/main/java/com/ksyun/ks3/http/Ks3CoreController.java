@@ -92,18 +92,7 @@ public class Ks3CoreController {
 					+ Timer.end());
 			doLogHttp(httpRequest, response);
 			log.info("finished log request and response : " + Timer.end());
-		} catch (ClientProtocolException e) {
-			log.error(e);
-			httpRequest.abort();
-			throw new Ks3ClientException(
-					"Request to Ks3 has occured an ClientProtocolException:("
-							+ e + ")", e);
-		} catch (IOException e) {
-			httpRequest.abort();
-			log.error(e);
-			throw new Ks3ClientException(
-					"Request to Ks3 has occured an IO exception:(" + e + ")", e);
-		} catch (Exception e) {
+		}catch (Exception e) {
 			httpRequest.abort();
 			log.error(e);
 			throw new Ks3ClientException(
