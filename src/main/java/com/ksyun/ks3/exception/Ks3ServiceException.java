@@ -77,8 +77,7 @@ public class Ks3ServiceException extends Ks3ClientException{
 			try {
 				if (response.getEntity().getContent() != null)
 					response.getEntity().getContent().close();
-			} catch (IllegalStateException e) {
-			} catch (IOException e) {
+			} catch (Exception e) {
 			}
 		}
 	}

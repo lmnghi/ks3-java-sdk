@@ -14,6 +14,10 @@ public class HeadBucketResponse extends Ks3WebServiceDefaultResponse<Boolean>{
 
 	@Override
 	public void preHandle() {
+/*		int reCode = this.getResponse().getStatusLine().getStatusCode();
+		if(reCode==404)
+		    this.result = false;
+		else if(reCode==200)*/
 		this.result = true;
 	}
 
