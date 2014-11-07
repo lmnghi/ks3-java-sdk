@@ -62,7 +62,7 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
-	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ","ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
+	private Ks3Client client = new Ks3Client("12HITWMQXL2VBB3XMAEHQ","ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
 
 	@Before
 	public void init() {
@@ -82,6 +82,7 @@ public class Ks3ClientTest {
 
     @Test
 	public void ListObjects() {
+    	
 /*		ObjectListing o = client.listObjects("yyy");
 		Object od = o;
 		System.out.println(od);*/
@@ -89,7 +90,6 @@ public class Ks3ClientTest {
     	ObjectListing o = client.listObjects(request);
     	Object od = o;
 		System.out.println(od);
-
 	}
 
 	// @Test

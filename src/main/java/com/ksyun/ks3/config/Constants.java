@@ -11,4 +11,5 @@ public class Constants {
 	 * xml namespace
 	 */
 	public final static String KS3_XML_NAMESPACE = "http://s3.amazonaws.com/doc/2006-03-01/";
+	public final static String KS3_PACAKAGE = "com.ksyun.ks3";
 }

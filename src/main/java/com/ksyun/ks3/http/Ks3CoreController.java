@@ -13,6 +13,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 import com.ksyun.ks3.config.ClientConfig;
+import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
@@ -52,11 +53,7 @@ public class Ks3CoreController {
 			return result;
 		} catch (Exception e) {
 			// 异常格式转化统一
-			if (e instanceof Ks3ServiceException) {
-				log.error(e);
-				e.printStackTrace();
-				throw (Ks3ServiceException) e;
-			} else if (e instanceof Ks3ClientException) {
+			if (e instanceof Ks3ClientException) {
 				log.error(e);
 				e.printStackTrace();
 				throw (Ks3ClientException) e;
@@ -116,7 +113,7 @@ public class Ks3CoreController {
 		if (!success(response, ksResponse)) {
 			httpRequest.abort();
 			throw new Ks3ServiceException(response, StringUtils.join(
-					ksResponse.expectedStatus(), ","));
+					ksResponse.expectedStatus(), ",")).convert();
 		}
 		Y result = ksResponse.handleResponse(response);
 		if (ksResponse instanceof Md5CheckAble

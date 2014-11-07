@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.w3c.dom.Document;
 
+import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.utils.XmlReader;
 
 /**
@@ -21,7 +22,7 @@ import com.ksyun.ks3.utils.XmlReader;
  *              href="http://ks3.ksyun.com/doc/api/index.html"
  *              >http://ks3.ksyun.com/doc/api/index.html</a>最下面
  **/
-public class Ks3ServiceException extends Ks3ClientException {
+public class Ks3ServiceException extends Ks3ClientException{
 	/**
 	 * 
 	 */
@@ -35,7 +36,7 @@ public class Ks3ServiceException extends Ks3ClientException {
 	/**期望的状态码*/
 	private String expectedStatueCode;
 	/**错误*/
-	private String message;
+	private String errorMessage;
 	/**用户请求的资源*/
 	private String resource;
 	private String requestId;
@@ -48,10 +49,10 @@ public class Ks3ServiceException extends Ks3ClientException {
 			Document document = new XmlReader(response.getEntity().getContent())
 					.getDocument();
 			try {
-				message = document.getElementsByTagName("Message").item(0)
+				errorMessage = document.getElementsByTagName("Message").item(0)
 						.getTextContent();
 			} catch (Exception e) {
-				this.message = "unknow";
+				this.errorMessage = "unknow";
 			}
 			try {
 				errorCode = document.getElementsByTagName("Code").item(0)
@@ -84,10 +85,10 @@ public class Ks3ServiceException extends Ks3ClientException {
 
 	@Override
 	public String toString() {
-		return "Ks3ServiceException[RequestId:"+this.requestId+",Resource:" + resource + ",Statue code:"
+		return this.getClass().getName()+":"+"[RequestId:"+this.requestId+",Resource:" + resource + ",Statue code:"
 				+ this.statueCode + ",Expected statue code:"
 				+ this.expectedStatueCode + ",Error code:" + this.errorCode
-				+ ",Error message:" + this.message + "]";
+				+ ",Error message:" + this.errorMessage + "]";
 	}
 
 	public String getErrorCode() {
@@ -98,8 +99,8 @@ public class Ks3ServiceException extends Ks3ClientException {
 		return statueCode;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getErrorMessage() {
+		return errorMessage;
 	}
 
 	public String getResource() {
@@ -130,12 +131,30 @@ public class Ks3ServiceException extends Ks3ClientException {
 		this.statueCode = statueCode;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setErrorMessage(String message) {
+		this.errorMessage = message;
 	}
 
 	public void setResource(String resource) {
 		this.resource = resource;
 	}
-
+	//将当前异常转化为com.ksyun.ks3.exception.serviceside.*下的异常
+	public <X extends Ks3ServiceException> RuntimeException convert()
+	{
+		String classString = Constants.KS3_PACAKAGE+".exception.serviceside."+this.getErrorCode()+"Exception";
+		try{
+			@SuppressWarnings("unchecked")
+			X e = (X) Class.forName(classString).newInstance();
+		    e.setErrorMessage(this.getErrorMessage());
+		    e.setErrorCode(this.getErrorCode());
+		    e.setExpectedStatueCode(this.getExpectedStatueCode());
+		    e.setRequestId(this.getRequestId());
+		    e.setResource(this.getResource());
+		    e.setStatueCode(this.getStatueCode());
+		    e.setStackTrace(this.getStackTrace());
+		    return e;
+		}catch(Exception e){
+			return this;
+		}
+	}
 }
