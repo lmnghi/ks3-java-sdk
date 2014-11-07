@@ -10,7 +10,7 @@ import com.ksyun.ks3.http.HttpHeaders;
  * 
  * @description 
  **/
-public class UploadPartResponse extends Ks3WebServiceDefaultResponse<PartETag>{
+public class UploadPartResponse extends Ks3WebServiceDefaultResponse<PartETag> implements Md5CheckAble{
 
 	public int[] expectedStatus() {
 		return new int[]{200};
@@ -21,5 +21,7 @@ public class UploadPartResponse extends Ks3WebServiceDefaultResponse<PartETag>{
 		result = new PartETag();
 		result.seteTag(this.getHeader(HttpHeaders.ETag.toString()));
 	}
-
+	public String getETag() {
+		return this.getHeader(HttpHeaders.ETag.toString());
+	}
 }

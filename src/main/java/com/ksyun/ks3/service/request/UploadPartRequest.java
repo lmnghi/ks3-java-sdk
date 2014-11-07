@@ -2,7 +2,11 @@ package com.ksyun.ks3.service.request;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ksyun.ks3.InputSubStream;
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
@@ -10,6 +14,7 @@ import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.Md5Utils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -19,7 +24,8 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @description 
  **/
-public class UploadPartRequest extends Ks3WebServiceRequest{	
+public class UploadPartRequest extends Ks3WebServiceRequest implements MD5CalculateAble{	
+	private final Log log = LogFactory.getLog(UploadPartRequest.class);
 	private static final int minPartNumber = 1;
 	private static final int maxPartNumber = 10000;
 	private static final int minPartSize = 5*1024*1024;
@@ -30,6 +36,17 @@ public class UploadPartRequest extends Ks3WebServiceRequest{
 	private File file;
 	private long partSize;
 	private long fileoffset;
+	private long contentLength = -1;
+	/**
+	 * 
+	 * @param bucketname
+	 * @param objectkey
+	 * @param uploadId
+	 * @param partNumber
+	 * @param file
+	 * @param partsize 注意类型为long
+	 * @param fileoffset 注意类型为long
+	 */
 	public UploadPartRequest(String bucketname,String objectkey,String uploadId,int partNumber,File file,long partsize,long fileoffset)
 	{
 		this.setBucketname(bucketname);
@@ -39,20 +56,23 @@ public class UploadPartRequest extends Ks3WebServiceRequest{
 		this.setFile(file);
 		this.setPartSize(partsize);
 		this.setFileoffset(fileoffset);
+		this.contentLength = file.length()-fileoffset<partsize?file.length()-fileoffset:partsize;
 	}
 	@Override
 	protected void configHttpRequest() {
 		this.setHttpMethod(HttpMethod.PUT);
 		this.addParams("uploadId", this.uploadId);
 		this.addParams("partNumber",String.valueOf(this.partNumber));
+		InputStream inputStream = null;
 		try {
-			InputStream inputStream = new MD5DigestCalculatingInputStream(new InputSubStream(new RepeatableFileInputStream(this.file),
-			        this.fileoffset, partSize, true));
-			this.setRequestBody(inputStream);
+			inputStream = new InputSubStream(new RepeatableFileInputStream(this.file),
+			        this.fileoffset, partSize, true);
+
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 			throw new Ks3ClientException("read file "+file.getName()+" error");
-		}
+		} 
+	    this.addHeader(HttpHeaders.ContentLength,String.valueOf(this.contentLength));
+		this.setRequestBody(inputStream);
 	}
 
 	@Override
@@ -107,5 +127,16 @@ public class UploadPartRequest extends Ks3WebServiceRequest{
 	}
 	public void setFileoffset(long fileoffset) {
 		this.fileoffset = fileoffset;
+	}
+	public long getContentLength() {
+		return contentLength;
+	}
+	public void setContentLength(long contentLength) {
+		this.contentLength = contentLength;
+	}
+	public String getMd5() {
+		return com.ksyun.ks3.utils.Base64
+				.encodeAsString(((MD5DigestCalculatingInputStream)super.getRequestBody())
+						.getMd5Digest());
 	}
 }

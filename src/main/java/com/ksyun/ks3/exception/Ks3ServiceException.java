@@ -39,7 +39,7 @@ public class Ks3ServiceException extends Ks3ClientException {
 	/**用户请求的资源*/
 	private String resource;
 	private String requestId;
-
+	public Ks3ServiceException(){super("");}
 	public Ks3ServiceException(HttpResponse response, String expected) {
 		super("");
 		this.expectedStatueCode = expected;
@@ -112,6 +112,30 @@ public class Ks3ServiceException extends Ks3ClientException {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getExpectedStatueCode() {
+		return expectedStatueCode;
+	}
+
+	public void setExpectedStatueCode(String expectedStatueCode) {
+		this.expectedStatueCode = expectedStatueCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public void setStatueCode(int statueCode) {
+		this.statueCode = statueCode;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
 	}
 
 }

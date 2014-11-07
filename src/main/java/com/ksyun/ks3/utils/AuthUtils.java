@@ -65,7 +65,7 @@ public class AuthUtils {
         String serverSignature = calculateRFC2104HMAC(signStr, accessKeySecret);
         return serverSignature;
 	}
-    private static String CanonicalizedKSSResource(Ks3WebServiceRequest request) {
+    public static String CanonicalizedKSSResource(Ks3WebServiceRequest request) {
     	boolean escapeDoubleSlash = true;
 
         String bucketName = request.getBucketname();

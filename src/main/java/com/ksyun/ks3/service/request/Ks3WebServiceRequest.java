@@ -118,6 +118,12 @@ public abstract class Ks3WebServiceRequest {
 	}
 
 	private void initHttpRequestBase() {
+		// 准备计算 md5值
+		if (this instanceof MD5CalculateAble && this.getRequestBody() != null)
+			if (!(this.getRequestBody() instanceof MD5DigestCalculatingInputStream))
+				this.setRequestBody(new MD5DigestCalculatingInputStream(this
+						.getRequestBody()));
+
 		String encodedParams = encodeParams();
 		url = new StringBuffer("http://")
 				.append(StringUtils.isBlank(bucketname) ? "" : bucketname + ".")
@@ -165,18 +171,30 @@ public abstract class Ks3WebServiceRequest {
 				Map<String, String> headrs = this.getHeader();
 				String length = headrs
 						.get(HttpHeaders.ContentLength.toString());
-				HttpEntity entity = new RepeatableInputStreamRequestEntity(
-						requestBody, length);
-				// 如果为body为inputstream时，md5值与InputStreamRequestEntity不可兼得（md5
-				// 1、直接加密文件 2、流在这个函数结束前必须被读取一次）；代码选择了md5
-				if (length == null || Integer.valueOf(length) < 0) {
+				HttpEntity entity = null;
+				long availeAble = Runtime.getRuntime().freeMemory()-1024*64;
+				if ((length == null || Long.valueOf(length) < availeAble)) {
 					try {
+						//这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
+						entity = new RepeatableInputStreamRequestEntity(
+								requestBody,"-1");
 						entity = new BufferedHttpEntity(entity);
+						if (this.getRequestBody() instanceof MD5DigestCalculatingInputStream)
+							this.addHeader(
+									HttpHeaders.ContentMD5,
+									com.ksyun.ks3.utils.Base64
+											.encodeAsString(((MD5DigestCalculatingInputStream) this
+													.getRequestBody())
+													.getMd5Digest()));
 					} catch (IOException e) {
 						e.printStackTrace();
 						throw new Ks3ClientException("init http request error("
 								+ e + ")", e);
 					}
+				}
+				else{
+					entity = new RepeatableInputStreamRequestEntity(
+							requestBody, length);
 				}
 				putMethod.setEntity(entity);
 			}
@@ -189,11 +207,6 @@ public abstract class Ks3WebServiceRequest {
 		} else {
 			throw new Ks3ClientException("Unknow http method : "
 					+ this.getHttpMethod());
-		}
-		if (this.requestBody instanceof MD5DigestCalculatingInputStream) {
-			this.setContentMD5(com.ksyun.ks3.utils.Base64
-					.encodeAsString(((MD5DigestCalculatingInputStream) requestBody)
-							.getMd5Digest()));
 		}
 		for (Entry<String, String> aHeader : header.entrySet()) {
 			if (!httpRequest.containsHeader(aHeader.getKey()))

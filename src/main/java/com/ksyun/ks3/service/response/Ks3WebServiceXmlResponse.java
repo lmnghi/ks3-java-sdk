@@ -8,12 +8,14 @@ import java.util.List;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler; 
 
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.http.HttpHeaders;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -50,6 +52,23 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 	public HttpResponse getResponse()
 	{
 		return this.response;
+	}
+	protected Header[] getHeaders(String key)
+	{
+		return response.getHeaders(key);
+	}
+	protected String getHeader(String key)
+	{
+		Header[] headers = getHeaders(key);
+		if(headers.length>0)
+		{
+			return headers[0].getValue();
+		}
+		return "";
+	}
+	public String getRequestId()
+	{
+		return this.getHeader(HttpHeaders.RequestId.toString());
 	}
 	public T handleResponse(HttpResponse response) {
 		this.setResponse(response);

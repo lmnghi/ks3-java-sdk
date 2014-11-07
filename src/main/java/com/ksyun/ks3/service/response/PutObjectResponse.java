@@ -1,6 +1,7 @@
 package com.ksyun.ks3.service.response;
 
 import com.ksyun.ks3.dto.PutObjectResult;
+import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
 
 /**
@@ -10,7 +11,7 @@ import com.ksyun.ks3.http.HttpHeaders;
  * 
  * @description 
  **/
-public class PutObjectResponse extends Ks3WebServiceDefaultResponse<PutObjectResult>{
+public class PutObjectResponse extends Ks3WebServiceDefaultResponse<PutObjectResult> implements Md5CheckAble{
 
 	public int[] expectedStatus() {
 		return new int[]{200};
@@ -20,5 +21,9 @@ public class PutObjectResponse extends Ks3WebServiceDefaultResponse<PutObjectRes
 	public void preHandle() {
 		result = new PutObjectResult();
 		result.seteTag(this.getHeader(HttpHeaders.ETag.toString()));
+	}
+
+	public String getETag() {
+		return this.getHeader(HttpHeaders.ETag.toString());
 	}
 }

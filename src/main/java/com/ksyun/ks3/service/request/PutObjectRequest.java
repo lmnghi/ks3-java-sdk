@@ -35,7 +35,7 @@ import com.ksyun.ks3.utils.Md5Utils;
  * 
  * @description 
  **/
-public class PutObjectRequest extends Ks3WebServiceRequest{
+public class PutObjectRequest extends Ks3WebServiceRequest implements MD5CalculateAble{
 	private File file;
 	private ObjectMetadata objectMeta = new ObjectMetadata();
 	private CannedAccessControlList cannedAcl;
@@ -153,5 +153,10 @@ public class PutObjectRequest extends Ks3WebServiceRequest{
 	}
 	public void setRedirectLocation(String redirectLocation) {
 		this.redirectLocation = redirectLocation;
+	}
+	public String getMd5() {
+		return com.ksyun.ks3.utils.Base64
+				.encodeAsString(((MD5DigestCalculatingInputStream)super.getRequestBody())
+						.getMd5Digest());
 	}
 }

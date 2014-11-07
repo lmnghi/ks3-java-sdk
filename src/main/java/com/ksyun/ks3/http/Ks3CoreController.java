@@ -17,10 +17,13 @@ import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
+import com.ksyun.ks3.service.request.MD5CalculateAble;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.Ks3WebServiceResponse;
+import com.ksyun.ks3.service.response.Md5CheckAble;
 import com.ksyun.ks3.signer.Signer;
 import com.ksyun.ks3.utils.AuthUtils;
+import com.ksyun.ks3.utils.Converter;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 import com.ksyun.ks3.utils.Timer;
@@ -39,7 +42,7 @@ public class Ks3CoreController {
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
 		try {
-			if (StringUtils.isBlank(auth.getAccessKeyId())
+			if (auth == null || StringUtils.isBlank(auth.getAccessKeyId())
 					|| StringUtils.isBlank(auth.getAccessKeySecret()))
 				throw new Ks3ClientException(
 						"client not login!AccessKeyId or AccessKeySecret is blank");
@@ -87,14 +90,16 @@ public class Ks3CoreController {
 		}
 		log.info("finished calculate authorization: " + Timer.end());
 		try {
+			log.info("sending http request..... please wait");
+			doLogHttp(httpRequest);
 			response = client.execute(httpRequest);
+			doLogHttp(response);
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
-			doLogHttp(httpRequest, response);
+
 			log.info("finished log request and response : " + Timer.end());
-		}catch (Exception e) {
+		} catch (Exception e) {
 			httpRequest.abort();
-			log.error(e);
 			throw new Ks3ClientException(
 					"Request to Ks3 has occured an exception:(" + e + ")", e);
 		}
@@ -102,11 +107,9 @@ public class Ks3CoreController {
 		try {
 			ksResponse = clazz.newInstance();
 		} catch (InstantiationException e) {
-			log.error(e);
 			throw new Ks3ClientException("to instantiate " + clazz
 					+ " has occured an exception:(" + e + ")", e);
 		} catch (IllegalAccessException e) {
-			log.error(e);
 			throw new Ks3ClientException("to instantiate " + clazz
 					+ " has occured an exception:(" + e + ")", e);
 		}
@@ -116,6 +119,15 @@ public class Ks3CoreController {
 					ksResponse.expectedStatus(), ","));
 		}
 		Y result = ksResponse.handleResponse(response);
+		if (ksResponse instanceof Md5CheckAble
+				&& request instanceof MD5CalculateAble) {
+			String ETag = ((Md5CheckAble) ksResponse).getETag();
+			String MD5 = ((MD5CalculateAble) request).getMd5();
+			if (!MD5.equals(Converter.MD52ETag(ETag))) {
+				throw new Ks3ClientException(
+						"the MD5 value we calculated dose not match the MD5 value Ks3 Service returned.please try again");
+			}
+		}
 		if (httpRequest != null) {
 			// 否则链接池会耗尽
 			httpRequest.abort();
@@ -147,33 +159,36 @@ public class Ks3CoreController {
 	/**
 	 * 将一次请求的http信息打在日志中
 	 * 
-	 * @param request
-	 * @param response
+	 * @param o
 	 */
-	private void doLogHttp(HttpRequestBase request, HttpResponse response) {
-		log.info(">>request:");
-		log.info(new StringBuffer(">>").append(request.getRequestLine()));
-		log.info(">>headers:");
-		Header[] headers = request.getAllHeaders();
-		for (int i = 0; i < headers.length; i++) {
-			log.info(new StringBuffer(">>").append(headers[i].getName())
-					.append(":").append(headers[i].getValue()));
-		}
-		HttpParams params = request.getParams();
-		if (params instanceof BasicHttpParams) {
-			log.info(">>params:");
-			for (String name : ((BasicHttpParams) params).getNames()) {
-				log.info(new StringBuffer(">>").append(name).append(":")
-						.append(params.getParameter(name)));
+	private void doLogHttp(Object o) {
+		Header[] headers = null;
+		if (o instanceof HttpRequestBase) {
+			HttpRequestBase request = (HttpRequestBase) o;
+			log.info(new StringBuffer(">>").append(request.getRequestLine()));
+			log.info(">>headers:");
+			headers = request.getAllHeaders();
+			for (int i = 0; i < headers.length; i++) {
+				log.info(new StringBuffer(">>").append(headers[i].getName())
+						.append(":").append(headers[i].getValue()));
 			}
-		}
-		log.info("<<response");
-		log.info(new StringBuffer("<<").append(response.getStatusLine()));
-		log.info("<<headers:");
-		headers = response.getAllHeaders();
-		for (int i = 0; i < headers.length; i++) {
-			log.info(new StringBuffer("<<").append(headers[i].getName())
-					.append(":").append(headers[i].getValue()));
+			HttpParams params = request.getParams();
+			if (params instanceof BasicHttpParams) {
+				log.info(">>params:");
+				for (String name : ((BasicHttpParams) params).getNames()) {
+					log.info(new StringBuffer(">>").append(name).append(":")
+							.append(params.getParameter(name)));
+				}
+			}
+		} else if (o instanceof HttpResponse) {
+			HttpResponse response = (HttpResponse) o;
+			log.info(new StringBuffer("<<").append(response.getStatusLine()));
+			log.info("<<headers:");
+			headers = response.getAllHeaders();
+			for (int i = 0; i < headers.length; i++) {
+				log.info(new StringBuffer("<<").append(headers[i].getName())
+						.append(":").append(headers[i].getValue()));
+			}
 		}
 	}
 }

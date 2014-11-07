@@ -7,6 +7,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.http.HttpHeaders;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -48,5 +49,9 @@ public abstract class Ks3WebServiceDefaultResponse<T> implements Ks3WebServiceRe
 			e.printStackTrace();
 			throw new Ks3ClientException("faild to get the response content("+e+")",e);
 		}
+	}
+	public String getRequestId()
+	{
+		return this.getHeader(HttpHeaders.RequestId.toString());
 	}
 }

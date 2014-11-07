@@ -7,6 +7,8 @@ package com.ksyun.ks3.http;
  * @description 
  **/
 public enum HttpHeaders {
+	RequestId("x-kss-request-id"),
+	
 	Authorization("Authorization"),
 	Date("Date"),
 	Host("Host"),

@@ -206,7 +206,9 @@ public class Ks3ClientTest {
 		long part = 5*1024*1024;
 		String bucket = "lijunwei.test";
 		String key = "IMG_16721.jpg";
+		//String filename = "D://新建文件夹.rar";
 		String filename = "D://IMG_16721.jpg";
+		
 		
 		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
 				bucket, key);

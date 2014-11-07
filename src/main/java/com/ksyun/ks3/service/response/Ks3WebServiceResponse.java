@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse;
 public interface Ks3WebServiceResponse<T>{
 	public T handleResponse(HttpResponse response);
 	public HttpResponse getResponse();
+	public String getRequestId();
 	/**
 	 * 
 	 * @return 期望的 http status
