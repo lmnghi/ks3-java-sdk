@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
  * 
  * @date 2014年11月7日 上午10:46:56
  * 
- * @description 
+ * @description ACL配置无效
  **/
 public class InvalidACLStringException extends Ks3ServiceException {
 

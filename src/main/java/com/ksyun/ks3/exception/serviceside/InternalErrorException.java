@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
  * 
  * @date 2014年11月7日 上午10:45:43
  * 
- * @description 
+ * @description 内部错误
  **/
 public class InternalErrorException extends Ks3ServiceException{
 

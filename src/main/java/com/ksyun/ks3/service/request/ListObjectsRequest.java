@@ -103,8 +103,8 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-
+		if(StringUtils.isBlank(super.getBucketname()))
+			throw new IllegalArgumentException("param bucketName can not be blank");
 	}
 
 }

@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
  * 
  * @date 2014年11月7日 上午10:45:17
  * 
- * @description 
+ * @description Bucket不为空
  **/
 public class BucketNotEmptyException extends Ks3ServiceException {
 

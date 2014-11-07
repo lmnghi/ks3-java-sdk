@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
  * 
  * @date 2014年11月7日 上午10:46:28
  * 
- * @description 
+ * @description 无效的AccessKeyId
  **/
 public class InvalidAccessKeyIdException extends Ks3ServiceException {
 

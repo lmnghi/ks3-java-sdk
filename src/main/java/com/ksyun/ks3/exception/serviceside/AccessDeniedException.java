@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
  * 
  * @date 2014年11月7日 上午10:39:47
  * 
- * @description 
+ * @description 拒绝访问
  **/
 public class AccessDeniedException extends Ks3ServiceException{
 

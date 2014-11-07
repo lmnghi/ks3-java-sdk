@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
  * 
  * @date 2014年11月7日 上午10:44:35
  * 
- * @description 
+ * @description Bucket已经存在
  **/
 public class BucketAlreadyExistsException extends Ks3ServiceException{
 

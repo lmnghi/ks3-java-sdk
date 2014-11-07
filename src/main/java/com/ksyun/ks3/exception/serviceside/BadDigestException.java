@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
  * 
  * @date 2014年11月7日 上午10:44:01
  * 
- * @description 
+ * @description 错误的摘要
  **/
 public class BadDigestException extends Ks3ServiceException {
 
