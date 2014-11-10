@@ -54,7 +54,7 @@ public class DateUtils {
 	}
 	public static Date convertStr2Date(String datetimeText)
 	{
-		datetimeText = datetimeText.replace("Z"," UTC");
+		datetimeText = datetimeText.replace("Z"," GMT");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS z");
 		try {
 			return sdf.parse(datetimeText);

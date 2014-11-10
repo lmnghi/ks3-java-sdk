@@ -7,7 +7,7 @@ package com.ksyun.ks3.utils;
  * @description 
  **/
 public class Converter {
-	public static String MD52ETag(String ETag)
+	public static String MD52ETag(String md5)
 	{
 		String finalETag = "";
 		return finalETag;

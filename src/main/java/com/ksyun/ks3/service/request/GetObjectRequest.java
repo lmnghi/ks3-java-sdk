@@ -35,6 +35,9 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 	 * 在此时间之后被修改过，否则返回结果的ifModified为false,object为空
 	 */
 	private Date modifiedSinceConstraint;
+	/**
+	 * 修改返回的response的headers
+	 */
 	private ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
 	public GetObjectRequest(String bucketname,String key)
 	{

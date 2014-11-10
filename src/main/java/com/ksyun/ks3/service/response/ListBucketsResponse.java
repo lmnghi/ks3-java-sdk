@@ -63,7 +63,7 @@ public class ListBucketsResponse extends Ks3WebServiceXmlResponse<List<Bucket>>{
 			}
 			if("CreationDate".equalsIgnoreCase(getTag()))
 			{
-				bucket.setCreationDate((DateUtils.convertStr2Date(s,new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000Z'"))));
+				bucket.setCreationDate((DateUtils.convertStr2Date(s)));
 			}
 		}
 	}

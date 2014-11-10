@@ -7,7 +7,7 @@ import java.util.Date;
  * 
  * @date 2014年10月14日 下午6:00:34
  * 
- * @description 
+ * @description 存储空间
  **/
 public class Bucket {
 	private static final long serialVersionUID = -8646831898339939580L;
@@ -23,6 +23,16 @@ public class Bucket {
         return "S3Bucket [name=" + getName()
                 + ", creationDate=" + getCreationDate()
                 + ", owner=" + getOwner() + "]";
+    }
+    public int hashCode(){
+    	return this.name.hashCode();
+    }
+    @Override
+    public boolean equals(Object obj){
+    	if(obj instanceof Bucket)
+    	    return this.name.equals(((Bucket)obj).getName());
+    	else
+    		return false;
     }
     public Owner getOwner() {
         return owner;

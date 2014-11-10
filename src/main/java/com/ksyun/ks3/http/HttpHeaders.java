@@ -15,6 +15,7 @@ public enum HttpHeaders {
 	Server("Server"),
 	ExtendedRequestId("x-kss-id-2"),
 	ContentMD5("Content-MD5"),
+	Expect("Expect"),
 	IfMatch("If-Match"),
 	IfNoneMatch("If-None-Match"),
 	IfModifiedSince("If-Modified-Since"),

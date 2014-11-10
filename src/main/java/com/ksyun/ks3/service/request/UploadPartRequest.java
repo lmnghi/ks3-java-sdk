@@ -38,6 +38,11 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements MD5Calcul
 	private long fileoffset;
 	private long contentLength = -1;
 	/**
+	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
+	 * @param expectContinue
+	 */
+	private boolean expectContinue = false;
+	/**
 	 * 
 	 * @param bucketname
 	 * @param objectkey
@@ -60,6 +65,8 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements MD5Calcul
 	}
 	@Override
 	protected void configHttpRequest() {
+		if(this.expectContinue)
+			this.addHeader(HttpHeaders.Expect,"100-continue");
 		this.setHttpMethod(HttpMethod.PUT);
 		this.addParams("uploadId", this.uploadId);
 		this.addParams("partNumber",String.valueOf(this.partNumber));
@@ -139,4 +146,15 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements MD5Calcul
 				.encodeAsString(((MD5DigestCalculatingInputStream)super.getRequestBody())
 						.getMd5Digest());
 	}
+	public boolean isExpectContinue() {
+		return expectContinue;
+	}
+	/**
+	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
+	 * @param expectContinue
+	 */
+	public void setExpectContinue(boolean expectContinue) {
+		expectContinue = expectContinue;
+	}
+	
 }

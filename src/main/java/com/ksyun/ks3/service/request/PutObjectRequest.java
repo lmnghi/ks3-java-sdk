@@ -41,6 +41,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements MD5Calcula
 	private CannedAccessControlList cannedAcl;
 	private AccessControlList acl = new AccessControlList();
 	private String redirectLocation;
+	/**
+	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
+	 * @param expectContinue
+	 */
+	private boolean expectContinue = false;
 	public PutObjectRequest(String bucketname,String key,File file)
 	{
 		this.setBucketname(bucketname);
@@ -59,6 +64,8 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements MD5Calcula
 	@Override
 	protected void configHttpRequest() {
 		this.setContentType("binary/octet-stream");
+		if(this.expectContinue)
+			this.addHeader(HttpHeaders.Expect,"100-continue");
 		/**
 		 * 设置request body
 		 * meta
@@ -160,5 +167,15 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements MD5Calcula
 		return com.ksyun.ks3.utils.Base64
 				.encodeAsString(((MD5DigestCalculatingInputStream)super.getRequestBody())
 						.getMd5Digest());
+	}
+	public boolean isExpectContinue() {
+		return expectContinue;
+	}
+	/**
+	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
+	 * @param expectContinue
+	 */
+	public void setExpectContinue(boolean expectContinue) {
+		expectContinue = expectContinue;
 	}
 }

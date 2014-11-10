@@ -165,22 +165,22 @@ public class Ks3ClientTest {
 		  Auto-generated catch block e.printStackTrace(); } catch
 		  (FileNotFoundException e) { // TODO Auto-generated catch block
 		  e.printStackTrace(); }*/
-/*		try {
-			PutObjectRequest request = new PutObjectRequest("lijunwei.test",
-					"IMG_16721。exe",new File("D://time.txt"));
+		try {
+			PutObjectRequest request = new PutObjectRequest("daiwenjun",
+					"IMG_16721。exe",new File("D://新建文件夹.rar"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-		GetObjectRequest request = new GetObjectRequest("lijunwei.test", "IMG_16721。exe");
+		}
+/*		GetObjectRequest request = new GetObjectRequest("lijunwei.test", "IMG_16721。exe");
 		request.setRange(0,499);
 		request.setModifiedSinceConstraint(new Date());
 		//List<String> aa = new ArrayList<String>();
 		//aa.add("73a2ec41f952b0d62e1dacff25889d5a");
 	//	request.setNonmatchingEtagConstraints(aa);
 		GetObjectResult obj = client.getObject(request);
-		System.out.println(obj);
+		System.out.println(obj);*/
 /*			try {
 				PutObjectRequest request = new PutObjectRequest("lijunwei.test",
 						"%2f",new ByteArrayInputStream(new byte[]{}),new ObjectMetadata());
