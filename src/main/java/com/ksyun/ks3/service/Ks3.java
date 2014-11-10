@@ -429,7 +429,42 @@ public interface Ks3 {
 	 */
 	public void deleteObject(DeleteObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
-
+	/**
+	 * DELETE Multiple Objects
+	 * @param request {@link DeleteMultipleObjectsRequest}
+	 * @return {@link DeleteMultipleObjectsResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 *  <p>
+	 *             删除若干的objects
+	 *             </p>
+	 */
+	public DeleteMultipleObjectsResult deleteObjects(DeleteMultipleObjectsRequest request)
+			throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * DELETE Multiple Objects
+	 * @param keys 要删除的keys
+	 * @return {@link DeleteMultipleObjectsResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * 	  <p>
+	 *             删除若干的objects
+	 *             </p>
+	 */
+	public DeleteMultipleObjectsResult deleteObjects(List<String> keys,String bucketName)
+			throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * DELETE Multiple Objects
+	 * @param keys 要删除的keys
+	 * @return {@link DeleteMultipleObjectsResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * 	  <p>
+	 *             删除若干的objects
+	 *             </p>
+	 */
+	public DeleteMultipleObjectsResult deleteObjects(String[] keys,String bucketName)
+			throws Ks3ClientException, Ks3ServiceException;
 	/**
 	 * GET OBJECT
 	 * 

@@ -26,6 +26,7 @@ import com.ksyun.ks3.dto.AccessControlPolicy;
 import com.ksyun.ks3.dto.Bucket;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
+import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Grantee;
 import com.ksyun.ks3.dto.HeadObjectResult;
@@ -43,6 +44,7 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.Ks3Client;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.CreateBucketRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
@@ -81,15 +83,16 @@ public class Ks3ClientTest {
 /*		ObjectListing o = client.listObjects("yyy");
 		Object od = o;
 		System.out.println(od);*/
-    	ListObjectsRequest request = new ListObjectsRequest("",null,null,null,null);
+    	ListObjectsRequest request = new ListObjectsRequest("lijunwei.test",null,null,null,0);
     	ObjectListing o = client.listObjects(request);
     	Object od = o;
 		System.out.println(od);
 	}
 
-	// @Test
+	 @Test
 	public void createAndDeleteBucket() {
-		client.createBucket("lijunwei");
+		CreateBucketRequest request = new CreateBucketRequest("lijunwei",REGION.BEIJING); 
+		client.createBucket(request);
 		client.deleteBucket("lijunwei");
 	}
 
@@ -295,5 +298,10 @@ public class Ks3ClientTest {
     {
     	PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm",CannedAccessControlList.PublicReadWrite);
     	client.putBucketACL(request);
+    }
+    @Test
+    public void deleteObjects()
+    {
+    	System.out.println(client.deleteObjects(new String[]{"11112018rln5.pdf","dfdfdsf.pdf","sssss","square/"}, "ksc-scm"));
     }
 }

@@ -149,7 +149,17 @@ public abstract class Ks3WebServiceRequest {
 				HttpEntity entity = new RepeatableInputStreamRequestEntity(
 						requestBody, length);
 				try {
+					//这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
+					entity = new RepeatableInputStreamRequestEntity(
+							requestBody,"-1");
 					entity = new BufferedHttpEntity(entity);
+					if (this.getRequestBody() instanceof MD5DigestCalculatingInputStream)
+						this.addHeader(
+								HttpHeaders.ContentMD5,
+								com.ksyun.ks3.utils.Base64
+										.encodeAsString(((MD5DigestCalculatingInputStream) this
+												.getRequestBody())
+												.getMd5Digest()));
 				} catch (IOException e) {
 					e.printStackTrace();
 					throw new Ks3ClientException("init http request error(" + e

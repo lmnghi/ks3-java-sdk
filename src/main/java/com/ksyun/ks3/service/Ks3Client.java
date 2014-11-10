@@ -14,6 +14,7 @@ import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
 import com.ksyun.ks3.service.request.DeleteBucketRequest;
+import com.ksyun.ks3.service.request.DeleteMultipleObjectsRequest;
 import com.ksyun.ks3.service.request.DeleteObjectRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
@@ -202,15 +203,15 @@ public class Ks3Client implements Ks3 {
 
 	public boolean bucketExists(String bucketname) throws Ks3ClientException,
 			Ks3ServiceException {
-		try{
-		HeadBucketResult result = this.headBucket(bucketname);
-		if (result.getStatueCode() == 404)
+		try {
+			HeadBucketResult result = this.headBucket(bucketname);
+			if (result.getStatueCode() == 404)
+				return false;
+			if (result.getStatueCode() == 200 || result.getStatueCode() == 301
+					|| result.getStatueCode() == 403)
+				return true;
 			return false;
-		if (result.getStatueCode() == 200 || result.getStatueCode() == 301
-				|| result.getStatueCode() == 404)
-			return true;
-		return false;
-		}catch(Ks3ClientException e){
+		} catch (Ks3ClientException e) {
 			return false;
 		}
 	}
@@ -337,6 +338,22 @@ public class Ks3Client implements Ks3 {
 			CannedAccessControlList CannedAcl) throws Ks3ClientException,
 			Ks3ServiceException {
 		this.putBucketACL(new PutBucketACLRequest(bucketName, CannedAcl));
+	}
+
+	public DeleteMultipleObjectsResult deleteObjects(
+			DeleteMultipleObjectsRequest request) throws Ks3ClientException,
+			Ks3ServiceException {
+		return client.execute(auth, request, DeleteMultipleObjectsResponse.class);
+	}
+
+	public DeleteMultipleObjectsResult deleteObjects(List<String> keys,String bucketName)
+			throws Ks3ClientException, Ks3ServiceException {
+		return this.deleteObjects(new DeleteMultipleObjectsRequest(bucketName,keys));
+	}
+
+	public DeleteMultipleObjectsResult deleteObjects(String[] keys,String bucketName)
+			throws Ks3ClientException, Ks3ServiceException {
+		return this.deleteObjects(new DeleteMultipleObjectsRequest(bucketName,keys));
 	}
 
 }

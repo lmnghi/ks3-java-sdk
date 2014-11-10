@@ -10,7 +10,7 @@ import com.ksyun.ks3.dto.Bucket;
  **/
 public class CreateBucketResponse extends Ks3WebServiceDefaultResponse<Bucket> {
 	public int[] expectedStatus() {
-		return new int[]{200};
+		return new int[]{200,307};
 	}
 
 	@Override

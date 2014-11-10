@@ -47,6 +47,12 @@ public class FunctionsTest extends Ks3ClientTest {
 		else{
 			CreateBucketRequest request = new CreateBucketRequest(bucketname);
 			this.client.createBucket(request);
+			if(!this.client.bucketExists(bucketname))
+			{
+				throw new Exception("创建bucket失败，但是却返回正确");
+			}else{
+			    client.deleteBucket(bucketname);
+			}
 		}
 	}
 	/**

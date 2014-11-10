@@ -1,10 +1,12 @@
 package com.ksyun.ks3.service.request;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CannedAccessControlList;
+import com.ksyun.ks3.dto.CreateBucketConfiguration;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.http.HttpHeaders;
@@ -21,11 +23,27 @@ import com.ksyun.ks3.utils.StringUtils;
 public class CreateBucketRequest extends Ks3WebServiceRequest{
 	private CannedAccessControlList cannedAcl;
 	private AccessControlList acl = new AccessControlList();
+	private CreateBucketConfiguration config = null;
 	public CreateBucketRequest(String bucketName)
 	{
 		this.setBucketname(bucketName);
 	}
-
+	public CreateBucketRequest(String bucketName,CannedAccessControlList cannedAcl)
+	{
+		this(bucketName);
+		this.setCannedAcl(cannedAcl);
+	}
+	public CreateBucketRequest(String bucketName,AccessControlList acl)
+	{
+		this(bucketName);
+		this.setAcl(acl);
+	}
+	public CreateBucketRequest(String bucketName,CreateBucketConfiguration.REGION region)
+	{
+		this(bucketName);
+		config = new CreateBucketConfiguration();
+		config.setLocation(region);
+	}
 	public CannedAccessControlList getCannedAcl() {
 		return cannedAcl;
 	}
@@ -45,6 +63,10 @@ public class CreateBucketRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void configHttpRequest() {
 		this.setHttpMethod(HttpMethod.PUT);
+		if(this.config!=null&&this.config.getLocation()!=null)
+		{
+			this.setRequestBody(new ByteArrayInputStream(this.config.toXml().getBytes()));
+		}
 		if(this.cannedAcl!=null)
 		{
 			this.addHeader(HttpHeaders.CannedAcl.toString(),cannedAcl.toString());
@@ -87,5 +109,13 @@ public class CreateBucketRequest extends Ks3WebServiceRequest{
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.validateBucketName(this.getBucketname())==null)
 			throw new IllegalArgumentException("bucket name is not correct");
+	}
+
+	public CreateBucketConfiguration getConfig() {
+		return config;
+	}
+
+	public void setConfig(CreateBucketConfiguration config) {
+		this.config = config;
 	}
 }

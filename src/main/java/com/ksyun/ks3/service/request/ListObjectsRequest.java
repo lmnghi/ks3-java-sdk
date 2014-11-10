@@ -97,7 +97,7 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 		this.addParams("marker", marker);
 		this.addParams("delimiter", delimiter);
 		if (maxKeys != null)
-			this.addParams("max-keys", maxKeys.toString());
+			this.addParams("max-keys", String.valueOf(maxKeys));
 		this.addHeader(HttpHeaders.ContentType, "text/plain");
 	}
 
