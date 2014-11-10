@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
  * @description 
  **/
 public interface Ks3WebServiceResponse<T>{
+	public static int allStatueCode = -1;
 	public T handleResponse(HttpResponse response);
 	public HttpResponse getResponse();
 	public String getRequestId();

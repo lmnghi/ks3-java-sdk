@@ -69,15 +69,10 @@ public class Ks3ClientTest {
 		ClientConfig config = ClientConfig.getConfig();
 	}
 
-	// @Test
+	 @Test
 	public void ListBuckets() {
 		List<Bucket> buckets = client.listBuckets();
-		for (Bucket bucket : buckets) {
-			System.out.println(bucket.getName());
-			System.out.println(bucket.getCreationDate());
-			System.out.println(bucket.getOwner().getId());
-			System.out.println(bucket.getOwner().getDisplayName());
-		}
+		System.out.println(buckets);
 	}
 
     @Test

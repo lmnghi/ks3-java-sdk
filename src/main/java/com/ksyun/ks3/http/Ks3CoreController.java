@@ -88,13 +88,9 @@ public class Ks3CoreController {
 		log.info("finished calculate authorization: " + Timer.end());
 		try {
 			log.info("sending http request..... please wait");
-			doLogHttp(httpRequest);
 			response = client.execute(httpRequest);
-			doLogHttp(response);
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
-
-			log.info("finished log request and response : " + Timer.end());
 		} catch (Exception e) {
 			httpRequest.abort();
 			throw new Ks3ClientException(
@@ -113,7 +109,7 @@ public class Ks3CoreController {
 		if (!success(response, ksResponse)) {
 			httpRequest.abort();
 			throw new Ks3ServiceException(response, StringUtils.join(
-					ksResponse.expectedStatus(), ",")).convert();
+					ksResponse.expectedStatus(), ",")+"("+Ks3WebServiceResponse.allStatueCode+" is all statue codes)").convert();
 		}
 		Y result = ksResponse.handleResponse(response);
 		if (ksResponse instanceof Md5CheckAble
@@ -147,45 +143,11 @@ public class Ks3CoreController {
 		int num = kscResponse.expectedStatus().length;
 		int code = response.getStatusLine().getStatusCode();
 		for (int i = 0; i < num; i++) {
+			if(code == Ks3WebServiceResponse.allStatueCode)
+				return true;
 			if (code == kscResponse.expectedStatus()[i])
 				return true;
 		}
 		return false;
-	}
-
-	/**
-	 * 将一次请求的http信息打在日志中
-	 * 
-	 * @param o
-	 */
-	private void doLogHttp(Object o) {
-		Header[] headers = null;
-		if (o instanceof HttpRequestBase) {
-			HttpRequestBase request = (HttpRequestBase) o;
-			log.info(new StringBuffer(">>").append(request.getRequestLine()));
-			log.info(">>headers:");
-			headers = request.getAllHeaders();
-			for (int i = 0; i < headers.length; i++) {
-				log.info(new StringBuffer(">>").append(headers[i].getName())
-						.append(":").append(headers[i].getValue()));
-			}
-			HttpParams params = request.getParams();
-			if (params instanceof BasicHttpParams) {
-				log.info(">>params:");
-				for (String name : ((BasicHttpParams) params).getNames()) {
-					log.info(new StringBuffer(">>").append(name).append(":")
-							.append(params.getParameter(name)));
-				}
-			}
-		} else if (o instanceof HttpResponse) {
-			HttpResponse response = (HttpResponse) o;
-			log.info(new StringBuffer("<<").append(response.getStatusLine()));
-			log.info("<<headers:");
-			headers = response.getAllHeaders();
-			for (int i = 0; i < headers.length; i++) {
-				log.info(new StringBuffer("<<").append(headers[i].getName())
-						.append(":").append(headers[i].getValue()));
-			}
-		}
 	}
 }

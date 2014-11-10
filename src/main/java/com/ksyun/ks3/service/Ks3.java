@@ -241,13 +241,14 @@ public interface Ks3 {
 	 * 
 	 * @param bucketname
 	 *            bucket名称
+	 * @return statue code and headers{@link HeadBucketResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 *             <p>
-	 *             如果bucket不存在会抛出{@link Ks3ServiceException}
+	 *             返回headers
 	 *             </p>
 	 */
-	public void headBucket(String bucketname) throws Ks3ClientException,
+	public HeadBucketResult headBucket(String bucketname) throws Ks3ClientException,
 			Ks3ServiceException;
 
 	/**
@@ -255,13 +256,14 @@ public interface Ks3 {
 	 * 
 	 * @param request
 	 *            {@link HeadBucketRequest}
+	 * @return statue code and headers{@link HeadBucketResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 *             <p>
-	 *             如果bucket不存在会抛出{@link Ks3ServiceException}
+	 *             返回headers
 	 *             </p>
 	 */
-	public void headBucket(HeadBucketRequest request)
+	public HeadBucketResult headBucket(HeadBucketRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
 
 	/**
@@ -271,10 +273,10 @@ public interface Ks3 {
 	 * @return 如果bucket存在则为true
 	 * @throws Ks3ClientException
 	 *             <p>
-	 *             判断bucket是否存在
+	 *             判断bucket是否存在,bucket存在但不属于当前用户也会返回true
 	 *             </p>
 	 */
-	public boolean bucketExists(String bucketname) throws Ks3ClientException;
+	public boolean bucketExists(String bucketname) throws Ks3ClientException,Ks3ServiceException;
 
 	/**
 	 * PUT BUCKET
