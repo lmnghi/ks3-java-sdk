@@ -472,14 +472,14 @@ public interface Ks3 {
 	 *            bucket名称
 	 * @param key
 	 *            object的key(即名称)
-	 * @return {@link Ks3Object}
+	 * @return {@link GetObjectResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 *             <p>
 	 *             获取指定的object
 	 *             </p>
 	 */
-	public Ks3Object getObject(String bucketname, String key)
+	public GetObjectResult getObject(String bucketname, String key)
 			throws Ks3ClientException, Ks3ServiceException;
 
 	/**
@@ -487,14 +487,14 @@ public interface Ks3 {
 	 * 
 	 * @param request
 	 *            {@link GetObjectRequest}
-	 * @return {@link Ks3Object}
+	 * @return {@link GetObjectResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 *             <p>
 	 *             获取指定的object
 	 *             </p>
 	 */
-	public Ks3Object getObject(GetObjectRequest request)
+	public GetObjectResult getObject(GetObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
 
 	/**

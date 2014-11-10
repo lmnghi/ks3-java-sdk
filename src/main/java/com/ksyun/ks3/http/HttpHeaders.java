@@ -12,7 +12,13 @@ public enum HttpHeaders {
 	Authorization("Authorization"),
 	Date("Date"),
 	Host("Host"),
+	Server("Server"),
+	ExtendedRequestId("x-kss-id-2"),
 	ContentMD5("Content-MD5"),
+	IfMatch("If-Match"),
+	IfNoneMatch("If-None-Match"),
+	IfModifiedSince("If-Modified-Since"),
+	IfUnmodifiedSince("If-Unmodified-Since"),
 	//put object metadata
 	ContentLength("Content-Length"),
 	CacheControl("Cache-Control"),
@@ -20,6 +26,7 @@ public enum HttpHeaders {
 	ContentDisposition("Content-Disposition"),
 	ContentEncoding("Content-Encoding"),
 	Expires("Expires"),
+	Range("Range"),
 	//
 	//acl
 	CannedAcl("x-kss-acl"),

@@ -1,16 +1,13 @@
 package com.ksyun.ks3.dto;
-
-import java.util.Date;
-
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
- * @date 2014年10月22日 下午8:01:05
+ * @date 2014年11月10日 下午6:09:15
  * 
  * @description 
  **/
-public class HeadObjectResult {
-	private ObjectMetadata objectMetadata = new ObjectMetadata();
+public class GetObjectResult {
+	private Ks3Object object = new Ks3Object();
 	/**
 	 * false 
 	 * object为null
@@ -21,33 +18,27 @@ public class HeadObjectResult {
 	 * object为null
 	 */
 	private boolean ifPreconditionSuccess = true;
-	
-	public ObjectMetadata getObjectMetadata() {
-		return objectMetadata;
+	public String toString()
+	{
+		return "GetObjectResult[ifModified="+this.isIfModified()+",ifPreconditionSuccess="+this.isIfPreconditionSuccess()+",Object="+this.object+"]";
 	}
-
-	public void setObjectMetadata(ObjectMetadata objectMetadata) {
-		this.objectMetadata = objectMetadata;
+	public Ks3Object getObject() {
+		return object;
 	}
-
+	public void setObject(Ks3Object object) {
+		this.object = object;
+	}
 	public boolean isIfModified() {
 		return ifModified;
 	}
-
 	public void setIfModified(boolean ifModified) {
 		this.ifModified = ifModified;
 	}
-
 	public boolean isIfPreconditionSuccess() {
 		return ifPreconditionSuccess;
 	}
-
 	public void setIfPreconditionSuccess(boolean ifPreconditionSuccess) {
 		this.ifPreconditionSuccess = ifPreconditionSuccess;
 	}
-
-	public String toString()
-	{
-		return "HeadObjectResult[ifModified="+this.isIfModified()+",ifPreconditionSuccess="+this.isIfPreconditionSuccess()+",objectMetadata="+this.objectMetadata+"]";
-	}
+	
 }

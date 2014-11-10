@@ -177,17 +177,17 @@ public class Ks3Client implements Ks3 {
 		client.execute(auth, request, DeleteObjectResponse.class);
 	}
 
-	public Ks3Object getObject(String bucketname, String key)
+	public GetObjectResult getObject(String bucketname, String key)
 			throws Ks3ClientException, Ks3ServiceException {
 		return getObject(new GetObjectRequest(bucketname, key));
 	}
 
-	public Ks3Object getObject(GetObjectRequest request)
+	public GetObjectResult getObject(GetObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException {
-		Ks3Object object = client.execute(auth, request,
+		GetObjectResult object = client.execute(auth, request,
 				GetObjectResponse.class);
-		object.setBucketName(request.getBucketname());
-		object.setKey(request.getObjectkey());
+		object.getObject().setBucketName(request.getBucketname());
+		object.getObject().setKey(request.getObjectkey());
 		return object;
 	}
 

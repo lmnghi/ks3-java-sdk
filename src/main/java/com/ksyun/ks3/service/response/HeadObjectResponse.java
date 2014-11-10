@@ -1,73 +1,85 @@
 package com.ksyun.ks3.service.response;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 
+import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.HeadObjectResult;
 import com.ksyun.ks3.dto.ObjectMetadata;
-import com.ksyun.ks3.dto.ObjectMetadata.Meta;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.utils.DateUtils;
-import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
 
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
  * @date 2014年10月22日 下午7:52:42
  * 
- * @description 
+ * @description
  **/
-public class HeadObjectResponse extends Ks3WebServiceDefaultResponse<HeadObjectResult>{
+public class HeadObjectResponse extends
+		Ks3WebServiceDefaultResponse<HeadObjectResult> {
+	private static Log log = LogFactory.getLog(HeadObjectResponse.class);
 
 	public int[] expectedStatus() {
-		return new int[]{200};
+		/**
+		 * 200 正常 206加rang的时候 304 not modified 412 Precondition Failed
+		 */
+		return new int[] { 200, 206, 304, 412 };
 	}
 
 	@Override
 	public void preHandle() {
 		result = new HeadObjectResult();
-		result.setETag(this.getHeader(HttpHeaders.ETag.toString()));
-		String time = this.getHeader(HttpHeaders.LastModified.toString());
-		if(!StringUtils.isBlank(time))
-		    result.setLastmodified(DateUtils.convertStr2Date(this.getHeader(HttpHeaders.LastModified.toString()), DATETIME_PROTOCOL.RFC1123));
-		ObjectMetadata meta = new ObjectMetadata();
-		Header[] headers = this.getResponse().getAllHeaders();
-		for(int i = 0;i<headers.length;i++)
-		{
-			Header h = headers[i];
-			if(h.getName().startsWith(ObjectMetadata.userMetaPrefix))
-			{
-			    meta.addOrEditUserMeta(h.getName(), h.getValue());
+		int statusCode = this.getResponse().getStatusLine().getStatusCode();
+		if (statusCode == 200 || statusCode == 206) {
+			ObjectMetadata metaData = new ObjectMetadata();
+			Header[] headers = this.getResponse().getAllHeaders();
+			for (int i = 0; i < headers.length; i++) {
+				if (headers[i].getName().startsWith(
+						Constants.KS3_USER_META_PREFIX)) {
+					metaData.setUserMeta(headers[i].getName(),
+							headers[i].getValue());
+				} else {
+					String key = headers[i].getName();
+					String value = headers[i].getValue();
+					if (Constants.KS3_IGNOREG_HEADERS.contains(key)) {
+						// ignore...
+					} else if (key.equals(HttpHeaders.LastModified)) {
+						try {
+							metaData.setLastModified(DateUtils
+									.convertStr2Date(key));
+						} catch (Exception pe) {
+							log.warn("Unable to parse last modified date: "
+									+ value, pe);
+						}
+					} else if (key.equals(HttpHeaders.ContentLength)) {
+						try {
+							metaData.setHeader(key, Long.parseLong(value));
+						} catch (NumberFormatException nfe) {
+							log.warn(
+									"Unable to parse content length: " + value,
+									nfe);
+						}
+					} else if (key.equals(HttpHeaders.ETag)) {
+						metaData.setHeader(key, value.replace("\"", ""));
+					} else if (key.equals(HttpHeaders.Expires)) {
+						try {
+							metaData.setHttpExpiresDate(DateUtils
+									.convertStr2Date(value));
+						} catch (Exception pe) {
+							log.warn("Unable to parse http expiration date: "
+									+ value, pe);
+						}
+					} else {
+						metaData.setHeader(key, value);
+					}
+				}
 			}
-			else if(h.getName().equalsIgnoreCase(Meta.CacheControl.toString()))
-			{
-				meta.setCacheControl(h.getValue());
-			}
-			else if(h.getName().equalsIgnoreCase(Meta.ContentDisposition.toString()))
-			{
-				meta.setContentDisposition(h.getValue());
-			}
-			else if(h.getName().equalsIgnoreCase(Meta.ContentEncoding.toString()))
-			{
-				meta.setContentEncoding(h.getValue());
-			}
-			else if(h.getName().equalsIgnoreCase(Meta.ContentLength.toString()))
-			{
-				meta.setContentLength(h.getValue());
-			}
-			else if(h.getName().equalsIgnoreCase(Meta.ContentType.toString()))
-			{
-				meta.setContentType(h.getValue());
-			}
-			else if(h.getName().equalsIgnoreCase(Meta.Expires.toString()))
-			{
-				meta.setExpires(h.getValue());
-			}
+			result.setObjectMetadata(metaData);
+		} else if (statusCode == 304) {
+			result.setIfModified(false);
+		} else if (statusCode == 412) {
+			result.setIfPreconditionSuccess(false);
 		}
-		result.setObjectMetadata(meta);
 	}
-
 }

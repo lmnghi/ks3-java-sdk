@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.Permission;
-import com.ksyun.ks3.dto.ObjectMetadata.Meta;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -34,17 +35,17 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 	protected void configHttpRequest() {
 		this.setHttpMethod(HttpMethod.POST);
 		this.addParams("uploads", null);
-		for(Entry<Meta,String> entry:this.objectMeta.getMetadata().entrySet())
+		//添加meta data  content-length 是由Apache HTTP框架自动添加的
+		this.addHeader(HttpHeaders.ContentType,this.objectMeta.getContentType());
+		this.addHeader(HttpHeaders.CacheControl,this.objectMeta.getCacheControl());
+		this.addHeader(HttpHeaders.ContentDisposition,this.objectMeta.getContentDisposition());
+		this.addHeader(HttpHeaders.ContentEncoding,this.objectMeta.getContentEncoding());
+		if(this.objectMeta.getHttpExpiresDate()!=null)
+	    	this.addHeader(HttpHeaders.Expires,this.objectMeta.getHttpExpiresDate().toGMTString());
+		//添加user meta
+		for(Entry<String,String> entry:this.objectMeta.getAllUserMeta().entrySet())
 		{
-			//apache http框架会自动添加content-length
-			if(!entry.getKey().equals(Meta.ContentLength))
-			{
-		    	this.addHeader(entry.getKey().toString(),entry.getValue());
-			}
-		}
-		for(Entry<String,String> entry:this.objectMeta.getUserMetadata().entrySet())
-		{
-			if(entry.getKey().startsWith(ObjectMetadata.userMetaPrefix))
+			if(entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
 		    	this.addHeader(entry.getKey(),entry.getValue());
 		}
 		if(this.cannedAcl!=null)
@@ -53,36 +54,7 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 		}
 		if(this.acl!=null)
 		{
-			List<String> grants_fullcontrol= new ArrayList<String>();
-			List<String> grants_read= new ArrayList<String>();
-			List<String> grants_write= new ArrayList<String>();
-			for(Grant grant:acl.getGrants())
-			{
-				if(grant.getPermission().equals(Permission.FullControl))
-				{
-					grants_fullcontrol.add("id=\""+grant.getGrantee().getIdentifier()+"\"");
-				}
-				else if(grant.getPermission().equals(Permission.Read))
-				{
-					grants_read.add("id=\""+grant.getGrantee().getIdentifier()+"\"");
-				}
-				else if(grant.getPermission().equals(Permission.Write))
-				{
-					grants_write.add("id=\""+grant.getGrantee().getIdentifier()+"\"");
-				}
-			}
-			if(grants_fullcontrol.size()>0)
-			{
-				this.addHeader(HttpHeaders.GrantFullControl,StringUtils.join(grants_fullcontrol,","));
-			}
-			if(grants_read.size()>0)
-			{
-				this.addHeader(HttpHeaders.GrantRead,StringUtils.join(grants_read,","));
-			}
-			if(grants_write.size()>0)
-			{
-				this.addHeader(HttpHeaders.GrantWrite,StringUtils.join(grants_write,","));
-			}
+			this.getHeader().putAll(HttpUtils.convertAcl2Headers(acl));
 		}
 	}
 

@@ -10,6 +10,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +38,6 @@ import com.ksyun.ks3.dto.Ks3ObjectSummary;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.ObjectListing;
 import com.ksyun.ks3.dto.ObjectMetadata;
-import com.ksyun.ks3.dto.ObjectMetadata.Meta;
 import com.ksyun.ks3.dto.PartETag;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.Ks3ClientException;
@@ -45,6 +46,7 @@ import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.Ks3Client;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
+import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
@@ -96,10 +98,11 @@ public class Ks3ClientTest {
 		client.deleteBucket("lijunwei");
 	}
 
-	// @Test
+	 @Test
 	public void getObject() throws IOException {
-		Ks3Object obj = client.getObject("lijunwei.test", "eclipse.zip");
-		Object od = obj;
+		GetObjectResult obj = client.getObject("ksc-scm", "favicon.ico");
+		System.out.println(obj);
+/*		Object od = obj;
 		try {
 			OutputStream os = new FileOutputStream(new File("D://"
 					+ obj.getKey()));
@@ -113,7 +116,7 @@ public class Ks3ClientTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+*/
 	}
 
     @Test
@@ -162,14 +165,22 @@ public class Ks3ClientTest {
 		  Auto-generated catch block e.printStackTrace(); } catch
 		  (FileNotFoundException e) { // TODO Auto-generated catch block
 		  e.printStackTrace(); }*/
-		try {
+/*		try {
 			PutObjectRequest request = new PutObjectRequest("lijunwei.test",
-					"IMG_16721。exe",new File("D://eclipse.exe"));
+					"IMG_16721。exe",new File("D://time.txt"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
+		GetObjectRequest request = new GetObjectRequest("lijunwei.test", "IMG_16721。exe");
+		request.setRange(0,499);
+		request.setModifiedSinceConstraint(new Date());
+		//List<String> aa = new ArrayList<String>();
+		//aa.add("73a2ec41f952b0d62e1dacff25889d5a");
+	//	request.setNonmatchingEtagConstraints(aa);
+		GetObjectResult obj = client.getObject(request);
+		System.out.println(obj);
 /*			try {
 				PutObjectRequest request = new PutObjectRequest("lijunwei.test",
 						"%2f",new ByteArrayInputStream(new byte[]{}),new ObjectMetadata());
