@@ -20,6 +20,10 @@ public enum HttpHeaders {
 	IfNoneMatch("If-None-Match"),
 	IfModifiedSince("If-Modified-Since"),
 	IfUnmodifiedSince("If-Unmodified-Since"),
+	XApplicationContext("X-Application-Context"),
+	XNoReferer("X-No-Referer"),
+	XBlackList("X-Black-List"),
+	XWhiteList("X-White-List"),
 	//put object metadata
 	ContentLength("Content-Length"),
 	CacheControl("Cache-Control"),
@@ -28,6 +32,7 @@ public enum HttpHeaders {
 	ContentEncoding("Content-Encoding"),
 	Expires("Expires"),
 	Range("Range"),
+	ContentRange("Content-Range"),
 	//
 	//acl
 	CannedAcl("x-kss-acl"),

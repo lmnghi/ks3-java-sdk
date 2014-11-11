@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -100,23 +101,23 @@ public class Ks3ClientTest {
 
 	 @Test
 	public void getObject() throws IOException {
-		GetObjectResult obj = client.getObject("ksc-scm", "favicon.ico");
+		GetObjectResult obj = client.getObject("lijunwei.test", "新建文本文档.txt");
 		System.out.println(obj);
-/*		Object od = obj;
 		try {
 			OutputStream os = new FileOutputStream(new File("D://"
-					+ obj.getKey()));
+					+ obj.getObject().getKey()));
 			int bytesRead = 0;
-			byte[] buffer = new byte[8192];
-			while ((bytesRead = obj.getObjectContent().read(buffer, 0, 8192)) != -1) {
+			byte[] buffer = new byte[1024];
+			InputStream in=obj.getObject().getObjectContent();
+			while ((bytesRead = in.read(buffer)) != -1) {
 				os.write(buffer, 0, bytesRead);
 			}
 			os.close();
-			obj.close();
+			obj.getObject().close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-*/
+
 	}
 
     @Test
@@ -314,5 +315,33 @@ public class Ks3ClientTest {
     public void deleteObjects()
     {
     	System.out.println(client.deleteObjects(new String[]{"11112018rln5.pdf","dfdfdsf.pdf","sssss","square/"}, "ksc-scm"));
+    }
+    @Test
+    public void partDownLoad()
+    {
+    	GetObjectRequest request = new GetObjectRequest("lijunwei.test","1234.jpeg");
+    	long max = 1024*10;
+    	long index = 0;
+    	long step = 1024*1024*1024;
+    	for(;index<=max;index=index+step+1){
+    		request.setRange(index,index+step);
+    		GetObjectResult result = client.getObject(request);
+    		max = result.getObject().getObjectMetadata().getInstanceLength();
+    		
+    		try {
+    			OutputStream os = new FileOutputStream(new File("D://"
+    					+ result.getObject().getKey()),true);
+    			
+    			int bytesRead = 0;
+    			byte[] buffer = new byte[ 8192];
+    			while ((bytesRead = result.getObject().getObjectContent().read(buffer, 0, 8192)) != -1) {
+    				os.write(buffer, 0, bytesRead);
+    			}
+    			os.close();
+    			result.getObject().close();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
     }
 }

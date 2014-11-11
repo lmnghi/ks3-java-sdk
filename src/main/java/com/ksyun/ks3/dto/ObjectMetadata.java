@@ -58,7 +58,7 @@ public class ObjectMetadata {
     public long getInstanceLength() {
         // See Content-Range in
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        String contentRange = (String)metadata.get(HttpHeaders.Range.toString());
+        String contentRange = (String)metadata.get(HttpHeaders.ContentRange.toString());
         if (contentRange != null) {
             int pos = contentRange.lastIndexOf("/");
             if (pos >= 0)

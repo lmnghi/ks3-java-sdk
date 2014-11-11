@@ -403,4 +403,78 @@ public class BucketTest extends Ks3ClientTest {
 			client1.deleteBucket(bucket);
 		}
 	}
+	@Test
+	public void testGetBucket_1014() throws Exception{
+		try {
+			if (!client1.bucketExists(bucket))
+				client1.createBucket(bucket);
+			PutObjectRequest request = new PutObjectRequest(bucket, "file.xml",
+					this.getClass().getClassLoader()
+							.getResourceAsStream("uploadtest.xml"), null);
+			client1.putObject(request);
+			ListObjectsRequest request1 = new ListObjectsRequest(bucket);
+			request1.setMarker("file.xm");
+			ObjectListing listing = client1.listObjects(request1);
+			if (listing.getObjectSummaries().size()
+					+ listing.getCommonPrefixes().size() > 0)
+				throw new Exception("返回的结果数不为0");
+		} finally {
+			client1.deleteObject(bucket, "file.xml");
+			client1.deleteBucket(bucket);
+		}
+	}
+	@Test
+	public void testGetBucket_1015() throws Exception{
+		try {
+			if (!client1.bucketExists(bucket))
+				client1.createBucket(bucket);
+			PutObjectRequest request = new PutObjectRequest(bucket, "file/file1/file2/",new ByteArrayInputStream(new byte[]{}), null);
+			client1.putObject(request);
+			
+			ListObjectsRequest request1 = new ListObjectsRequest(bucket);
+			request1.setMarker("file");
+			ObjectListing listing1 = client1.listObjects(request1);
+			if (listing1.getObjectSummaries().size()
+					+ listing1.getCommonPrefixes().size() > 0)
+				throw new Exception("返回的结果数不为0"+listing1);
+			
+			ListObjectsRequest request2 = new ListObjectsRequest(bucket);
+			request1.setMarker("file");
+			ObjectListing listing2 = client1.listObjects(request2);
+			if ( listing2.getCommonPrefixes().size()<1||!"file/".equals(listing2.getCommonPrefixes().get(0)))
+				throw new Exception("结果与预期的不一致file/"+listing2);
+			
+			ListObjectsRequest request3 = new ListObjectsRequest(bucket);
+			request1.setMarker("file");
+			ObjectListing listing3 = client1.listObjects(request3);
+			if (listing3.getObjectSummaries().size()
+					+ listing3.getCommonPrefixes().size() > 0)
+				throw new Exception("返回的结果数不为0"+listing3);
+			
+			ListObjectsRequest request4 = new ListObjectsRequest(bucket);
+			request1.setMarker("file");
+			ObjectListing listing4 = client1.listObjects(request4);
+			if (listing4.getObjectSummaries().size()
+					+ listing4.getCommonPrefixes().size() > 0)
+				throw new Exception("返回的结果数不为0"+listing4);
+			
+			ListObjectsRequest request5 = new ListObjectsRequest(bucket);
+			request1.setMarker("file");
+			ObjectListing listing5 = client1.listObjects(request5);
+			if (listing5.getObjectSummaries().size()
+					+ listing5.getCommonPrefixes().size() > 0)
+				throw new Exception("返回的结果数不为0"+listing5);
+			
+			ListObjectsRequest request6 = new ListObjectsRequest(bucket);
+			request1.setMarker("file");
+			ObjectListing listing6 = client1.listObjects(request6);
+			if ( listing6.getCommonPrefixes().size()<1||!"file/file1/".equals(listing6.getCommonPrefixes().get(0)))
+				throw new Exception("结果与预期的不一致file/file1/"+listing2);
+			
+		} finally {
+			client1.deleteObject(bucket, "file/file1/file2/");
+			client1.deleteBucket(bucket);
+		}
+	}
+
 }

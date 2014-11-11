@@ -28,5 +28,9 @@ public class Constants {
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.Server.toString());
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.RequestId.toString());
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.ExtendedRequestId.toString());
+		KS3_IGNOREG_HEADERS.add(HttpHeaders.XApplicationContext.toString());
+		KS3_IGNOREG_HEADERS.add(HttpHeaders.XBlackList.toString());
+		KS3_IGNOREG_HEADERS.add(HttpHeaders.XWhiteList.toString());
+		KS3_IGNOREG_HEADERS.add(HttpHeaders.XNoReferer.toString());
 	}
 }
