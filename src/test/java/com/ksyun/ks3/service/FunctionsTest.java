@@ -8,7 +8,6 @@ import org.junit.Test;
 import com.ksyun.ks3.dto.Bucket;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.serviceside.BucketAlreadyExistsException;
-import com.ksyun.ks3.request.WithOutDateRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
 import com.ksyun.ks3.service.response.ListBucketsResponse;
 

@@ -44,8 +44,8 @@ public class Ks3ClientTest {
 		
 		final String accesskeyId2 = credential.getProperty("accesskeyid2");
 		final String accesskeySecret2 = credential.getProperty("accesskeysecret2");
-		this.client2 = new Ks3Client(accesskeyId1,accesskeySecret2);
-		this.auth2 = new Authorization(accesskeyId1,accesskeySecret2);
+		this.client2 = new Ks3Client(accesskeyId2,accesskeySecret2);
+		this.auth2 = new Authorization(accesskeyId2,accesskeySecret2);
 		this.controller = new Ks3CoreController();
 	}
 }

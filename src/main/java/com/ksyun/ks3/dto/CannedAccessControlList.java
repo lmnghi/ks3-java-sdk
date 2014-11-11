@@ -5,7 +5,7 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年10月22日 上午10:36:46
  * 
- * @description
+ * @description 对ks3 bucket或object的{@link AccessControlList}的一种快捷配置方式
  **/
 public enum CannedAccessControlList {
 	Private("private"),

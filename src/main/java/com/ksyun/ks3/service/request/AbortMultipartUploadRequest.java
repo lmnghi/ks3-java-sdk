@@ -8,9 +8,12 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月23日 下午2:17:56
  * 
- * @description 
+ * @description 取消分块上传操作
  **/
 public class AbortMultipartUploadRequest extends Ks3WebServiceRequest{
+	/**
+	 * 通过Init Multipart Upload 初始化得到的uploadId
+	 */
 	private String uploadId;
 	public AbortMultipartUploadRequest(String bucketname,String objectkey,String uploadId)
 	{
@@ -33,9 +36,15 @@ public class AbortMultipartUploadRequest extends Ks3WebServiceRequest{
 		if(StringUtils.isBlank(this.uploadId))
 			throw new IllegalArgumentException("uploadId can not be null");
 	}
+	/**
+	 * 通过Init Multipart Upload 初始化得到的uploadId
+	 */
 	public String getUploadId() {
 		return uploadId;
 	}
+	/**
+	 * 通过Init Multipart Upload 初始化得到的uploadId
+	 */
 	public void setUploadId(String uploadId) {
 		this.uploadId = uploadId;
 	}

@@ -41,7 +41,8 @@ import com.ksyun.ks3.service.request.UploadPartRequest;
  * 
  * @date 2014年10月14日 下午5:30:30
  * 
- * @description ks3客户端，用户使用时需要先配置ClientConfig{@link ClientConfig},然后初始化一个Ks3Client进行操作
+ * @description ks3客户端，用户使用时需要先配置ClientConfig{@link ClientConfig}
+ *              ,然后初始化一个Ks3Client进行操作
  **/
 public interface Ks3 {
 	/**
@@ -248,8 +249,8 @@ public interface Ks3 {
 	 *             返回headers
 	 *             </p>
 	 */
-	public HeadBucketResult headBucket(String bucketname) throws Ks3ClientException,
-			Ks3ServiceException;
+	public HeadBucketResult headBucket(String bucketname)
+			throws Ks3ClientException, Ks3ServiceException;
 
 	/**
 	 * HEAD BUCKET
@@ -276,7 +277,8 @@ public interface Ks3 {
 	 *             判断bucket是否存在,bucket存在但不属于当前用户也会返回true
 	 *             </p>
 	 */
-	public boolean bucketExists(String bucketname) throws Ks3ClientException,Ks3ServiceException;
+	public boolean bucketExists(String bucketname) throws Ks3ClientException,
+			Ks3ServiceException;
 
 	/**
 	 * PUT BUCKET
@@ -293,12 +295,11 @@ public interface Ks3 {
 	 *            Bucket的名称全局唯一且命名规则与DNS命名规则相同：
 	 *            <p>
 	 *            <ul>
-	 *            <li>仅包含小写英文字母（a-z），数字，点（.），中线，即：
-	 *            abcdefghijklmnopqrstuvwxyz0123456789.-</li>
-	 *            <li>必须由字母或数字开头</li>
-	 *            <li>长度在3和255个字符之间</li>
-	 *            <li>不能是IP的形式，类似192.168.0.1</li>
-	 *            <li>不能以kss开头</li>
+	 *            <li>长度3-63，</li>
+	 *            <li>不包含大写字母，不包含[‘ ’,\t,\r,\n]，不包含连续的’.’</li>
+	 *            <li>，’.’和’-’在bucket名称中不能相连，</li>
+	 *            <li>仅可包含. - 数字 小写字母，</li>
+	 *            <li>不以’.’或’-’结尾</li>
 	 *            </ul>
 	 * @return {@link Bucket}
 	 * @throws Ks3ClientException
@@ -429,42 +430,53 @@ public interface Ks3 {
 	 */
 	public void deleteObject(DeleteObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * DELETE Multiple Objects
-	 * @param request {@link DeleteMultipleObjectsRequest}
+	 * 
+	 * @param request
+	 *            {@link DeleteMultipleObjectsRequest}
 	 * @return {@link DeleteMultipleObjectsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 *  <p>
+	 *             <p>
 	 *             删除若干的objects
 	 *             </p>
 	 */
-	public DeleteMultipleObjectsResult deleteObjects(DeleteMultipleObjectsRequest request)
-			throws Ks3ClientException, Ks3ServiceException;
+	public DeleteMultipleObjectsResult deleteObjects(
+			DeleteMultipleObjectsRequest request) throws Ks3ClientException,
+			Ks3ServiceException;
+
 	/**
 	 * DELETE Multiple Objects
-	 * @param keys 要删除的keys
+	 * 
+	 * @param keys
+	 *            要删除的keys
 	 * @return {@link DeleteMultipleObjectsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * 	  <p>
+	 *             <p>
 	 *             删除若干的objects
 	 *             </p>
 	 */
-	public DeleteMultipleObjectsResult deleteObjects(List<String> keys,String bucketName)
-			throws Ks3ClientException, Ks3ServiceException;
+	public DeleteMultipleObjectsResult deleteObjects(List<String> keys,
+			String bucketName) throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * DELETE Multiple Objects
-	 * @param keys 要删除的keys
+	 * 
+	 * @param keys
+	 *            要删除的keys
 	 * @return {@link DeleteMultipleObjectsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * 	  <p>
+	 *             <p>
 	 *             删除若干的objects
 	 *             </p>
 	 */
-	public DeleteMultipleObjectsResult deleteObjects(String[] keys,String bucketName)
-			throws Ks3ClientException, Ks3ServiceException;
+	public DeleteMultipleObjectsResult deleteObjects(String[] keys,
+			String bucketName) throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * GET OBJECT
 	 * 
@@ -652,7 +664,9 @@ public interface Ks3 {
 	 * @return {@link CompleteMultipartUploadResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>完成分块上传，使ks3服务器将之前上传的小块合并成一个object</p>
+	 *             <p>
+	 *             完成分块上传，使ks3服务器将之前上传的小块合并成一个object
+	 *             </p>
 	 */
 	public CompleteMultipartUploadResult completeMultipartUpload(
 			String bucketname, String objectkey, String uploadId,
@@ -662,11 +676,14 @@ public interface Ks3 {
 	/**
 	 * Complete Multipart Upload
 	 * 
-	 * @param request {@link CompleteMultipartUploadRequest}
+	 * @param request
+	 *            {@link CompleteMultipartUploadRequest}
 	 * @return {@link CompleteMultipartUploadResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>完成分块上传，使ks3服务器将之前上传的小块合并成一个object</p>
+	 *             <p>
+	 *             完成分块上传，使ks3服务器将之前上传的小块合并成一个object
+	 *             </p>
 	 */
 	public CompleteMultipartUploadResult completeMultipartUpload(
 			CompleteMultipartUploadRequest request) throws Ks3ClientException,
@@ -675,12 +692,17 @@ public interface Ks3 {
 	/**
 	 * Abort Multipart Upload
 	 * 
-	 * @param bucketname bucket名称
-	 * @param objectkey object的key(即object的名称)
-	 * @param uploadId 通过初始化分块上传获取到的uploadId
+	 * @param bucketname
+	 *            bucket名称
+	 * @param objectkey
+	 *            object的key(即object的名称)
+	 * @param uploadId
+	 *            通过初始化分块上传获取到的uploadId
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>中止分块上传</p>
+	 *             <p>
+	 *             中止分块上传
+	 *             </p>
 	 */
 	public void abortMultipartUpload(String bucketname, String objectkey,
 			String uploadId) throws Ks3ClientException, Ks3ServiceException;
@@ -688,10 +710,13 @@ public interface Ks3 {
 	/**
 	 * Abort Multipart Upload
 	 * 
-	 * @param request {@link AbortMultipartUploadRequest}
+	 * @param request
+	 *            {@link AbortMultipartUploadRequest}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>中止分块上传</p>
+	 *             <p>
+	 *             中止分块上传
+	 *             </p>
 	 */
 	public void abortMultipartUpload(AbortMultipartUploadRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
@@ -699,13 +724,18 @@ public interface Ks3 {
 	/**
 	 * List Parts
 	 * 
-	 * @param bucketname bucket名称
-	 * @param objectkey object的key(即object的名称)
-	 * @param uploadId 通过初始化分块上传获取到的uploadId
+	 * @param bucketname
+	 *            bucket名称
+	 * @param objectkey
+	 *            object的key(即object的名称)
+	 * @param uploadId
+	 *            通过初始化分块上传获取到的uploadId
 	 * @return {@link ListPartsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>列出该uploadid下已经上传成功的块</p>
+	 *             <p>
+	 *             列出该uploadid下已经上传成功的块
+	 *             </p>
 	 */
 	public ListPartsResult ListParts(String bucketname, String objectkey,
 			String uploadId) throws Ks3ClientException, Ks3ServiceException;
@@ -713,14 +743,20 @@ public interface Ks3 {
 	/**
 	 * List Parts
 	 * 
-	 * @param bucketname bucket名称
-	 * @param objectkey object的key(即object的名称)
-	 * @param uploadId 通过初始化分块上传获取到的uploadId
-	 * @param maxParts 列出的最大结果数
+	 * @param bucketname
+	 *            bucket名称
+	 * @param objectkey
+	 *            object的key(即object的名称)
+	 * @param uploadId
+	 *            通过初始化分块上传获取到的uploadId
+	 * @param maxParts
+	 *            列出的最大结果数
 	 * @return {@link ListPartsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>列出该uploadid下已经上传成功的块</p>
+	 *             <p>
+	 *             列出该uploadid下已经上传成功的块
+	 *             </p>
 	 */
 	public ListPartsResult ListParts(String bucketname, String objectkey,
 			String uploadId, int maxParts) throws Ks3ClientException,
@@ -729,15 +765,22 @@ public interface Ks3 {
 	/**
 	 * List Parts
 	 * 
-	 * @param bucketname bucket名称
-	 * @param objectkey object的key(即object的名称)
-	 * @param uploadId 通过初始化分块上传获取到的uploadId
-	 * @param maxParts 列出的最大结果数
-	 * @param partNumberMarker partnumber游标，即从第partNumberMarker开始罗列
+	 * @param bucketname
+	 *            bucket名称
+	 * @param objectkey
+	 *            object的key(即object的名称)
+	 * @param uploadId
+	 *            通过初始化分块上传获取到的uploadId
+	 * @param maxParts
+	 *            列出的最大结果数
+	 * @param partNumberMarker
+	 *            partnumber游标，即从第partNumberMarker开始罗列
 	 * @return {@link ListPartsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>列出该uploadid下已经上传成功的块</p>
+	 *             <p>
+	 *             列出该uploadid下已经上传成功的块
+	 *             </p>
 	 */
 	public ListPartsResult ListParts(String bucketname, String objectkey,
 			String uploadId, int maxParts, int partNumberMarker)
@@ -746,11 +789,14 @@ public interface Ks3 {
 	/**
 	 * List Parts
 	 * 
-	 * @param request {@link ListPartsRequest}
+	 * @param request
+	 *            {@link ListPartsRequest}
 	 * @return {@link ListPartsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 * <p>列出该uploadid下已经上传成功的块</p>
+	 *             <p>
+	 *             列出该uploadid下已经上传成功的块
+	 *             </p>
 	 */
 	public ListPartsResult ListParts(ListPartsRequest request)
 			throws Ks3ClientException, Ks3ServiceException;

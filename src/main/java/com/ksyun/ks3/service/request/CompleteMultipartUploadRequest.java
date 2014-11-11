@@ -29,10 +29,16 @@ import com.ksyun.ks3.utils.XmlWrite;
  * 
  * @date 2014年10月23日 下午1:55:03
  * 
- * @description 
+ * @description 完成分块上传
  **/
 public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
+	/**
+	 * 通过Init Multipart Upload 初始化得到的uploadId
+	 */
 	private String uploadId;
+	/**
+	 * 通过Upload Part返回的内容集合
+	 */
 	private List<PartETag> partETags = new ArrayList<PartETag>();
 	public CompleteMultipartUploadRequest(String bucketname,String objectkey,String uploadId,List<PartETag> eTags)
 	{
@@ -91,15 +97,27 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 		if(StringUtils.isBlank(this.uploadId))
 			throw new IllegalArgumentException("uploadId can not be null");
 	}
+	/**
+	 * 通过Init Multipart Upload 初始化得到的uploadId
+	 */
 	public String getUploadId() {
 		return uploadId;
 	}
+	/**
+	 * 通过Init Multipart Upload 初始化得到的uploadId
+	 */
 	public void setUploadId(String uploadId) {
 		this.uploadId = uploadId;
 	}
+	/**
+	 * 通过Upload Part返回的内容集合
+	 */
 	public List<PartETag> getPartETags() {
 		return partETags;
 	}
+	/**
+	 * 通过Upload Part返回的内容集合
+	 */
 	public void setPartETags(List<PartETag> partETags) {
 		this.partETags = partETags;
 	}

@@ -11,6 +11,7 @@ import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -18,11 +19,17 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月15日 下午4:43:12
  * 
- * @description 
+ * @description 新建bucket时的请求信息
  **/
 public class CreateBucketRequest extends Ks3WebServiceRequest{
+	/**
+	 * {@link CannedAccessControlList}
+	 */
 	private CannedAccessControlList cannedAcl;
 	private AccessControlList acl = new AccessControlList();
+	/**
+	 * Bucket存储地点配置
+	 */
 	private CreateBucketConfiguration config = null;
 	public CreateBucketRequest(String bucketName)
 	{
@@ -41,8 +48,7 @@ public class CreateBucketRequest extends Ks3WebServiceRequest{
 	public CreateBucketRequest(String bucketName,CreateBucketConfiguration.REGION region)
 	{
 		this(bucketName);
-		config = new CreateBucketConfiguration();
-		config.setLocation(region);
+		config = new CreateBucketConfiguration(region);
 	}
 	public CannedAccessControlList getCannedAcl() {
 		return cannedAcl;
@@ -73,36 +79,7 @@ public class CreateBucketRequest extends Ks3WebServiceRequest{
 		}
 		if(this.acl!=null)
 		{
-			List<String> grants_fullcontrol= new ArrayList<String>();
-			List<String> grants_read= new ArrayList<String>();
-			List<String> grants_write= new ArrayList<String>();
-			for(Grant grant:acl.getGrants())
-			{
-				if(grant.getPermission().equals(Permission.FullControl))
-				{
-					grants_fullcontrol.add("id=\""+grant.getGrantee().getIdentifier()+"\"");
-				}
-				else if(grant.getPermission().equals(Permission.Read))
-				{
-					grants_read.add("id=\""+grant.getGrantee().getIdentifier()+"\"");
-				}
-				else if(grant.getPermission().equals(Permission.Write))
-				{
-					grants_write.add("id=\""+grant.getGrantee().getIdentifier()+"\"");
-				}
-			}
-			if(grants_fullcontrol.size()>0)
-			{
-				this.addHeader(HttpHeaders.GrantFullControl,StringUtils.join(grants_fullcontrol,","));
-			}
-			if(grants_read.size()>0)
-			{
-				this.addHeader(HttpHeaders.GrantRead,StringUtils.join(grants_read,","));
-			}
-			if(grants_write.size()>0)
-			{
-				this.addHeader(HttpHeaders.GrantWrite,StringUtils.join(grants_write,","));
-			}
+			this.getHeader().putAll(HttpUtils.convertAcl2Headers(acl));
 		}
 	}
 	@Override

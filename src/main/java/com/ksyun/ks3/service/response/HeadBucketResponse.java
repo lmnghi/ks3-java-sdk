@@ -1,10 +1,5 @@
 package com.ksyun.ks3.service.response;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.http.Header;
-
 import com.ksyun.ks3.dto.HeadBucketResult;
 
 /**
@@ -16,6 +11,12 @@ import com.ksyun.ks3.dto.HeadBucketResult;
  **/
 public class HeadBucketResponse extends Ks3WebServiceDefaultResponse<HeadBucketResult>{
 
+	/**
+	 * 200 OK
+	 * 301
+	 * 403 没有权限
+	 * 404不存在
+	 */
 	public int[] expectedStatus() {
 		return new int[]{200,301,403,404};
 	}

@@ -7,9 +7,12 @@ import java.util.HashSet;
  * 
  * @date 2014年10月22日 上午10:40:23
  * 
- * @description 
+ * @description 对bucket或object的权限控制信息
  **/
 public class AccessControlList {
+	/**
+	 * 授权信息
+	 */
 	private HashSet<Grant> grants = new HashSet<Grant>();
 	public HashSet<Grant> getGrants() {
 		return grants;

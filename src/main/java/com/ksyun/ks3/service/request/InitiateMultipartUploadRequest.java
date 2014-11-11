@@ -36,17 +36,28 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 		this.setHttpMethod(HttpMethod.POST);
 		this.addParams("uploads", null);
 		//添加meta data  content-length 是由Apache HTTP框架自动添加的
-		this.addHeader(HttpHeaders.ContentType,this.objectMeta.getContentType());
-		this.addHeader(HttpHeaders.CacheControl,this.objectMeta.getCacheControl());
-		this.addHeader(HttpHeaders.ContentDisposition,this.objectMeta.getContentDisposition());
-		this.addHeader(HttpHeaders.ContentEncoding,this.objectMeta.getContentEncoding());
-		if(this.objectMeta.getHttpExpiresDate()!=null)
-	    	this.addHeader(HttpHeaders.Expires,this.objectMeta.getHttpExpiresDate().toGMTString());
-		//添加user meta
-		for(Entry<String,String> entry:this.objectMeta.getAllUserMeta().entrySet())
-		{
-			if(entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
-		    	this.addHeader(entry.getKey(),entry.getValue());
+		if (this.objectMeta != null) {
+			if (!StringUtils.isBlank(this.objectMeta.getContentType()))
+				this.addHeader(HttpHeaders.ContentType,
+						this.objectMeta.getContentType());
+			if (!StringUtils.isBlank(this.objectMeta.getCacheControl()))
+				this.addHeader(HttpHeaders.CacheControl,
+						this.objectMeta.getCacheControl());
+			if (!StringUtils.isBlank(this.objectMeta.getContentDisposition()))
+				this.addHeader(HttpHeaders.ContentDisposition,
+						this.objectMeta.getContentDisposition());
+			if (!StringUtils.isBlank(this.objectMeta.getContentEncoding()))
+				this.addHeader(HttpHeaders.ContentEncoding,
+						this.objectMeta.getContentEncoding());
+			if (this.objectMeta.getHttpExpiresDate() != null)
+				this.addHeader(HttpHeaders.Expires, this.objectMeta
+						.getHttpExpiresDate().toGMTString());
+			//添加user meta
+			for(Entry<String,String> entry:this.objectMeta.getAllUserMeta().entrySet())
+			{
+				if(entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
+			    	this.addHeader(entry.getKey(),entry.getValue());
+			}
 		}
 		if(this.cannedAcl!=null)
 		{

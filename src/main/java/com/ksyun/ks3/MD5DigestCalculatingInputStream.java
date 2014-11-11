@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 public class MD5DigestCalculatingInputStream extends FilterInputStream {
 	private MessageDigest digest;
 	private MessageDigest digestLastMarked;
+	private byte[] lastDigest = null;
 
 	public MD5DigestCalculatingInputStream(InputStream in) {
 		super(in);
@@ -27,7 +28,11 @@ public class MD5DigestCalculatingInputStream extends FilterInputStream {
 	}
 
 	public byte[] getMd5Digest() {
-		return digest.digest();
+		if(lastDigest==null)
+		    return this.lastDigest =digest.digest();
+		else{
+			return this.lastDigest;
+		}
 	}
 
 	@Override

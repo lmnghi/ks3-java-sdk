@@ -5,10 +5,16 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年10月22日 上午10:46:27
  * 
- * @description 
+ * @description  授权信息
  **/
 public class Grant {
+	/**
+	 * 被授权者
+	 */
 	private Grantee grantee = null;
+	/**
+	 * 权限
+	 */
     private Permission permission = null;
 
     public Grant() {

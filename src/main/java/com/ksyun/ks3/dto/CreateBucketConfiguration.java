@@ -7,13 +7,15 @@ import com.ksyun.ks3.utils.XmlWrite;
  * 
  * @date 2014年11月10日 下午1:47:26
  * 
- * @description
+ * @description bucket存储地点配置，用于{@link com.ksyun.ks3.service.request.CreateBucketRequest}
  **/
 public class CreateBucketConfiguration {
 	public static enum REGION {
 		BEIJING, HANGZHOU, JIYANG
 	}
-
+	public CreateBucketConfiguration(REGION region){
+		this.location = region;
+	}
 	private REGION location;
 
 	public REGION getLocation() {

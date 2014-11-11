@@ -15,7 +15,13 @@ public class ObjectListing {
     private List<Ks3ObjectSummary> objectSummaries = new ArrayList<Ks3ObjectSummary>();
     private List<String> commonPrefixes = new ArrayList<String>();
     private String bucketName;
+    /**
+     * 若isTruncated为true,则nextMarker可以作为下次请求的marker
+     */
     private String nextMarker;
+    /**
+     * 如果结果被全部列出来则为false
+     */
     private boolean isTruncated;
     private String prefix;
     private String marker;

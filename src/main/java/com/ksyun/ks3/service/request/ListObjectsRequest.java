@@ -13,42 +13,69 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class ListObjectsRequest extends Ks3WebServiceRequest {
 
+	/**
+	 * 前缀
+	 */
 	private String prefix;
 
+	/**
+	 * 游标
+	 */
 	private String marker;
 
+	/**
+	 * 分隔符
+	 */
 	private String delimiter;
-
+	/**
+	 * 返回的最大数
+	 */
 	private Integer maxKeys;
-
+	/**
+	 * 前缀
+	 */
 	public String getPrefix() {
 		return prefix;
 	}
-
+	/**
+	 * 前缀
+	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-
+	/**
+	 * 游标
+	 */
 	public String getMarker() {
 		return marker;
 	}
-
+	/**
+	 * 游标
+	 */
 	public void setMarker(String marker) {
 		this.marker = marker;
 	}
-
+	/**
+	 * 分隔符
+	 */
 	public String getDelimiter() {
 		return delimiter;
 	}
-
+	/**
+	 * 分隔符
+	 */
 	public void setDelimiter(String delimiter) {
 		this.delimiter = delimiter;
 	}
-
+	/**
+	 * 返回的最大数
+	 */
 	public Integer getMaxKeys() {
 		return maxKeys;
 	}
-
+	/**
+	 * 返回的最大数
+	 */
 	public void setMaxKeys(Integer maxKeys) {
 		this.maxKeys = maxKeys;
 	}
