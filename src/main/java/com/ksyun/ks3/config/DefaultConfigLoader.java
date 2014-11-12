@@ -16,8 +16,8 @@ public class DefaultConfigLoader implements ConfigLoader{
 	public ClientConfig load(ClientConfig config) {
 		config.set(ClientConfig.CONNECTION_TIMEOUT, "50000");
 		config.set(ClientConfig.SOCKET_TIMEOUT,String.valueOf(Integer.MAX_VALUE));
-		config.set(ClientConfig.SOCKET_SEND_BUFFER_SIZE_HINT,"0");
-		config.set(ClientConfig.SOCKET_RECEIVE_BUFFER_SIZE_HINT,"0");
+		config.set(ClientConfig.SOCKET_SEND_BUFFER_SIZE_HINT,"990");
+		config.set(ClientConfig.SOCKET_RECEIVE_BUFFER_SIZE_HINT,"990");
 		config.set(ClientConfig.CONNECTION_TTL,"-1");
 		config.set(ClientConfig.MAX_CONNECTIONS,"50");
 		config.set(ClientConfig.PROXY_HOST,null);

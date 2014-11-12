@@ -3,6 +3,7 @@ package com.ksyun.ks3.service.request;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -117,6 +119,7 @@ public abstract class Ks3WebServiceRequest {
 		this.paramsToSign = paramsToSign;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void initHttpRequestBase() {
 		// 准备计算 md5值
 		if (this instanceof MD5CalculateAble && this.getRequestBody() != null)
@@ -125,6 +128,7 @@ public abstract class Ks3WebServiceRequest {
 						.getRequestBody()));
 
 		String encodedParams = encodeParams();
+		objectkey = HttpUtils.urlEncode(objectkey, true);
 		url = new StringBuffer("http://")
 				.append(StringUtils.isBlank(bucketname) ? "" : bucketname + ".")
 				.append(url).append("/")
@@ -242,6 +246,7 @@ public abstract class Ks3WebServiceRequest {
 		return this.httpRequest;
 	}
 
+	@SuppressWarnings("deprecation")
 	private String encodeParams() {
 		List<Map.Entry<String, String>> arrayList = new ArrayList<Map.Entry<String, String>>(
 				this.params.entrySet());
@@ -257,14 +262,17 @@ public abstract class Ks3WebServiceRequest {
 		List<String> kvList = new ArrayList<String>();
 		List<String> list = new ArrayList<String>();
 		for (Entry<String, String> entry : arrayList) {
+			String value = null;
+			if(!StringUtils.isBlank(entry.getValue()))
+			    value = URLEncoder.encode(entry.getValue());
 			if (RequestUtils.subResource.contains(entry.getKey())) {
-				if (entry.getValue() != null && !entry.getValue().equals(""))
-					kvList.add(entry.getKey() + "=" + entry.getValue());
+				if (value != null && !value.equals(""))
+					kvList.add(entry.getKey() + "=" + value);
 				else
 					kvList.add(entry.getKey());
 			}
-			if (entry.getValue() != null && !entry.getValue().equals("")) {
-				list.add(entry.getKey() + "=" + entry.getValue());
+			if (value != null && !value.equals("")) {
+				list.add(entry.getKey() + "=" + value);
 			} else
 				list.add(entry.getKey());
 		}

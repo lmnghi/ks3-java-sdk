@@ -55,7 +55,6 @@ public class StringUtils {
 	public static String join(List<String> strings, String spliter) {
 		return join(strings.toArray(), spliter);
 	}
-
 	public static boolean isBlank(String s) {
 		if (s == null)
 			return true;

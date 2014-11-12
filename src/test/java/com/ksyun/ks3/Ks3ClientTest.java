@@ -101,7 +101,7 @@ public class Ks3ClientTest {
 
 	 @Test
 	public void getObject() throws IOException {
-		GetObjectResult obj = client.getObject("lijunwei.test", "新建文本文档.txt");
+		GetObjectResult obj = client.getObject("ksc-scm", "square/6aaeb4b8gw1em2hfpoz1uj20c80900tc.jpg");
 		System.out.println(obj);
 		try {
 			OutputStream os = new FileOutputStream(new File("D://"
@@ -122,18 +122,17 @@ public class Ks3ClientTest {
 
     @Test
 	public void deleteObject() {
-    	ListObjectsRequest request = new ListObjectsRequest("ksc-scm",null,null,null,null);
+    	ListObjectsRequest request = new ListObjectsRequest("ksc-scm","square/",null,null,null);
     	ObjectListing o = client.listObjects(request);
     	for(Ks3ObjectSummary sum:o.getObjectSummaries())
     	{
-		     client.deleteObject("lijunwei.test", sum.getKey());
+		     client.deleteObject("ksc-scm", sum.getKey());
     	}
     	for(String s :o.getCommonPrefixes())
     	{
     		client.deleteObject("ksc-scm", s);
     	}
 	}
-
 	 @Test
 	public void putObject() {
 
