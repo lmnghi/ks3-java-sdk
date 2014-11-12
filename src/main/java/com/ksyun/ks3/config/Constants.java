@@ -32,5 +32,7 @@ public class Constants {
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.XBlackList.toString());
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.XWhiteList.toString());
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.XNoReferer.toString());
+		KS3_IGNOREG_HEADERS.add(HttpHeaders.AcceptRanges.toString());
+		KS3_IGNOREG_HEADERS.add(HttpHeaders.Connection.toString());
 	}
 }

@@ -34,6 +34,8 @@ public enum HttpHeaders {
 	Range("Range"),
 	ContentRange("Content-Range"),
 	//
+	AcceptRanges("Accept-Ranges"),
+	Connection("Connection"),
 	//acl
 	CannedAcl("x-kss-acl"),
     AclPrivate("x-kss-acl-private"),
