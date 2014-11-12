@@ -3,6 +3,7 @@ package com.ksyun.ks3.service.response;
 import com.ksyun.ks3.dto.PutObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
+import com.ksyun.ks3.service.response.support.Md5CheckAble;
 
 /**
  * @author lijunwei[13810414122@163.com]  

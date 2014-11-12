@@ -18,10 +18,10 @@ import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
-import com.ksyun.ks3.service.request.MD5CalculateAble;
 import com.ksyun.ks3.service.request.UploadPartRequest;
+import com.ksyun.ks3.service.request.support.MD5CalculateAble;
 import com.ksyun.ks3.service.response.Ks3WebServiceResponse;
-import com.ksyun.ks3.service.response.Md5CheckAble;
+import com.ksyun.ks3.service.response.support.Md5CheckAble;
 import com.ksyun.ks3.signer.Signer;
 import com.ksyun.ks3.utils.AuthUtils;
 import com.ksyun.ks3.utils.Converter;
@@ -109,7 +109,10 @@ public class Ks3CoreController {
 		if (!success(response, ksResponse)) {
 			httpRequest.abort();
 			throw new Ks3ServiceException(response, StringUtils.join(
-					ksResponse.expectedStatus(), ",")+"("+Ks3WebServiceResponse.allStatueCode+" is all statue codes)").convert();
+					ksResponse.expectedStatus(), ",")
+					+ "("
+					+ Ks3WebServiceResponse.allStatueCode
+					+ " is all statue codes)").convert();
 		}
 		Y result = ksResponse.handleResponse(response);
 		if (ksResponse instanceof Md5CheckAble
@@ -121,10 +124,6 @@ public class Ks3CoreController {
 						"the MD5 value we calculated dose not match the MD5 value Ks3 Service returned.please try again");
 			}
 		}
-/*		if (httpRequest != null) {
-			// 否则链接池会耗尽
-			httpRequest.abort();
-		}*/
 		log.info("finished handle response : " + Timer.end());
 		return result;
 	}
@@ -143,7 +142,7 @@ public class Ks3CoreController {
 		int num = kscResponse.expectedStatus().length;
 		int code = response.getStatusLine().getStatusCode();
 		for (int i = 0; i < num; i++) {
-			if(code == Ks3WebServiceResponse.allStatueCode)
+			if (code == Ks3WebServiceResponse.allStatueCode)
 				return true;
 			if (code == kscResponse.expectedStatus()[i])
 				return true;

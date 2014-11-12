@@ -1,4 +1,4 @@
-package com.ksyun.ks3.service.request;
+package com.ksyun.ks3.service.request.support;
 /**
  * @author lijunwei[13810414122@163.com]  
  * 

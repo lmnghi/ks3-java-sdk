@@ -23,6 +23,7 @@ import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.Mimetypes;
+import com.ksyun.ks3.service.request.support.MD5CalculateAble;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.Md5Utils;
 import com.ksyun.ks3.utils.StringUtils;

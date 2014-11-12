@@ -34,6 +34,7 @@ import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.RepeatableInputStreamRequestEntity;
+import com.ksyun.ks3.service.request.support.MD5CalculateAble;
 import com.ksyun.ks3.utils.AuthUtils;
 import com.ksyun.ks3.utils.DateUtils;
 import com.ksyun.ks3.utils.HttpUtils;

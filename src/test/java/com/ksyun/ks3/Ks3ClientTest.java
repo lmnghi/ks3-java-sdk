@@ -91,14 +91,14 @@ public class Ks3ClientTest {
 		System.out.println(od);
 	}
 
-	 //@Test
+	 @Test
 	public void createAndDeleteBucket() {
 		CreateBucketRequest request = new CreateBucketRequest("lijunwei",REGION.BEIJING); 
 		client.createBucket(request);
 		client.deleteBucket("lijunwei");
 	}
 
-	 //@Test
+	 @Test
 	public void getObject() throws IOException {
 		GetObjectResult obj = client.getObject("lijunwei.test", "test1/1234.bmp");
 		System.out.println(obj);
@@ -314,11 +314,19 @@ public class Ks3ClientTest {
     {
     	System.out.println(client.deleteObjects(new String[]{"11112018rln5.pdf","dfdfdsf.pdf","sssss","square/"}, "ksc-scm"));
     }
-    //@Test
+    static int i = 0;
+    @Test
+    public void test()
+    {
+    	
+    	for(;;i++){
+    		partDownLoad();
+    	}
+    }
     public void partDownLoad()
     {
     	GetObjectRequest request = new GetObjectRequest("lijunwei.test","1234.jpeg");
-    	long max = 1024*10;
+    	long max = 1024*1024;
     	long index = 0;
     	long step = 1024*1024*1024;
     	for(;index<=max;index=index+step+1){
@@ -327,7 +335,7 @@ public class Ks3ClientTest {
     		max = result.getObject().getObjectMetadata().getInstanceLength();
     		
     		try {
-    			OutputStream os = new FileOutputStream(new File("D://"
+    			OutputStream os = new FileOutputStream(new File("D://ggg/"+i+"--"
     					+ result.getObject().getKey()),true);
     			
     			int bytesRead = 0;

@@ -17,20 +17,16 @@ import org.apache.http.auth.NTCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeLayeredSocketFactory;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -47,7 +43,6 @@ import com.ksyun.ks3.exception.Ks3ClientException;
  * @description 
  **/
 public class HttpClientFactory {
-    @SuppressWarnings("deprecation")
 	public HttpClient createHttpClient() {
     	ClientConfig config = ClientConfig.getConfig();
         /* Set HTTP client parameters */
@@ -64,7 +59,7 @@ public class HttpClientFactory {
                     Math.max(socketSendBufferSizeHint, socketReceiveBufferSizeHint));
         }
 
-        ThreadSafeClientConnManager connectionManager = ConnectionManagerFactory
+        PoolingClientConnectionManager connectionManager = ConnectionManagerFactory
                 .createPoolingClientConnManager(httpClientParams);
         DefaultHttpClient httpClient = new DefaultHttpClient(connectionManager, httpClientParams);
         httpClient.setRedirectStrategy(new LocationHeaderNotRequiredRedirectStrategy());

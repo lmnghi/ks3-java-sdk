@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.service.request.support.MD5CalculateAble;
 import com.ksyun.ks3.utils.StringUtils;
 import com.ksyun.ks3.utils.XmlWrite;
 
