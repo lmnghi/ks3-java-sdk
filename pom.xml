@@ -8,6 +8,21 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ks3-kss-java-sdk</name>
 	<url>http://maven.apache.org</url>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<encoding>gbk</encoding>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -36,11 +51,10 @@
 			<artifactId>joda-time</artifactId>
 			<version>[2.2,)</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase-client</artifactId>
-			<version>0.98.4-hadoop2</version>
+        <dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 	</dependencies>
 </project>

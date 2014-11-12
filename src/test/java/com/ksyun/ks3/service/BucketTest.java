@@ -35,7 +35,7 @@ import com.ksyun.ks3.service.response.CreateBucketResponse;
 public class BucketTest extends Ks3ClientTest {
 	private String bucket = "test.ljw.sdk.001";
 
-	@Test
+	//@Test
 	public void testPutBucket_1001() {
 		try {
 			if (client1.bucketExists(bucket))
@@ -74,7 +74,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testCreateBucket_1002() {
 		List<String> skiped = new ArrayList<String>();
 		String[] bucketNames = new String[] {
@@ -102,7 +102,7 @@ public class BucketTest extends Ks3ClientTest {
 			throw new NotThrowException();
 	}
 
-	@Test
+	//@Test
 	public void testCreateBucket_1003() {
 		try {
 			if (client1.bucketExists(bucket))
@@ -124,7 +124,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testCreateBucket_1004() {
 		try {
 			if (client1.bucketExists(bucket))
@@ -146,7 +146,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testDeleteBucket_1005() {
 		if (client1.bucketExists(bucket))
 			client1.deleteBucket(bucket);
@@ -161,7 +161,7 @@ public class BucketTest extends Ks3ClientTest {
 			throw new NotThrowException();
 	}
 
-	@Test
+	//@Test
 	public void testDeleteBucket_1006() {
 		try {
 			if (client1.bucketExists(bucket)) {
@@ -188,7 +188,7 @@ public class BucketTest extends Ks3ClientTest {
 
 	}
 
-	@Test
+	//@Test
 	public void testDeleteBucket_1007() {
 		String bucket1 = bucket + ".001";
 		String bucket2 = bucket + ".002";
@@ -213,7 +213,7 @@ public class BucketTest extends Ks3ClientTest {
 		client1.deleteBucket(bucket3);
 	}
 
-	@Test
+	//@Test
 	public void testDeleteBucket_1008() {
 		String bucket1 = bucket + ".001";
 		String bucket2 = bucket + ".002";
@@ -272,7 +272,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testPutBucket_1009() {
 		String thisBucket = "";
 		List<String> added = new ArrayList<String>();
@@ -299,7 +299,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testGetBucket_1010() {
 		this.ste = true;
 		this.isc = false;
@@ -312,7 +312,7 @@ public class BucketTest extends Ks3ClientTest {
 			throw new NotThrowException();
 	}
 
-	@Test
+	//@Test
 	public void testGetBucket_1011() {
 		String bucket1 = bucket + ".001";
 		String bucket2 = bucket + ".002";
@@ -340,7 +340,7 @@ public class BucketTest extends Ks3ClientTest {
 		client1.deleteBucket(bucket3);
 	}
 
-	@Test
+	//@Test
 	public void testGetBucket_1012() {
 		String bucket1 = bucket + ".001";
 		String bucket2 = bucket + ".002";
@@ -383,7 +383,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testGetBucket_1013() throws Exception {
 		try {
 			if (!client1.bucketExists(bucket))
@@ -403,7 +403,7 @@ public class BucketTest extends Ks3ClientTest {
 			client1.deleteBucket(bucket);
 		}
 	}
-	@Test
+	//@Test
 	public void testGetBucket_1014() throws Exception{
 		try {
 			if (!client1.bucketExists(bucket))
@@ -423,7 +423,7 @@ public class BucketTest extends Ks3ClientTest {
 			client1.deleteBucket(bucket);
 		}
 	}
-	@Test
+	//@Test
 	public void testGetBucket_1015() throws Exception{
 		try {
 			if (!client1.bucketExists(bucket))

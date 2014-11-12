@@ -19,7 +19,6 @@ import java.util.Set;
 
 import com.ksyun.ks3.dto.*;
 
-import org.jets3t.service.model.S3Object;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -74,13 +73,13 @@ public class Ks3ClientTest {
 		ClientConfig config = ClientConfig.getConfig();
 	}
 
-	 @Test
+	 //@Test
 	public void ListBuckets() {
 		List<Bucket> buckets = client.listBuckets();
 		System.out.println(buckets);
 	}
 
-    @Test
+    //@Test
 	public void ListObjects() {
     	
 /*		ObjectListing o = client.listObjects("yyy");
@@ -92,16 +91,16 @@ public class Ks3ClientTest {
 		System.out.println(od);
 	}
 
-	 @Test
+	 //@Test
 	public void createAndDeleteBucket() {
 		CreateBucketRequest request = new CreateBucketRequest("lijunwei",REGION.BEIJING); 
 		client.createBucket(request);
 		client.deleteBucket("lijunwei");
 	}
 
-	 @Test
+	 //@Test
 	public void getObject() throws IOException {
-		GetObjectResult obj = client.getObject("ksc-scm", "square/6aaeb4b8gw1em2hfpoz1uj20c80900tc.jpg");
+		GetObjectResult obj = client.getObject("lijunwei.test", "test1/1234.bmp");
 		System.out.println(obj);
 		try {
 			OutputStream os = new FileOutputStream(new File("D://"
@@ -120,7 +119,7 @@ public class Ks3ClientTest {
 
 	}
 
-    @Test
+    //@Test
 	public void deleteObject() {
     	ListObjectsRequest request = new ListObjectsRequest("ksc-scm","square/",null,null,null);
     	ObjectListing o = client.listObjects(request);
@@ -133,7 +132,7 @@ public class Ks3ClientTest {
     		client.deleteObject("ksc-scm", s);
     	}
 	}
-	 @Test
+	 //@Test
 	public void putObject() {
 
 /*		PutObjectRequest request = new PutObjectRequest("lijunwei.test",
@@ -192,14 +191,14 @@ public class Ks3ClientTest {
 		 
 	}
 
-	// @Test
+	// //@Test
 	public void headObject() {
 		HeadObjectResult response = client.headObject("lijunwei.test",
 				"IMG_16721.jpg");
 		System.out.println("");
 	}
 
-	// @Test
+	// //@Test
 	public void initMultipart() {
 		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
 				"lijunwei.test", "eclipse.zip");
@@ -210,7 +209,7 @@ public class Ks3ClientTest {
 
 	}
 
-	@Test
+	//@Test
 	public void uploadPart() {
 		long part = 5*1024*1024;
 		String bucket = "lijunwei.test";
@@ -249,7 +248,7 @@ public class Ks3ClientTest {
 		client.completeMultipartUpload(request);
 	}
 
-	// @Test
+	// //@Test
 	public void completeMulti() {
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 				"lijunwei.test", "eclipse.zip",
@@ -262,24 +261,24 @@ public class Ks3ClientTest {
 		System.out.println(response);
 	}
 
-	// @Test
+	// //@Test
 	public void listParts() {
 		ListPartsResult result = client.ListParts("lijunwei.test",
 				"eclipse.zip", "aedf953924f34d0ba93b74188de1596b");
 		System.out.println(result);
 	}
 
-	 @Test
+	 //@Test
 	public void abortMulti() {
 		client.abortMultipartUpload("lijunwei.test", "bigFile.rar",
 				"44157d71c6e741699c8c5fb1f4f61aff");
 	}
-    @Test
+    //@Test
     public void getBucketACL(){
         AccessControlPolicy getBucketACL = client.getBucketACL("ksc-scm");
         System.out.println(getBucketACL.getAccessControlList());
     }
-    @Test
+    //@Test
     public void putBucketACL(){
     	PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm");
     	AccessControlList acl = new AccessControlList();
@@ -288,7 +287,7 @@ public class Ks3ClientTest {
     	request.setAccessControlList(acl);
     	client.putBucketACL(request);
     }
-    @Test
+    //@Test
     public void putObjectACL(){
     	PutObjectACLRequest request = new PutObjectACLRequest("ksc-scm","这个事测试.doc");
     	AccessControlList acl = new AccessControlList();
@@ -299,23 +298,23 @@ public class Ks3ClientTest {
     	//request.setCannedAcl(CannedAccessControlList.Private);
     	client.putObjectACL(request);
     }
-   @Test
+   //@Test
     public void getObjectACL(){
 	   AccessControlPolicy getObjectACL = client.getObjectACL("ksc-scm","这个事测试.doc");
         System.out.println(getObjectACL.getAccessControlList());
     }
-  //  @Test
+  //  //@Test
     public void configBucketAcl()
     {
     	PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm",CannedAccessControlList.PublicReadWrite);
     	client.putBucketACL(request);
     }
-    @Test
+    //@Test
     public void deleteObjects()
     {
     	System.out.println(client.deleteObjects(new String[]{"11112018rln5.pdf","dfdfdsf.pdf","sssss","square/"}, "ksc-scm"));
     }
-    @Test
+    //@Test
     public void partDownLoad()
     {
     	GetObjectRequest request = new GetObjectRequest("lijunwei.test","1234.jpeg");

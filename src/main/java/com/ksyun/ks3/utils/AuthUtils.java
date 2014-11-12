@@ -12,10 +12,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
@@ -105,9 +103,11 @@ public class AuthUtils {
         }
 
         Collections.sort(headList, new Comparator<String>() {
-            public int compare(String o1, String o2) {
-                return Bytes.BYTES_COMPARATOR.compare(o1.getBytes(), o2.toString().getBytes());
-            }
+
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+         
         });
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < headList.size(); i++) {

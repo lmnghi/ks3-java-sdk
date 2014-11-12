@@ -2,8 +2,8 @@ package com.ksyun.ks3.http;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.SchemeRegistryFactory;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpParams;
 
 import com.ksyun.ks3.config.ClientConfig;
@@ -17,9 +17,11 @@ import com.ksyun.ks3.config.ClientConfig;
  * @description 
  **/
 public class ConnectionManagerFactory {
-    public static PoolingClientConnectionManager createPoolingClientConnManager( HttpParams httpClientParams ) {
+    @SuppressWarnings("deprecation")
+	public static ThreadSafeClientConnManager createPoolingClientConnManager( HttpParams httpClientParams ) {
     	ClientConfig config = ClientConfig.getConfig();
-        PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager(
+
+    	ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(
                 SchemeRegistryFactory.createDefault(),
                 config.getLong(ClientConfig.CONNECTION_TTL), TimeUnit.MILLISECONDS);
         connectionManager.setDefaultMaxPerRoute(config.getInt(ClientConfig.MAX_CONNECTIONS));

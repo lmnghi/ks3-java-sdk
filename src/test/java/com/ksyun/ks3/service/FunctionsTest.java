@@ -36,7 +36,7 @@ public class FunctionsTest extends Ks3ClientTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	//@Test
 	public void testGetService() throws Exception {
 		List<Bucket> buckets = client1.listBuckets();
 		List<Bucket> added = new ArrayList<Bucket>();
@@ -67,7 +67,7 @@ public class FunctionsTest extends Ks3ClientTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	//@Test
 	public void testCreateBucket_01() throws Exception {
 		String bucketname = "lijunwei.sdk.test";
 
@@ -97,7 +97,7 @@ public class FunctionsTest extends Ks3ClientTest {
 	/**
 	 * bucket名称中特殊字符的校验
 	 */
-	@Test
+	//@Test
 	public void testCreateBucket_02() {
 		List<String> skiped = new ArrayList<String>();
 		String[] bucketNames = new String[] { "AAAAAAA", "aaa__", "aaaaa$$",

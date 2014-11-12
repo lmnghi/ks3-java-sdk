@@ -1,17 +1,8 @@
 package com.ksyun.ks3.http;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -39,6 +30,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -55,7 +47,8 @@ import com.ksyun.ks3.exception.Ks3ClientException;
  * @description 
  **/
 public class HttpClientFactory {
-    public HttpClient createHttpClient() {
+    @SuppressWarnings("deprecation")
+	public HttpClient createHttpClient() {
     	ClientConfig config = ClientConfig.getConfig();
         /* Set HTTP client parameters */
         HttpParams httpClientParams = new BasicHttpParams();
@@ -71,7 +64,7 @@ public class HttpClientFactory {
                     Math.max(socketSendBufferSizeHint, socketReceiveBufferSizeHint));
         }
 
-        PoolingClientConnectionManager connectionManager = ConnectionManagerFactory
+        ThreadSafeClientConnManager connectionManager = ConnectionManagerFactory
                 .createPoolingClientConnManager(httpClientParams);
         DefaultHttpClient httpClient = new DefaultHttpClient(connectionManager, httpClientParams);
         httpClient.setRedirectStrategy(new LocationHeaderNotRequiredRedirectStrategy());

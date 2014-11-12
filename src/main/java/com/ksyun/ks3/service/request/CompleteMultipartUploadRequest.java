@@ -13,7 +13,6 @@ import java.util.HashSet;
 
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.dto.ListPartsResult;

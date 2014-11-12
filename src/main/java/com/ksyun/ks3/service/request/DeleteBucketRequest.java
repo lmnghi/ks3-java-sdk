@@ -1,8 +1,7 @@
 package com.ksyun.ks3.service.request;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author lijunwei[13810414122@163.com]  

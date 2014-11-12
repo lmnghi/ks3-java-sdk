@@ -13,21 +13,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.params.CoreProtocolPNames;
 
@@ -44,6 +39,7 @@ import com.ksyun.ks3.utils.DateUtils;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.Md5Utils;
 import com.ksyun.ks3.utils.RequestUtils;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -254,9 +250,7 @@ public abstract class Ks3WebServiceRequest {
 				new Comparator<Map.Entry<String, String>>() {
 					public int compare(Entry<String, String> o1,
 							Entry<String, String> o2) {
-						return Bytes.BYTES_COMPARATOR.compare(o1.getKey()
-								.toString().getBytes(), o2.getKey().toString()
-								.getBytes());
+						return o1.getKey().compareTo(o2.getKey());
 					}
 				});
 		List<String> kvList = new ArrayList<String>();

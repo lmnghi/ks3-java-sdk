@@ -121,10 +121,10 @@ public class Ks3CoreController {
 						"the MD5 value we calculated dose not match the MD5 value Ks3 Service returned.please try again");
 			}
 		}
-		if (httpRequest != null) {
+/*		if (httpRequest != null) {
 			// 否则链接池会耗尽
 			httpRequest.abort();
-		}
+		}*/
 		log.info("finished handle response : " + Timer.end());
 		return result;
 	}
