@@ -52,7 +52,6 @@ import com.ksyun.ks3.utils.StringUtils;
 public abstract class Ks3WebServiceRequest {
 	private static final Log log = LogFactory
 			.getLog(Ks3WebServiceRequest.class);
-	private ClientConfig config = ClientConfig.getConfig();
 	private String url;
 	private HttpMethod httpMethod;
 	private Map<String, String> header = new HashMap<String, String>();
@@ -150,9 +149,9 @@ public abstract class Ks3WebServiceRequest {
 				HttpEntity entity = new RepeatableInputStreamRequestEntity(
 						requestBody, length);
 				try {
-					//这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
+					// 这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
 					entity = new RepeatableInputStreamRequestEntity(
-							requestBody,"-1");
+							requestBody, "-1");
 					entity = new BufferedHttpEntity(entity);
 					if (this.getRequestBody() instanceof MD5DigestCalculatingInputStream)
 						this.addHeader(
@@ -183,12 +182,12 @@ public abstract class Ks3WebServiceRequest {
 				String length = headrs
 						.get(HttpHeaders.ContentLength.toString());
 				HttpEntity entity = null;
-				long availeAble = Runtime.getRuntime().freeMemory()-1024*64;
+				long availeAble = Runtime.getRuntime().freeMemory() - 1024 * 64;
 				if ((length == null || Long.valueOf(length) < availeAble)) {
 					try {
-						//这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
+						// 这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
 						entity = new RepeatableInputStreamRequestEntity(
-								requestBody,"-1");
+								requestBody, "-1");
 						entity = new BufferedHttpEntity(entity);
 						if (this.getRequestBody() instanceof MD5DigestCalculatingInputStream)
 							this.addHeader(
@@ -202,8 +201,7 @@ public abstract class Ks3WebServiceRequest {
 						throw new Ks3ClientException("init http request error("
 								+ e + ")", e);
 					}
-				}
-				else{
+				} else {
 					entity = new RepeatableInputStreamRequestEntity(
 							requestBody, length);
 				}
@@ -224,22 +222,15 @@ public abstract class Ks3WebServiceRequest {
 				httpRequest.addHeader(aHeader.getKey(), aHeader.getValue());
 		}
 		this.httpRequest = httpRequest;
+		// 添加长度会报错，最后Apache http框架会自动添加
 		this.httpRequest.removeHeaders(HttpHeaders.ContentLength.toString());
 	}
 
 	public HttpRequestBase getHttpRequest() {
-		try {
-			this.validateParams();
-			configHttpRequestPrivate();
-			configHttpRequest();
-			initHttpRequestBase();
-		} finally {
-			/*
-			 * if(this.requestBody!=null) try { this.requestBody.close(); }
-			 * catch (IOException e) { e.printStackTrace();
-			 * log.info("can not close request body input stream"); }
-			 */
-		}
+		this.validateParams();
+		configHttpRequestPrivate();
+		configHttpRequest();
+		initHttpRequestBase();
 		return this.httpRequest;
 	}
 
@@ -258,8 +249,8 @@ public abstract class Ks3WebServiceRequest {
 		List<String> list = new ArrayList<String>();
 		for (Entry<String, String> entry : arrayList) {
 			String value = null;
-			if(!StringUtils.isBlank(entry.getValue()))
-			    value = URLEncoder.encode(entry.getValue());
+			if (!StringUtils.isBlank(entry.getValue()))
+				value = URLEncoder.encode(entry.getValue());
 			if (RequestUtils.subResource.contains(entry.getKey())) {
 				if (value != null && !value.equals(""))
 					kvList.add(entry.getKey() + "=" + value);

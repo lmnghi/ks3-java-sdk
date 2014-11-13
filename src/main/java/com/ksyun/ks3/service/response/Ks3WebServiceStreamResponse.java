@@ -15,7 +15,7 @@ import com.ksyun.ks3.http.HttpHeaders;
  * 
  * @date 2014年11月13日 下午9:21:57
  * 
- * @description 
+ * @description 和{@link Ks3WebServiceDefaultResponse}区别 http request不立即释放
  **/
 public abstract class Ks3WebServiceStreamResponse<T> implements Ks3WebServiceResponse<T>{
 

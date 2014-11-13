@@ -9,7 +9,7 @@ import org.apache.http.client.methods.HttpRequestBase;
  * 
  * @date 2014年10月17日 下午2:40:32
  * 
- * @description 
+ * @description KS3 http response处理器
  **/
 public interface Ks3WebServiceResponse<T>{
 	public static int allStatueCode = -1;

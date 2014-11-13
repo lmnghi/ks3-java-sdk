@@ -209,7 +209,7 @@ public class Ks3ClientTest {
 
 	}
 
-	//@Test
+	@Test
 	public void uploadPart() {
 		long part = 5*1024*1024;
 		String bucket = "lijunwei.test";

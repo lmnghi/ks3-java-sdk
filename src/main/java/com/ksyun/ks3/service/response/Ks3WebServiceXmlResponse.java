@@ -24,7 +24,7 @@ import com.ksyun.ks3.http.HttpHeaders;
  * 
  * @date 2014年10月14日 下午7:48:26
  * 
- * @description 
+ * @description 封装了SAX
  **/
 public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler implements Ks3WebServiceResponse<T>{
 	private HttpResponse response;
