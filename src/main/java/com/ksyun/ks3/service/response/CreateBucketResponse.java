@@ -1,4 +1,7 @@
 package com.ksyun.ks3.service.response;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+
 import com.ksyun.ks3.dto.Bucket;
 
 /**

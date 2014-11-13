@@ -3,7 +3,10 @@ package com.ksyun.ks3.service.response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 
+import com.ksyun.ks3.AutoAbortInputStream;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -18,7 +21,7 @@ import com.ksyun.ks3.utils.DateUtils;
  * @description
  **/
 public class GetObjectResponse extends
-		Ks3WebServiceDefaultResponse<GetObjectResult> {
+		Ks3WebServiceStreamResponse<GetObjectResult> {
 	private static Log log = LogFactory.getLog(GetObjectResponse.class);
 
 	public int[] expectedStatus() {
@@ -34,7 +37,8 @@ public class GetObjectResponse extends
 		result = new GetObjectResult();
 		int statusCode = this.getResponse().getStatusLine().getStatusCode();
 		if (statusCode == 200 || statusCode == 206) {
-			result.getObject().setObjectContent(getContent());
+			//自动释放http链接
+			result.getObject().setObjectContent(new AutoAbortInputStream(getContent(),request));
 			result.getObject().setRedirectLocation(
 					getHeader(HttpHeaders.XKssWebsiteRedirectLocation
 							.toString()));

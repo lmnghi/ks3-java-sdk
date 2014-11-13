@@ -9,7 +9,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.http.Header;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler; 
@@ -70,7 +72,7 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 	{
 		return this.getHeader(HttpHeaders.RequestId.toString());
 	}
-	public T handleResponse(HttpResponse response) {
+	public T handleResponse(HttpRequest request,HttpResponse response) {
 		this.setResponse(response);
 		preHandle();
 		InputStream in = null;
@@ -91,6 +93,9 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			//Xml的不需要考虑keep-alive，所以可以直接关闭
+			if(request instanceof HttpRequestBase)
+			    ((HttpRequestBase) request).abort();
 		}
 	}
 	public abstract void preHandle();

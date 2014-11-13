@@ -3,6 +3,8 @@ package com.ksyun.ks3.dto;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.ksyun.ks3.AutoAbortInputStream;
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -15,7 +17,7 @@ public class Ks3Object  implements Closeable{
 	private String key = null;
 	private String bucketName = null;
 	private ObjectMetadata objectMetadata;
-	private InputStream objectContent;
+	private AutoAbortInputStream objectContent;
 	private String redirectLocation;
 	
 	@Override
@@ -40,11 +42,11 @@ public class Ks3Object  implements Closeable{
 		this.bucketName = bucketName;
 	}
 
-	public InputStream getObjectContent() {
+	public AutoAbortInputStream getObjectContent() {
 		return objectContent;
 	}
 
-	public void setObjectContent(InputStream objectContent) {
+	public void setObjectContent(AutoAbortInputStream objectContent) {
 		this.objectContent = objectContent;
 	}
 

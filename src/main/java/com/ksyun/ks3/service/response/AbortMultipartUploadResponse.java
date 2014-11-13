@@ -1,4 +1,8 @@
 package com.ksyun.ks3.service.response;
+
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -16,5 +20,7 @@ public class AbortMultipartUploadResponse extends Ks3WebServiceDefaultResponse<B
 	public void preHandle() {
 		this.result = true;
 	}
+
+
 
 }

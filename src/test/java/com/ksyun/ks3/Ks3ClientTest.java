@@ -79,13 +79,13 @@ public class Ks3ClientTest {
 		System.out.println(buckets);
 	}
 
-    //@Test
+    @Test
 	public void ListObjects() {
     	
 /*		ObjectListing o = client.listObjects("yyy");
 		Object od = o;
 		System.out.println(od);*/
-    	ListObjectsRequest request = new ListObjectsRequest("lijunwei.test",null,null,null,0);
+    	ListObjectsRequest request = new ListObjectsRequest("ksc-scm",null,null,null,null);
     	ObjectListing o = client.listObjects(request);
     	Object od = o;
 		System.out.println(od);
@@ -100,13 +100,13 @@ public class Ks3ClientTest {
 
 	 @Test
 	public void getObject() throws IOException {
-		GetObjectResult obj = client.getObject("lijunwei.test", "test1/1234.bmp");
+		GetObjectResult obj = client.getObject("lijunwei.test", "新建文本文档.txt");
 		System.out.println(obj);
 		try {
 			OutputStream os = new FileOutputStream(new File("D://"
 					+ obj.getObject().getKey()));
 			int bytesRead = 0;
-			byte[] buffer = new byte[1024];
+			byte[] buffer = new byte[1024*10];
 			InputStream in=obj.getObject().getObjectContent();
 			while ((bytesRead = in.read(buffer)) != -1) {
 				os.write(buffer, 0, bytesRead);
@@ -119,20 +119,20 @@ public class Ks3ClientTest {
 
 	}
 
-    //@Test
+    @Test
 	public void deleteObject() {
-    	ListObjectsRequest request = new ListObjectsRequest("ksc-scm","square/",null,null,null);
+    	ListObjectsRequest request = new ListObjectsRequest("ksc-scm",null,null,null,null);
     	ObjectListing o = client.listObjects(request);
     	for(Ks3ObjectSummary sum:o.getObjectSummaries())
     	{
-		     client.deleteObject("ksc-scm", sum.getKey());
+		     client.deleteObject("ksc-scm", " { ^ } % ` ] ' < > [ ~ # | \" " );
     	}
     	for(String s :o.getCommonPrefixes())
     	{
     		client.deleteObject("ksc-scm", s);
     	}
 	}
-	 //@Test
+	 @Test
 	public void putObject() {
 
 /*		PutObjectRequest request = new PutObjectRequest("lijunwei.test",
@@ -165,8 +165,8 @@ public class Ks3ClientTest {
 		  (FileNotFoundException e) { // TODO Auto-generated catch block
 		  e.printStackTrace(); }*/
 		try {
-			PutObjectRequest request = new PutObjectRequest("daiwenjun",
-					"IMG_16721。exe",new File("D://新建文件夹.rar"));
+			PutObjectRequest request = new PutObjectRequest("ksc-scm",
+					"123.txt",new ByteArrayInputStream(new byte[]{44,45,46}),null);
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -191,7 +191,7 @@ public class Ks3ClientTest {
 		 
 	}
 
-	// //@Test
+	@Test
 	public void headObject() {
 		HeadObjectResult response = client.headObject("lijunwei.test",
 				"IMG_16721.jpg");
@@ -248,7 +248,7 @@ public class Ks3ClientTest {
 		client.completeMultipartUpload(request);
 	}
 
-	// //@Test
+	@Test
 	public void completeMulti() {
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 				"lijunwei.test", "eclipse.zip",
@@ -323,9 +323,10 @@ public class Ks3ClientTest {
     		partDownLoad();
     	}
     }
+    @Test
     public void partDownLoad()
     {
-    	GetObjectRequest request = new GetObjectRequest("lijunwei.test","1234.jpeg");
+    	GetObjectRequest request = new GetObjectRequest("lijunwei.test","IMG_16721。exe");
     	long max = 1024*1024;
     	long index = 0;
     	long step = 1024*1024*1024;

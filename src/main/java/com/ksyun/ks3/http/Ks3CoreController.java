@@ -1,6 +1,7 @@
 package com.ksyun.ks3.http;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +16,7 @@ import org.apache.http.params.HttpParams;
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.Authorization;
+import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
@@ -114,7 +116,7 @@ public class Ks3CoreController {
 					+ Ks3WebServiceResponse.allStatueCode
 					+ " is all statue codes)").convert();
 		}
-		Y result = ksResponse.handleResponse(response);
+		Y result = ksResponse.handleResponse(httpRequest,response);
 		if (ksResponse instanceof Md5CheckAble
 				&& request instanceof MD5CalculateAble) {
 			String ETag = ((Md5CheckAble) ksResponse).getETag();

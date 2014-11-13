@@ -1,6 +1,8 @@
 package com.ksyun.ks3.service.response;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -11,7 +13,7 @@ import org.apache.http.HttpResponse;
  **/
 public interface Ks3WebServiceResponse<T>{
 	public static int allStatueCode = -1;
-	public T handleResponse(HttpResponse response);
+	public T handleResponse(HttpRequest httpRequest, HttpResponse response);
 	public HttpResponse getResponse();
 	public String getRequestId();
 	/**

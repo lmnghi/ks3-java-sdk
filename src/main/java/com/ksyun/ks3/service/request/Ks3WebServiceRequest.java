@@ -300,7 +300,7 @@ public abstract class Ks3WebServiceRequest {
 		return header;
 	}
 
-	protected InputStream getRequestBody() {
+	public InputStream getRequestBody() {
 		return requestBody;
 	}
 

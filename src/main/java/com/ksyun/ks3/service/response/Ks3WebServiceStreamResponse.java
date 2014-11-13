@@ -1,6 +1,5 @@
 package com.ksyun.ks3.service.response;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.http.Header;
@@ -14,11 +13,12 @@ import com.ksyun.ks3.http.HttpHeaders;
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
- * @date 2014年10月20日 下午5:13:22
+ * @date 2014年11月13日 下午9:21:57
  * 
  * @description 
  **/
-public abstract class Ks3WebServiceDefaultResponse<T> implements Ks3WebServiceResponse<T>{
+public abstract class Ks3WebServiceStreamResponse<T> implements Ks3WebServiceResponse<T>{
+
 	protected T result = null;
 	protected HttpResponse response;
 	protected HttpRequest request;
@@ -26,7 +26,6 @@ public abstract class Ks3WebServiceDefaultResponse<T> implements Ks3WebServiceRe
 		this.response = response;
 		this.request = request;
 		preHandle();
-		this.abortRequest();
 		return result;
 	}
 	public abstract void preHandle();
@@ -58,9 +57,5 @@ public abstract class Ks3WebServiceDefaultResponse<T> implements Ks3WebServiceRe
 	public String getRequestId()
 	{
 		return this.getHeader(HttpHeaders.RequestId.toString());
-	}
-	private void abortRequest(){
-		if(this.request!=null&&this.request instanceof HttpRequestBase)
-			((HttpRequestBase) this.request).abort();
 	}
 }
