@@ -4,7 +4,7 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年10月24日 下午1:18:12
  * 
- * @description 
+ * @description 通过email指定被授权者
  **/
 public class GranteeEmail implements Grantee{
 	private String email;

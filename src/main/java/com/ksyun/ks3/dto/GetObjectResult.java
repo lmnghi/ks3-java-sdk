@@ -11,11 +11,13 @@ public class GetObjectResult {
 	/**
 	 * false 
 	 * object为null
+	 * false 即 http 304  一般用于缓存控制
 	 */
 	private boolean ifModified = true;
 	/**
 	 * false
 	 * object为null
+	 * false 即http 412 一般用于缓存控制
 	 */
 	private boolean ifPreconditionSuccess = true;
 	public String toString()

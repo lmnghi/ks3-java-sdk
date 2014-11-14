@@ -4,11 +4,15 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年10月23日 上午10:30:46
  * 
- * @description 
+ * @description 初始化分块上传的返回结果
  **/
 public class InitiateMultipartUploadResult {
 	private String bucket;
 	private String key;
+	/**
+	 * upload id
+	 * 用于之后的upload part、complete multipart upload、list parts 、abort multipart upload
+	 */
 	private String uploadId;
 	public String getBucket() {
 		return bucket;

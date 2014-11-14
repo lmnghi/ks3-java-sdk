@@ -10,13 +10,19 @@ import com.ksyun.ks3.AutoAbortInputStream;
  * 
  * @date 2014年10月16日 下午3:54:01
  * 
- * @description 
+ * @description 存放object信息
  **/
 public class Ks3Object  implements Closeable{
 	
 	private String key = null;
 	private String bucketName = null;
+	/**
+	 * object 元数据
+	 */
 	private ObjectMetadata objectMetadata;
+	/**
+	 * object 数据
+	 */
 	private AutoAbortInputStream objectContent;
 	private String redirectLocation;
 	

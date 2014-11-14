@@ -7,6 +7,9 @@ package com.ksyun.ks3.dto;
  * @description 
  **/
 public class CompleteMultipartUploadResult {
+	/**
+	 * 新建对象的uri
+	 */
 	private String location;
 	private String bucket;
 	private String key;

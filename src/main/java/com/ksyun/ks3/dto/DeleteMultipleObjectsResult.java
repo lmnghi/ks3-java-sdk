@@ -8,10 +8,16 @@ import java.util.List;
  * 
  * @date 2014年11月10日 下午2:56:45
  * 
- * @description 
+ * @description 批量删除结果
  **/
 public class DeleteMultipleObjectsResult {
+	/**
+	 * 删除成功的object key
+	 */
 	private List<String> deleted = new ArrayList<String>();
+	/**
+	 * 删除失败的object key及错误信息
+	 */
 	private List<DeleteMultipleObjectsError> errors = new ArrayList<DeleteMultipleObjectsError>();
 	public List<String> getDeleted() {
 		return deleted;

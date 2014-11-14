@@ -6,9 +6,12 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年10月24日 下午1:18:38
  * 
- * @description 
+ * @description 通过uri指定被授权者
  **/
 public enum GranteeUri implements Grantee{
+	/**
+	 * Ks3所有用户
+	 */
 	AllUsers("http://acs.ksyun.com/groups/global/AllUsers"),
    // AuthenticatedUsers("http://acs.amazonaws.com/groups/global/AuthenticatedUsers"),
    // LogDelivery("http://acs.amazonaws.com/groups/s3/LogDelivery");

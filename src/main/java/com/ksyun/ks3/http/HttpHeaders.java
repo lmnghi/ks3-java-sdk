@@ -24,6 +24,7 @@ public enum HttpHeaders {
 	XNoReferer("X-No-Referer"),
 	XBlackList("X-Black-List"),
 	XWhiteList("X-White-List"),
+	XKssOp("x-kss-Op"),
 	//put object metadata
 	ContentLength("Content-Length"),
 	CacheControl("Cache-Control"),

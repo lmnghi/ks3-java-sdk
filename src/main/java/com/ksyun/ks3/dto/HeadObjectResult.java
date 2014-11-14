@@ -7,18 +7,20 @@ import java.util.Date;
  * 
  * @date 2014年10月22日 下午8:01:05
  * 
- * @description 
+ * @description Head请求一个object
  **/
 public class HeadObjectResult {
 	private ObjectMetadata objectMetadata = new ObjectMetadata();
 	/**
 	 * false 
 	 * object为null
+	 * false 即http 304 一般用于缓存控制
 	 */
 	private boolean ifModified = true;
 	/**
 	 * false
 	 * object为null
+	 * false 即http 412 一般用于缓存控制
 	 */
 	private boolean ifPreconditionSuccess = true;
 	

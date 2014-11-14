@@ -4,7 +4,7 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年10月24日 下午1:18:02
  * 
- * @description 
+ * @description 通过Id指定被授权者
  **/
 public class GranteeId implements Grantee{
 	private String id;

@@ -5,11 +5,20 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年11月10日 下午3:05:01
  * 
- * @description
+ * @description 批量删除object时，删除某单个object时的错误信息
  **/
 public class DeleteMultipleObjectsError {
+	/**
+	 *  object key
+	 */
 	private String key;
+	/**
+	 * 错误码，详见readme.txt
+	 */
 	private String code;
+	/**
+	 * 错误信息
+	 */
 	private String message;
 
 	public String getKey() {

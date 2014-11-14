@@ -8,10 +8,16 @@ import java.util.Map;
  * 
  * @date 2014年11月10日 下午12:00:19
  * 
- * @description 
+ * @description HEAD请求一个bucket
  **/
 public class HeadBucketResult {
+	/**
+	 * http 状态码
+	 */
 	private int statueCode;
+	/**
+	 * 返回的htpp状态码
+	 */
 	private Map<String,String> headers = new HashMap<String,String>();
 	public int getStatueCode() {
 		return statueCode;
