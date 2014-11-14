@@ -40,9 +40,6 @@ import com.ksyun.ks3.utils.StringUtils;
  * }
  * 的方式配置
  * </li>
- * <li>
- * 也可通过使用该方法初始化 new Ks3Client(String accessKey,String accessKeySecret)
- * </li>
  * </ul>
  **/
 public class ClientConfig {

@@ -26,6 +26,7 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 	private ObjectMetadata objectMeta = new ObjectMetadata();
 	private AccessControlList acl = new AccessControlList();
 	private CannedAccessControlList cannedAcl;
+	private String redirectLocation;
 	public InitiateMultipartUploadRequest(String bucketname,String objectkey)
 	{
 		this.setBucketname(bucketname);
@@ -67,6 +68,10 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 		{
 			this.getHeader().putAll(HttpUtils.convertAcl2Headers(acl));
 		}
+		if (this.redirectLocation != null) {
+			this.addHeader(HttpHeaders.XKssWebsiteRedirectLocation,
+					this.redirectLocation);
+		}
 	}
 
 	@Override
@@ -75,6 +80,10 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 			throw new IllegalArgumentException("bucket name is not correct");
 		if(StringUtils.isBlank(this.getObjectkey()))
 			throw new IllegalArgumentException("object key can not be null");
+		if(this.redirectLocation!=null){
+			if(!this.redirectLocation.startsWith("/")&&!this.redirectLocation.startsWith("http://")&&!this.redirectLocation.startsWith("https://"))
+				throw new IllegalArgumentException("redirectLocation should start with / http:// or https://");
+		}
 	}
 	
 	public ObjectMetadata getObjectMeta() {
@@ -94,6 +103,12 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 	}
 	public void setCannedAcl(CannedAccessControlList cannedAcl) {
 		this.cannedAcl = cannedAcl;
+	}
+	public String getRedirectLocation() {
+		return redirectLocation;
+	}
+	public void setRedirectLocation(String redirectLocation) {
+		this.redirectLocation = redirectLocation;
 	}
 	
 }

@@ -145,6 +145,10 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			throw new IllegalArgumentException("object key can not be null");
 		if (file == null && this.getRequestBody() == null)
 			throw new IllegalArgumentException("upload object can not be null");
+		if(this.redirectLocation!=null){
+			if(!this.redirectLocation.startsWith("/")&&!this.redirectLocation.startsWith("http://")&&!this.redirectLocation.startsWith("https://"))
+				throw new IllegalArgumentException("redirectLocation should start with / http:// or https://");
+		}
 	}
 
 	public File getFile() {

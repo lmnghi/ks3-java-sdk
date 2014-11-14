@@ -56,14 +56,6 @@ public class Ks3Object  implements Closeable{
 		this.objectContent = objectContent;
 	}
 
-	public String getRedirectLocation() {
-		return redirectLocation;
-	}
-
-	public void setRedirectLocation(String redirectLocation) {
-		this.redirectLocation = redirectLocation;
-	}
-
 	public void close() throws IOException {
 		if(objectContent!=null)
 		{
@@ -77,6 +69,14 @@ public class Ks3Object  implements Closeable{
 
 	public void setObjectMetadata(ObjectMetadata objectMetadata) {
 		this.objectMetadata = objectMetadata;
+	}
+
+	public String getRedirectLocation() {
+		return redirectLocation;
+	}
+
+	public void setRedirectLocation(String redirectLocation) {
+		this.redirectLocation = redirectLocation;
 	}
 
 }
