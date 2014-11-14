@@ -182,7 +182,7 @@ public abstract class Ks3WebServiceRequest {
 				String length = headrs
 						.get(HttpHeaders.ContentLength.toString());
 				HttpEntity entity = null;
-				long availeAble = Runtime.getRuntime().freeMemory() - 1024 * 64;
+				long availeAble = (long) (Runtime.getRuntime().freeMemory()*0.7);
 				if ((length == null || Long.valueOf(length) < availeAble)) {
 					try {
 						// 这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
