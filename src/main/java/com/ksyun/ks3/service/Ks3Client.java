@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.dto.*;
+import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.http.Ks3CoreController;
@@ -16,13 +17,17 @@ import com.ksyun.ks3.service.request.CreateBucketRequest;
 import com.ksyun.ks3.service.request.DeleteBucketRequest;
 import com.ksyun.ks3.service.request.DeleteMultipleObjectsRequest;
 import com.ksyun.ks3.service.request.DeleteObjectRequest;
+import com.ksyun.ks3.service.request.GetBucketLocationRequest;
+import com.ksyun.ks3.service.request.GetBucketLoggingRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.ListBucketsRequest;
+import com.ksyun.ks3.service.request.ListMultipartUploadsRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
+import com.ksyun.ks3.service.request.PutBucketLoggingRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.AbortMultipartUploadResponse;
@@ -82,7 +87,46 @@ public class Ks3Client implements Ks3 {
 
 		return client.execute(auth, request, ListBucketsResponse.class);
 	}
+	
 
+	public REGION getBucketLoaction(String bucketName)
+			throws Ks3ClientException, Ks3ServiceException {
+		GetBucketLocationRequest request = new GetBucketLocationRequest(bucketName);
+		return this.getBucketLoaction(request);
+	}
+
+	public REGION getBucketLoaction(GetBucketLocationRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		return this.client.execute(auth, request,GetBucketLocationResponse.class);
+	}
+	public BucketLoggingStatus getBucketLogging(String bucketName)
+			throws Ks3ClientException, Ks3ServiceException {
+		GetBucketLoggingRequest request = new GetBucketLoggingRequest(bucketName);
+		return this.getBucketLogging(request);
+	}
+
+	public BucketLoggingStatus getBucketLogging(GetBucketLoggingRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		return client.execute(auth, request,GetBucketLoggingResponse.class);
+	}
+	public void putBucketLogging(String bucketName, boolean enable,
+			String targetBucket) throws Ks3ClientException, Ks3ServiceException {
+		PutBucketLoggingRequest request = new PutBucketLoggingRequest(bucketName,enable,targetBucket);
+		this.putBucketLogging(request);
+		
+	}
+
+	public void putBucketLogging(String bucketName, boolean enable,
+			String targetBucket, String targetPrefix)
+			throws Ks3ClientException, Ks3ServiceException {
+		PutBucketLoggingRequest request = new PutBucketLoggingRequest(bucketName,enable,targetBucket,targetPrefix);
+		this.putBucketLogging(request);
+	}
+
+	public void putBucketLogging(PutBucketLoggingRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		client.execute(auth, request,PutBucketLoggingResponse.class);
+	}
 	public AccessControlPolicy getBucketACL(String bucketName)
 			throws Ks3ClientException, Ks3ServiceException {
 		return getBucketACL(new GetBucketACLRequest(bucketName));
@@ -298,33 +342,33 @@ public class Ks3Client implements Ks3 {
 		this.client.execute(auth, request, AbortMultipartUploadResponse.class);
 	}
 
-	public ListPartsResult ListParts(String bucketname, String objectkey,
+	public ListPartsResult listParts(String bucketname, String objectkey,
 			String uploadId) throws Ks3ClientException, Ks3ServiceException {
 		ListPartsRequest request = new ListPartsRequest(bucketname, objectkey,
 				uploadId);
-		return ListParts(request);
+		return listParts(request);
 	}
 
-	public ListPartsResult ListParts(String bucketname, String objectkey,
+	public ListPartsResult listParts(String bucketname, String objectkey,
 			String uploadId, int maxParts) throws Ks3ClientException,
 			Ks3ServiceException {
 		ListPartsRequest request = new ListPartsRequest(bucketname, objectkey,
 				uploadId);
 		request.setMaxParts(maxParts);
-		return ListParts(request);
+		return listParts(request);
 	}
 
-	public ListPartsResult ListParts(String bucketname, String objectkey,
+	public ListPartsResult listParts(String bucketname, String objectkey,
 			String uploadId, int maxParts, int partNumberMarker)
 			throws Ks3ClientException, Ks3ServiceException {
 		ListPartsRequest request = new ListPartsRequest(bucketname, objectkey,
 				uploadId);
 		request.setMaxParts(maxParts);
 		request.setPartNumberMarker(partNumberMarker);
-		return ListParts(request);
+		return listParts(request);
 	}
 
-	public ListPartsResult ListParts(ListPartsRequest request)
+	public ListPartsResult listParts(ListPartsRequest request)
 			throws Ks3ClientException, Ks3ServiceException {
 		return client.execute(auth, request, ListPartsResponse.class);
 	}
@@ -357,5 +401,28 @@ public class Ks3Client implements Ks3 {
 			throws Ks3ClientException, Ks3ServiceException {
 		return this.deleteObjects(new DeleteMultipleObjectsRequest(bucketName,keys));
 	}
+	public ListMultipartUploadsResult listMultipartUploads(String bucketName)
+			throws Ks3ClientException, Ks3ClientException {
+		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(bucketName);
+		return this.listMultipartUploads(request);
+	}
 
+	public ListMultipartUploadsResult listMultipartUploads(String bucketName,
+			String prefix) throws Ks3ClientException, Ks3ClientException {
+		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(bucketName,prefix);
+		return this.listMultipartUploads(request);
+	}
+
+	public ListMultipartUploadsResult listMultipartUploads(String bucketName,
+			String prefix, String keyMarker, String uploadIdMarker)
+			throws Ks3ClientException, Ks3ClientException {
+		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(bucketName,prefix,keyMarker,uploadIdMarker);
+		return this.listMultipartUploads(request);
+	}
+
+	public ListMultipartUploadsResult listMultipartUploads(
+			ListMultipartUploadsRequest request) throws Ks3ClientException,
+			Ks3ClientException {
+		return client.execute(auth, request,ListMultipartUploadsResponse.class);
+	}
 }

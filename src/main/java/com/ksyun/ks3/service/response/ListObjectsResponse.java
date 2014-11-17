@@ -96,6 +96,8 @@ public class ListObjectsResponse extends
 				prefixs.add(s);
 			} else if ("NextMarker".equals(tag)) {
 				result.setNextMarker(s);
+			} else if("Encoding-Type".equals(tag)){
+				result.setEncodingType(s);
 			}
 		}
 	}

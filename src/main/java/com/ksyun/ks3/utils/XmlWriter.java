@@ -13,37 +13,48 @@ import com.ksyun.ks3.config.Constants;
  *
  * @description
  **/
-public class XmlWrite {
+public class XmlWriter {
     private List<String> tag = new ArrayList<String>();
     private StringBuffer buffer = new StringBuffer();
 
-    public XmlWrite start(String nodeName) {
+    public XmlWriter start(String nodeName) {
         buffer.append("<" + nodeName + ">");
         this.tag.add(nodeName);
         return this;
     }
 
-    public XmlWrite start(String nodeName, String param, String value) {
+    public XmlWriter start(String nodeName, String param, String value) {
         buffer.append("<" + nodeName + " " + param + "=\"" + value + "\">");
         this.tag.add(nodeName);
         return this;
     }
-
-    public XmlWrite startWithNs(String nodeName) {
-        return start(nodeName, "xmlns", Constants.KS3_XML_NAMESPACE);
+    public XmlWriter start(String nodeName, String[] params, String[] values) {
+    	if(params.length!=values.length)
+    		throw new IllegalArgumentException("params.length should be equals with values.length");
+    	
+        buffer.append("<" + nodeName+" ");
+        for(int i =0;i<params.length;i++){
+        	buffer.append(params[i]+"=\""+values[i]+"\" ");
+        }
+        buffer.append(">");
+        this.tag.add(nodeName);
+        return this;
     }
 
-    public XmlWrite end() {
+    public XmlWriter startWithNs(String nodeName) {
+        return start(nodeName, "xmlns", Constants.KS3_XML_NAMESPACE);
+    }
+    public XmlWriter end() {
         buffer.append("</" + tag.get(tag.size() - 1) + ">");
         tag.remove(tag.size() - 1);
         return this;
     }
 
-    public XmlWrite value(String value) {
+    public XmlWriter value(String value) {
         buffer.append(value);
         return this;
     }
-    public XmlWrite value(int value) {
+    public XmlWriter value(int value) {
         buffer.append(value);
         return this;
     }

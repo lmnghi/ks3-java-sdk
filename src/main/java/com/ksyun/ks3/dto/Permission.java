@@ -1,5 +1,7 @@
 package com.ksyun.ks3.dto;
 
+import com.ksyun.ks3.exception.Ks3ClientException;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -25,7 +27,7 @@ public enum Permission {
 	public String toString() {
 		return permissionString;
 	}
-    public static Permission getInstance(String value)
+    public static Permission load(String value)
     {
         if(value.equals(FullControl.toString()))
         {
@@ -39,6 +41,6 @@ public enum Permission {
         {
             return Permission.Write;
         }
-       return null;
+        throw new Ks3ClientException("unknow permission:"+value);
     }
 }

@@ -1,6 +1,7 @@
 package com.ksyun.ks3.dto;
 
-import com.ksyun.ks3.utils.XmlWrite;
+import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.utils.XmlWriter;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -11,7 +12,14 @@ import com.ksyun.ks3.utils.XmlWrite;
  **/
 public class CreateBucketConfiguration {
 	public static enum REGION {
-		BEIJING, HANGZHOU, JIYANG
+		BEIJING, HANGZHOU, JIYANG;
+		public static REGION load(String s){
+			for(REGION region :REGION.values()){
+				if(region.toString().equals(s))
+					return region;
+			}
+			throw new Ks3ClientException("unknow region :"+s);
+		}
 	}
 	public CreateBucketConfiguration(REGION region){
 		this.location = region;
@@ -31,7 +39,7 @@ public class CreateBucketConfiguration {
 	}
 
 	public String toXml() {
-		return new XmlWrite().startWithNs("CreateBucketConfiguration")
+		return new XmlWriter().startWithNs("CreateBucketConfiguration")
 				.start("LocationConstraint").value(this.location.toString())
 				.end().end().toString();
 	}

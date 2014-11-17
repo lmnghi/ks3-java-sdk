@@ -17,6 +17,9 @@ public class Constants {
 	 * xml namespace
 	 */
 	public final static String KS3_XML_NAMESPACE = "http://s3.amazonaws.com/doc/2006-03-01/";
+	public final static String KS3_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+	
+	
 	public final static String KS3_PACAKAGE = "com.ksyun.ks3";
 	public final static String KS3_USER_META_PREFIX = "x-kss-meta-";
 	/**

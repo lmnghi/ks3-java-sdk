@@ -27,13 +27,14 @@ public class ObjectListing {
     private String marker;
     private int maxKeys;
     private String delimiter;
+    private String encodingType;
     @Override
     public String toString()
     {
     	return "ObjectListing[bucket="+this.bucketName+";nextMarker="+this.nextMarker
     			+";isTruncated="+this.isTruncated+";prefix="+this.prefix+";marker="+this.marker
     			+";maxKeys="+this.maxKeys+";delimiter="+this.delimiter+";commonPrefixs="+this.commonPrefixes
-    			+";objectSummaries="+this.objectSummaries+"]";
+    			+";objectSummaries="+this.objectSummaries+";encodingType="+this.encodingType+"]";
     }
 
     public List<Ks3ObjectSummary> getObjectSummaries() {
@@ -90,5 +91,13 @@ public class ObjectListing {
     public void setTruncated(boolean isTruncated) {
         this.isTruncated = isTruncated;
     }
+
+	public String getEncodingType() {
+		return encodingType;
+	}
+
+	public void setEncodingType(String encodingType) {
+		this.encodingType = encodingType;
+	}
 
 }

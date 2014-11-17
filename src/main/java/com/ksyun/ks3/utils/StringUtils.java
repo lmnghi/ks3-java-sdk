@@ -1,6 +1,9 @@
 package com.ksyun.ks3.utils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+
+import com.ksyun.ks3.dto.Owner;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -109,5 +112,4 @@ public class StringUtils {
 		}
 		return bname;
 	}
-
 }

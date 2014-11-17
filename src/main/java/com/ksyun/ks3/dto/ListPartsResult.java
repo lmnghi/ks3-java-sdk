@@ -18,6 +18,7 @@ public class ListPartsResult {
 	private String nextPartNumberMarker;
 	private String maxParts;
 	private boolean isTruncated;
+	private String encodingType;
 	private Owner initiator = new Owner();
 	private Owner owner = new Owner();
 	private List<Part> parts = new ArrayList<Part>();
@@ -28,8 +29,9 @@ public class ListPartsResult {
 				+ ";uploadId=" + this.uploadId + ";partNumberMarker="
 				+ this.partNumberMarker + ";nextPartNumberMarker="
 				+ this.nextPartNumberMarker + ";maxParts=" + this.maxParts
-				+ ";isTruncated=" + this.isTruncated + ";initiator="
-				+ this.initiator + ";owner=" + this.owner + "]";
+				+ ";isTruncated=" + this.isTruncated + ";encodingType="
+				+ this.encodingType + ";initiator=" + this.initiator
+				+ ";owner=" + this.owner + "]";
 	}
 
 	public String getBucketname() {
@@ -110,6 +112,14 @@ public class ListPartsResult {
 
 	public void setParts(List<Part> parts) {
 		this.parts = parts;
+	}
+
+	public String getEncodingType() {
+		return encodingType;
+	}
+
+	public void setEncodingType(String encodingType) {
+		this.encodingType = encodingType;
 	}
 
 }

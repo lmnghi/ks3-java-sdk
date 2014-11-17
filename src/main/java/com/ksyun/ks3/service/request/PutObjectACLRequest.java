@@ -4,7 +4,7 @@ import com.ksyun.ks3.dto.*;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.HttpUtils;
-import com.ksyun.ks3.utils.XmlWrite;
+import com.ksyun.ks3.utils.XmlWriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

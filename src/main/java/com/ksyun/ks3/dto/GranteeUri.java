@@ -31,15 +31,7 @@ public enum GranteeUri implements Grantee{
     public String getIdentifier() {
         return uri;
     }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-    public static GranteeUri parse(String groupUri) {
+    public static GranteeUri load(String groupUri) {
         for (GranteeUri grantee : GranteeUri.values()) {
             if (grantee.uri.equals(groupUri)) {
                 return grantee;

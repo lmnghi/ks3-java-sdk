@@ -91,7 +91,7 @@ public class GetBucketACLResponse extends Ks3WebServiceXmlResponse<AccessControl
                     grantee.setIdentifier(s);
                 }
                 else if("URI".equalsIgnoreCase(getTag())){
-                	grantee = GranteeUri.parse(s);
+                	grantee = GranteeUri.load(s);
                 }
                 else if("DisplayName".equalsIgnoreCase(getTag())){
                     ((GranteeId) grantee).setDisplayName(s);
@@ -100,7 +100,7 @@ public class GetBucketACLResponse extends Ks3WebServiceXmlResponse<AccessControl
             }
         }
         if("Permission".equalsIgnoreCase(getTag())){
-            permission = Permission.getInstance(s);
+            permission = Permission.load(s);
             grant.setPermission(permission);
         }
 

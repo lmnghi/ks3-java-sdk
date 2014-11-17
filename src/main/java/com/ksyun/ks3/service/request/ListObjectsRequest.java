@@ -28,9 +28,13 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 	 */
 	private String delimiter;
 	/**
-	 * 返回的最大数
+	 * 返回的最大数1-1000
 	 */
 	private Integer maxKeys;
+	/**
+	 * 要求ks3服务器对返回的结果中object key进行编码
+	 */
+	private String encodingType;
 	/**
 	 * 前缀
 	 */
@@ -125,6 +129,8 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 		this.addParams("delimiter", delimiter);
 		if (maxKeys != null)
 			this.addParams("max-keys", String.valueOf(maxKeys));
+		if(!StringUtils.isBlank(this.encodingType))
+			this.addParams("encoding-type",this.encodingType);
 		this.addHeader(HttpHeaders.ContentType, "text/plain");
 	}
 
@@ -132,6 +138,14 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(super.getBucketname()))
 			throw new IllegalArgumentException("param bucketName can not be blank");
+		if(this.maxKeys!=null&&(this.maxKeys>1000||this.maxKeys<1))
+			throw new IllegalArgumentException("maxKeys should between 1 and 1000");
+	}
+	public String getEncodingType() {
+		return encodingType;
+	}
+	public void setEncodingType(String encodingType) {
+		this.encodingType = encodingType;
 	}
 
 }

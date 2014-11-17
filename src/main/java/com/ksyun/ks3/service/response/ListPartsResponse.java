@@ -109,6 +109,8 @@ public class ListPartsResponse extends Ks3WebServiceXmlResponse<ListPartsResult>
 			}else if("IsTruncated".equalsIgnoreCase(getTag()))
 			{
 				result.setTruncated("true".equalsIgnoreCase(s));
+			}else if("Encoding-Type".equals(getTag())){
+				result.setEncodingType(s);
 			}
 		}
 	}

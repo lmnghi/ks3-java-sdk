@@ -21,7 +21,7 @@ import com.ksyun.ks3.dto.PartETag;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.StringUtils;
-import com.ksyun.ks3.utils.XmlWrite;
+import com.ksyun.ks3.utils.XmlWriter;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -74,7 +74,7 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	}
 	@Override
 	protected void configHttpRequest() {
-		XmlWrite writer = new XmlWrite();
+		XmlWriter writer = new XmlWriter();
 		writer.start("CompleteMultipartUpload");
 		for(PartETag tag:this.partETags)
 		{

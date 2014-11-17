@@ -1,7 +1,7 @@
 package com.ksyun.ks3.dto;
 
 import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
-import com.ksyun.ks3.utils.XmlWrite;
+import com.ksyun.ks3.utils.XmlWriter;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -34,7 +34,7 @@ public class CreateBucketConfigurationForTest extends CreateBucketConfiguration{
 	}
 
 	public String toXml() {
-		return new XmlWrite().startWithNs("CreateBucketConfiguration")
+		return new XmlWriter().startWithNs("CreateBucketConfiguration")
 				.start("LocationConstraint").value(this.location.toString())
 				.end().end().toString();
 	}

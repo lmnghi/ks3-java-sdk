@@ -31,10 +31,12 @@ import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
 import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Grantee;
+import com.ksyun.ks3.dto.GranteeEmail;
 import com.ksyun.ks3.dto.HeadObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.Ks3ObjectSummary;
+import com.ksyun.ks3.dto.ListMultipartUploadsResult;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.ObjectListing;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -51,6 +53,7 @@ import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
 import com.ksyun.ks3.service.request.PutBucketACLRequest;
+import com.ksyun.ks3.service.request.PutBucketLoggingRequest;
 import com.ksyun.ks3.service.request.PutObjectACLRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
@@ -67,18 +70,56 @@ import com.ksyun.ks3.utils.Timer;
  **/
 public class Ks3ClientTest {
 	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ","ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
-
+	public static void main(String [] args){
+		String s = "http://lijunwei.test.kss.ksyun.com/?delimiter=%2F&key-marker=23&prefix=IM&upload-id​marker=34&uploadshttp://lijunwei.test.kss.ksyun.com/?delimiter=%2F&key-marker=23&prefix=IM&upload-id​marker=34&uploads";
+		            
+		System.out.println((int)s.charAt(83));
+	}
 	@Before
 	public void init() {
 		ClientConfig config = ClientConfig.getConfig();
 	}
 
-	 //@Test
+	 @Test
 	public void ListBuckets() {
 		List<Bucket> buckets = client.listBuckets();
 		System.out.println(buckets);
 	}
-
+	 @Test
+	 public void getBucketLocation(){
+		 System.out.println(client.getBucketLoaction("ksc-scm"));
+	 }
+	 @Test 
+	 public void getBucketLogging(){
+		 System.out.println(client.getBucketLogging("ksc-scm"));
+	 }
+	 @Test
+	 public void putBucketLogging(){
+		 BucketLoggingStatus status = new BucketLoggingStatus();
+		 status.setEnable(false);
+		 status.setTargetBucket("lijunwei.test");
+		 status.setTargetPrefix("ddd");
+		 
+		 GranteeEmail grantee1 = new GranteeEmail();
+		 grantee1.setIdentifier("lijunwei@kingsoft.com");
+		 status.addGrant(new Grant(grantee1,Permission.Read));
+		 
+		 GranteeUri grantee2 = GranteeUri.AllUsers;
+		 status.addGrant(new Grant(grantee2,Permission.FullControl));
+		 
+		 GranteeId grantee = new GranteeId();
+		 grantee.setIdentifier("12344");
+		 status.addGrant(new Grant(grantee,Permission.Write));
+		 
+		 PutBucketLoggingRequest request = new PutBucketLoggingRequest("ksc-scm");
+		 request.setBucketLoggingStatus(status);
+		 client.putBucketLogging(request);
+	 }
+	 @Test
+	 public void listBucketParts(){
+		 ListMultipartUploadsResult result = client.listMultipartUploads("lijunwei.test","IM","23","34");
+		 System.out.println(result);
+	 }
     @Test
 	public void ListObjects() {
     	
@@ -242,7 +283,7 @@ public class Ks3ClientTest {
 		}
 		//list parts
 		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),result.getKey(),result.getUploadId());
-		ListPartsResult tags = client.ListParts(requestList);
+		ListPartsResult tags = client.listParts(requestList);
 		//complete
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(tags);
 		client.completeMultipartUpload(request);
@@ -263,7 +304,7 @@ public class Ks3ClientTest {
 
 	// //@Test
 	public void listParts() {
-		ListPartsResult result = client.ListParts("lijunwei.test",
+		ListPartsResult result = client.listParts("lijunwei.test",
 				"eclipse.zip", "aedf953924f34d0ba93b74188de1596b");
 		System.out.println(result);
 	}

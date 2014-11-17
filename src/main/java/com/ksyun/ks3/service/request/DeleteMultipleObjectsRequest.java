@@ -8,7 +8,7 @@ import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.service.request.support.MD5CalculateAble;
 import com.ksyun.ks3.utils.StringUtils;
-import com.ksyun.ks3.utils.XmlWrite;
+import com.ksyun.ks3.utils.XmlWriter;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -39,7 +39,7 @@ public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implement
 	protected void configHttpRequest() {
 		this.addParams("delete","");
 		this.setHttpMethod(HttpMethod.POST);
-		XmlWrite writer = new XmlWrite();
+		XmlWriter writer = new XmlWriter();
 		writer.start("Delete");
 		for(int i =0;i<this.keys.length;i++)
 		{

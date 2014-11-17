@@ -3,12 +3,15 @@ package com.ksyun.ks3.service.request;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -249,18 +252,22 @@ public abstract class Ks3WebServiceRequest {
 		List<String> list = new ArrayList<String>();
 		for (Entry<String, String> entry : arrayList) {
 			String value = null;
+			//8203,直接从浏览器粘下来的字符串中可能含有这个非法字符
+			String key = entry.getKey().replace(String.valueOf((char)8203),"");
 			if (!StringUtils.isBlank(entry.getValue()))
 				value = URLEncoder.encode(entry.getValue());
 			if (RequestUtils.subResource.contains(entry.getKey())) {
 				if (value != null && !value.equals(""))
-					kvList.add(entry.getKey() + "=" + value);
+					kvList.add(key + "=" + value);
 				else
-					kvList.add(entry.getKey());
+					kvList.add(key);
 			}
 			if (value != null && !value.equals("")) {
-				list.add(entry.getKey() + "=" + value);
-			} else
-				list.add(entry.getKey());
+				list.add(key + "=" + value);
+			} else{
+				if (RequestUtils.subResource.contains(key))
+			    	list.add(key);
+			}
 		}
 
 		String queryParams = StringUtils.join(list.toArray(), "&");

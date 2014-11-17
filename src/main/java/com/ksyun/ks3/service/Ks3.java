@@ -6,16 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import com.ksyun.ks3.dto.Bucket;
-import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
-import com.ksyun.ks3.dto.HeadObjectResult;
-import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
-import com.ksyun.ks3.dto.Ks3Object;
-import com.ksyun.ks3.dto.ListPartsResult;
-import com.ksyun.ks3.dto.ObjectListing;
-import com.ksyun.ks3.dto.ObjectMetadata;
-import com.ksyun.ks3.dto.PartETag;
-import com.ksyun.ks3.dto.PutObjectResult;
+import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.dto.*;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
@@ -72,6 +63,87 @@ public interface Ks3 {
 	 */
 	public List<Bucket> listBuckets(ListBucketsRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * GET Bucket Location
+	 * 
+	 * @param bucketName
+	 * @return
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>
+	 * 获取bucket的存储地点
+	 * </p>
+	 */
+	public REGION getBucketLoaction(String bucketName) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * GET Bucket Location
+	 * 
+	 * @param request {@link GetBucketLocationRequest}
+	 * @return
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>
+	 * 获取bucket的存储地点
+	 * </p>
+	 */
+	public REGION getBucketLoaction(GetBucketLocationRequest request) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * GET Bucket Logging
+	 * @param bucketName
+	 * @return {@link BucketLoggingStatus}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>
+	 * 获取bucket的日志配置
+	 * </p>
+	 */
+	public BucketLoggingStatus getBucketLogging(String bucketName) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * GET Bucket Logging
+	 * @param request {@link GetBucketLoggingRequest}
+	 * @return {@link BucketLoggingStatus}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>
+	 * 获取bucket的日志配置
+	 * </p>
+	 */
+	public BucketLoggingStatus getBucketLogging(GetBucketLoggingRequest request) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * PUT Bucket Logging
+	 * @param bucketName
+	 * @param enable 是否开启
+	 * @param targetBucket 存储日志的bucket
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>
+	 * 配置bucket的日志
+	 * </p>
+	 */
+	public void putBucketLogging(String bucketName,boolean enable,String targetBucket) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * PUT Bucket Logging
+	 * @param bucketName
+	 * @param enable 是否开启
+	 * @param targetBucket 存储日志的bucket
+	 * @param targetPrefix 日志文件前缀
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>
+	 * 配置 bucket的日志
+	 * </p>
+	 */
+	public void putBucketLogging(String bucketName,boolean enable,String targetBucket,String targetPrefix) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * PUT Bucket Logging
+	 * @param request{@link PutBucketLoggingRequest}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>
+	 * 配置bucket的日志
+	 * </p>
+	 */
+	public void putBucketLogging(PutBucketLoggingRequest request) throws Ks3ClientException,Ks3ServiceException;
 
 	/**
 	 * GET BUCKET acl
@@ -737,7 +809,7 @@ public interface Ks3 {
 	 *             列出该uploadid下已经上传成功的块
 	 *             </p>
 	 */
-	public ListPartsResult ListParts(String bucketname, String objectkey,
+	public ListPartsResult listParts(String bucketname, String objectkey,
 			String uploadId) throws Ks3ClientException, Ks3ServiceException;
 
 	/**
@@ -758,7 +830,7 @@ public interface Ks3 {
 	 *             列出该uploadid下已经上传成功的块
 	 *             </p>
 	 */
-	public ListPartsResult ListParts(String bucketname, String objectkey,
+	public ListPartsResult listParts(String bucketname, String objectkey,
 			String uploadId, int maxParts) throws Ks3ClientException,
 			Ks3ServiceException;
 
@@ -782,7 +854,7 @@ public interface Ks3 {
 	 *             列出该uploadid下已经上传成功的块
 	 *             </p>
 	 */
-	public ListPartsResult ListParts(String bucketname, String objectkey,
+	public ListPartsResult listParts(String bucketname, String objectkey,
 			String uploadId, int maxParts, int partNumberMarker)
 			throws Ks3ClientException, Ks3ServiceException;
 
@@ -798,6 +870,64 @@ public interface Ks3 {
 	 *             列出该uploadid下已经上传成功的块
 	 *             </p>
 	 */
-	public ListPartsResult ListParts(ListPartsRequest request)
+	public ListPartsResult listParts(ListPartsRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * List Multipart Uploads
+	 * 
+	 * @param bucketName
+	 * @return {@link ListMultipartUploadsResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ClientException
+	 * <p>
+	 * 列出bucket下分块上传未abort或complete的块
+	 * </p>
+	 */
+	public ListMultipartUploadsResult listMultipartUploads(String bucketName) throws Ks3ClientException,Ks3ClientException;
+	/**
+	 * List Multipart Uploads
+	 * 
+	 * @param bucketName
+	 * @param prefix 前缀
+	 * @return {@link ListMultipartUploadsResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ClientException
+	 * <p>
+	 * 列出bucket下分块上传未abort或complete的块
+	 * </p>
+	 */
+	public ListMultipartUploadsResult listMultipartUploads(String bucketName,String prefix) throws Ks3ClientException,Ks3ClientException;
+	/**
+	 * List Multipart Uploads
+	 * 
+	 * @param bucketName
+	 * @param prefix 前缀
+	 * @param keyMarker
+	 * @param uploadIdMarker
+	 * <p>keyMarker为空，uploadIdMarker不为空<P>
+	 * <p>无意义</p>
+	 * <p>keyMarker不为空，uploadIdMarker不为空<P>
+	 * <p>列出分块上传object key为keyMarker，且upload id 大于uploadIdMarker的块</p>
+	 * <p>keyMarker不为空，uploadIdMarker为空<P>
+	 * <p>列出分块上传object key大于keyMarker的块</p>
+	 * @return {@link ListMultipartUploadsResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ClientException
+	 * <p>
+	 * 列出bucket下分块上传未abort或complete的块
+	 * </p>
+	 */
+	public ListMultipartUploadsResult listMultipartUploads(String bucketName,String prefix,String keyMarker,String uploadIdMarker) throws Ks3ClientException,Ks3ClientException;
+	/**
+	 * List Multipart Uploads
+	 * 
+	 * @param request {@link ListMultipartUploadsRequest}
+	 * @return {@link ListMultipartUploadsResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ClientException
+	 * <p>
+	 * 列出bucket下分块上传未abort或complete的块
+	 * </p>
+	 */
+	public ListMultipartUploadsResult listMultipartUploads(ListMultipartUploadsRequest request) throws Ks3ClientException,Ks3ClientException;
 }
