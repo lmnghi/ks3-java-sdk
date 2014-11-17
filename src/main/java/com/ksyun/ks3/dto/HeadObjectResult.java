@@ -2,6 +2,8 @@ package com.ksyun.ks3.dto;
 
 import java.util.Date;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -50,6 +52,6 @@ public class HeadObjectResult {
 
 	public String toString()
 	{
-		return "HeadObjectResult[ifModified="+this.isIfModified()+",ifPreconditionSuccess="+this.isIfPreconditionSuccess()+",objectMetadata="+this.objectMetadata+"]";
+		return StringUtils.object2string(this);
 	}
 }

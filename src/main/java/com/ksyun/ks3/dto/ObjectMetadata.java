@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.http.HttpHeaders;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -21,7 +22,7 @@ public class ObjectMetadata {
 	@Override
 	public String toString()
 	{
-		return "ObjectMetadata[metadata="+this.metadata+",userMetadata="+this.userMetadata+",httpExpiresDate="+this.httpExpiresDate+"]";
+		return StringUtils.object2string(this);
 	}
 	
 	public void setUserMeta(String key,String value)

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.ksyun.ks3.AutoAbortInputStream;
+import com.ksyun.ks3.utils.StringUtils;
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -29,7 +30,7 @@ public class Ks3Object  implements Closeable{
 	@Override
 	public String toString()
 	{
-		return "Ks3Object[bucket="+this.bucketName+";key="+this.key+";redirectLocation="+this.redirectLocation+";objectMetadata="+this.objectMetadata+"]";
+		return StringUtils.object2string(this);
 	}
 	
 	public String getKey() {

@@ -1,6 +1,7 @@
 package com.ksyun.ks3.dto;
 
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.utils.StringUtils;
 import com.ksyun.ks3.utils.XmlWriter;
 
 /**
@@ -39,8 +40,6 @@ public class CreateBucketConfiguration {
 	}
 
 	public String toXml() {
-		return new XmlWriter().startWithNs("CreateBucketConfiguration")
-				.start("LocationConstraint").value(this.location.toString())
-				.end().end().toString();
+		return StringUtils.object2string(this);
 	}
 }

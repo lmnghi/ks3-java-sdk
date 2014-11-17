@@ -1,4 +1,7 @@
 package com.ksyun.ks3.dto;
+
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -29,7 +32,7 @@ public class PartETag {
 	}
 	public String toString()
 	{
-		return "PartETag[partNumber="+this.partNumber+";eTag="+this.eTag+"]";
+		return StringUtils.object2string(this);
 	}
 	public boolean equals(Object obj)
 	{

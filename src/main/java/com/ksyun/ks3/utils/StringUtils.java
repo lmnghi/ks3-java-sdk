@@ -1,7 +1,15 @@
 package com.ksyun.ks3.utils;
 
 import java.lang.reflect.Field;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.ksyun.ks3.dto.Owner;
 
@@ -29,6 +37,7 @@ public class StringUtils {
 		}
 		return buffer.toString();
 	}
+
 	public static String join(int[] strings, String spliter) {
 		int i = 0;
 		StringBuffer buffer = new StringBuffer();
@@ -42,6 +51,7 @@ public class StringUtils {
 		}
 		return buffer.toString();
 	}
+
 	public static String join(byte[] strings, String spliter) {
 		int i = 0;
 		StringBuffer buffer = new StringBuffer();
@@ -55,9 +65,11 @@ public class StringUtils {
 		}
 		return buffer.toString();
 	}
+
 	public static String join(List<String> strings, String spliter) {
 		return join(strings.toArray(), spliter);
 	}
+
 	public static boolean isBlank(String s) {
 		if (s == null)
 			return true;
@@ -111,5 +123,59 @@ public class StringUtils {
 			return null;
 		}
 		return bname;
+	}
+
+	public static String object2string(Object obj) {
+		return object2string(0, obj,null);
+	}
+
+	private static List<Class<?>> clazzs = Arrays.asList(new Class<?>[] {
+			String.class, Boolean.class, Integer.class, Long.class,
+			Double.class, Float.class, Short.class, Byte.class,
+			Collection.class ,Map.class,HashMap.class,ArrayList.class,HashSet.class,java.util.Date.class});
+
+	private static String object2string(int index, Object obj,Field fieldF) {
+		StringBuffer value = new StringBuffer();
+		StringBuffer prefixSb = new StringBuffer();
+		for (int i = 0; i < index-1; i++) {
+			prefixSb.append("       ");
+		}
+		String prefix = prefixSb.toString();
+		if(fieldF!=null)
+		    value.append("\n"+prefix+fieldF.getName()+"="+obj.getClass() + "\n");
+		else
+		    value.append("\n"+prefix+obj.getClass() + "\n");
+		if(index!=0)
+	    	prefixSb.append("       ");
+		prefix = prefixSb.toString();
+		Field[] fields = obj.getClass().getDeclaredFields();
+		Map<Field,Object> valuesToAdd = new HashMap<Field,Object>();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			field.setAccessible(true);
+			Object fieldValue = null;
+			try {
+				fieldValue = field.get(obj);
+			} catch (IllegalArgumentException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IllegalAccessException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			if (fieldValue != null) {
+				if (clazzs.contains(fieldValue.getClass())) {
+
+					value.append(prefix+field.getName() + "=" + fieldValue.toString()
+							+ "\n");
+				} else {
+					valuesToAdd.put(field,fieldValue);
+				}
+			} 
+		}
+		for(Entry<Field,Object> obj1:valuesToAdd.entrySet()){
+		    value.append(object2string(index + 1, obj1.getValue(),obj1.getKey()));
+		}
+		return value.toString();
 	}
 }

@@ -3,6 +3,8 @@ package com.ksyun.ks3.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -33,5 +35,8 @@ public class ResponseHeaderOverrides {
 	public Map<String,String> getOverrides()
 	{
 		return this.overrides;
+	}
+	public String toString(){
+		return StringUtils.object2string(this);
 	}
 }

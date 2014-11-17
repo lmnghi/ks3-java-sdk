@@ -7,28 +7,13 @@ import com.ksyun.ks3.utils.StringUtils;
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
- * @date 2014年10月23日 下午2:34:30
+ * @date 2014年11月17日 下午1:00:34
  * 
- * @description 
+ * @description Copy Object 和 Copy Part的结果
  **/
-public class Part {
-	private int partNumber;
+public class CopyResult {
 	private Date lastModified;
 	private String ETag;
-	private long size;
-	
-	@Override
-	public String toString()
-	{
-		return StringUtils.object2string(this);
-	}
-	
-	public int getPartNumber() {
-		return partNumber;
-	}
-	public void setPartNumber(int partNumber) {
-		this.partNumber = partNumber;
-	}
 	public Date getLastModified() {
 		return lastModified;
 	}
@@ -41,11 +26,7 @@ public class Part {
 	public void setETag(String eTag) {
 		ETag = eTag;
 	}
-	public long getSize() {
-		return size;
+	public String toString(){
+		return StringUtils.object2string(this);
 	}
-	public void setSize(long size) {
-		this.size = size;
-	}
-	
 }

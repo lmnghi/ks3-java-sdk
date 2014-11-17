@@ -1,4 +1,7 @@
 package com.ksyun.ks3.dto;
+
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -22,7 +25,7 @@ public class GetObjectResult {
 	private boolean ifPreconditionSuccess = true;
 	public String toString()
 	{
-		return "GetObjectResult[ifModified="+this.isIfModified()+",ifPreconditionSuccess="+this.isIfPreconditionSuccess()+",Object="+this.object+"]";
+		return StringUtils.object2string(this);
 	}
 	public Ks3Object getObject() {
 		return object;

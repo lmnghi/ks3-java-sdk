@@ -3,6 +3,8 @@ package com.ksyun.ks3.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -29,15 +31,7 @@ public class ListMultipartUploadsResult {
 	private List<MultiPartInfo> uploads = new ArrayList<MultiPartInfo>();
 
 	public String toString() {
-		return "ListMultipartUploadsResult[bucket=" + this.bucket
-				+ ";keyMarker=" + this.keyMarker + ";uploadIdMarker="
-				+ this.uploadIdMarker + ";nextKeyMarker=" + this.nextKeyMarker
-				+ ";nextUploadIdMarker=" + this.nextUploadIdMarker
-				+ ";encodingType=" + this.encodingType + ";maxUploads="
-				+ this.maxUploads + ";isTruncated=" + this.isTruncated
-				+ ";prefix=" + this.prefix + ";delimiter=" + this.delimiter
-				+ ";commonPrefix=" + this.commonPrefixes + ";uploads="
-				+ this.uploads + "]";
+		return StringUtils.object2string(this);
 	}
 
 	public String getBucket() {

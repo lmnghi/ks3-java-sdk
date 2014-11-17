@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -31,9 +33,7 @@ public class BucketLoggingStatus {
 
 	@Override
 	public String toString() {
-		return "BucketLoggingStatus[enable=" + this.enable + ";targetBucket="
-				+ this.targetBucket + ";targetPrefix=" + this.targetPrefix
-				+ ";targetGrants=" + this.targetGrants + "]";
+		return StringUtils.object2string(this);
 	}
 
 	/**

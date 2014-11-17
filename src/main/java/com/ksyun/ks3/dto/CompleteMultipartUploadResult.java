@@ -1,4 +1,7 @@
 package com.ksyun.ks3.dto;
+
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -16,7 +19,7 @@ public class CompleteMultipartUploadResult {
 	private String eTag;
 	public String toString()
 	{
-		return "CompleteMultipartUploadResult[location="+this.location+";bucket="+this.bucket+";key="+this.key+";eTag="+this.eTag+"]";
+		return StringUtils.object2string(this);
 	}
 	public String getLocation() {
 		return location;

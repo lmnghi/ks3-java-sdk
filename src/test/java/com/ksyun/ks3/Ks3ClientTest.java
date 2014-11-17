@@ -96,7 +96,7 @@ public class Ks3ClientTest {
 	 @Test
 	 public void putBucketLogging(){
 		 BucketLoggingStatus status = new BucketLoggingStatus();
-		 status.setEnable(false);
+		 status.setEnable(true);
 		 status.setTargetBucket("lijunwei.test");
 		 status.setTargetPrefix("ddd");
 		 
@@ -141,7 +141,7 @@ public class Ks3ClientTest {
 
 	 @Test
 	public void getObject() throws IOException {
-		GetObjectResult obj = client.getObject("lijunwei.test", "新建文本文档.txt");
+		GetObjectResult obj = client.getObject("ksc-scm", "123.txt");
 		System.out.println(obj);
 		try {
 			OutputStream os = new FileOutputStream(new File("D://"
@@ -208,6 +208,7 @@ public class Ks3ClientTest {
 		try {
 			PutObjectRequest request = new PutObjectRequest("ksc-scm",
 					"123.txt",new ByteArrayInputStream(new byte[]{44,45,46}),null);
+			request.setRedirectLocation("http://www.baidu.com");
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

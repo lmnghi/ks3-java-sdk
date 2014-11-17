@@ -3,6 +3,8 @@ package com.ksyun.ks3.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -31,10 +33,7 @@ public class ObjectListing {
     @Override
     public String toString()
     {
-    	return "ObjectListing[bucket="+this.bucketName+";nextMarker="+this.nextMarker
-    			+";isTruncated="+this.isTruncated+";prefix="+this.prefix+";marker="+this.marker
-    			+";maxKeys="+this.maxKeys+";delimiter="+this.delimiter+";commonPrefixs="+this.commonPrefixes
-    			+";objectSummaries="+this.objectSummaries+";encodingType="+this.encodingType+"]";
+    	return StringUtils.object2string(this);
     }
 
     public List<Ks3ObjectSummary> getObjectSummaries() {

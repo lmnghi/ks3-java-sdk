@@ -1,4 +1,7 @@
 package com.ksyun.ks3.dto;
+
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -34,6 +37,6 @@ public class InitiateMultipartUploadResult {
 	}
 	public String toString()
 	{
-		return "InitiateMultipartUploadResult[bucket="+this.bucket+";key="+this.key+";uploadId="+this.uploadId+"]";
+		return StringUtils.object2string(this);
 	}
 }

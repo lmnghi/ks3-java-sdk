@@ -1,5 +1,7 @@
 package com.ksyun.ks3.dto;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -46,7 +48,6 @@ public class DeleteMultipleObjectsError {
 	}
 
 	public String toString() {
-		return "DeleteMultipleObjectsError[key=" + this.key + ",code="
-				+ this.code + ",message=" + this.message + "]";
+		return StringUtils.object2string(this);
 	}
 }

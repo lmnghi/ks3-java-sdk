@@ -2,6 +2,8 @@ package com.ksyun.ks3.dto;
 
 import java.util.Date;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -19,10 +21,7 @@ public class Ks3ObjectSummary {
 	protected Owner owner;
 
 	public String toString() {
-		return "Ks3ObjectSummary[bucket=" + this.bucketName + ";key="
-				+ this.key + ";eTag=" + this.eTag + ";size=" + this.size
-				+ ";lastModified=" + this.lastModified + ";storgeClass="
-				+ this.storageClass + ";owner=" + this.owner + "]";
+		return StringUtils.object2string(this);
 	}
 
 	public String getBucketName() {

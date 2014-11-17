@@ -2,6 +2,8 @@ package com.ksyun.ks3.dto;
 
 import java.util.Date;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -20,9 +22,7 @@ public class Bucket {
         this.name = name;
     }
     public String toString() {
-        return "S3Bucket [name=" + getName()
-                + ", creationDate=" + getCreationDate()
-                + ", owner=" + getOwner() + "]";
+    	return StringUtils.object2string(this);
     }
     public int hashCode(){
     	return this.name.hashCode();

@@ -13,6 +13,8 @@ import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.CopyObjectRequest;
+import com.ksyun.ks3.service.request.CopyPartRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
 import com.ksyun.ks3.service.request.DeleteBucketRequest;
 import com.ksyun.ks3.service.request.DeleteMultipleObjectsRequest;
@@ -280,6 +282,37 @@ public class Ks3Client implements Ks3 {
 		return obj;
 	}
 
+	public CopyResult copyObject(String destinationBucket,
+			String destinationObject, String sourceBucket, String sourceKey)
+			throws Ks3ClientException, Ks3ServiceException {
+		CopyObjectRequest request = new CopyObjectRequest(destinationBucket,
+				destinationObject, sourceBucket, sourceKey);
+		return this.copyObject(request);
+	}
+
+	public CopyResult copyObject(String destinationBucket,
+			String destinationObject, String sourceBucket, String sourceKey,
+			CannedAccessControlList cannedAcl) throws Ks3ClientException,
+			Ks3ServiceException {
+		CopyObjectRequest request = new CopyObjectRequest(destinationBucket,
+				destinationObject, sourceBucket, sourceKey,cannedAcl);
+		return this.copyObject(request);
+	}
+
+	public CopyResult copyObject(String destinationBucket,
+			String destinationObject, String sourceBucket, String sourceKey,
+			AccessControlList accessControlList) throws Ks3ClientException,
+			Ks3ServiceException {
+		CopyObjectRequest request = new CopyObjectRequest(destinationBucket,
+				destinationObject, sourceBucket, sourceKey,accessControlList);
+		return this.copyObject(request);
+	}
+
+	public CopyResult copyObject(CopyObjectRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		return client.execute(auth, request, CopyObjectResponse.class);
+	}
+	
 	public HeadObjectResult headObject(String bucketname, String objectkey)
 			throws Ks3ClientException, Ks3ServiceException {
 		return headObject(new HeadObjectRequest(bucketname, objectkey));
@@ -316,6 +349,10 @@ public class Ks3Client implements Ks3 {
 		return result;
 	}
 
+	public CopyResult copyPart(CopyPartRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		return client.execute(auth, request,CopyPartResponse.class);
+	}
 	public CompleteMultipartUploadResult completeMultipartUpload(
 			String bucketname, String objectkey, String uploadId,
 			List<PartETag> partETags) throws Ks3ClientException,

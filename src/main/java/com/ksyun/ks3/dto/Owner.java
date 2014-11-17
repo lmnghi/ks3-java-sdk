@@ -2,6 +2,8 @@ package com.ksyun.ks3.dto;
 
 import java.io.Serializable;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -25,7 +27,7 @@ public class Owner implements Serializable{
     }
 
     public String toString() {
-        return "S3Owner [name=" + getDisplayName() + ",id=" + getId() + "]";
+    	 return StringUtils.object2string(this);
     }
     public String getId() {
         return id;

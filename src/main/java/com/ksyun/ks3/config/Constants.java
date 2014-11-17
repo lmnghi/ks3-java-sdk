@@ -22,6 +22,11 @@ public class Constants {
 	
 	public final static String KS3_PACAKAGE = "com.ksyun.ks3";
 	public final static String KS3_USER_META_PREFIX = "x-kss-meta-";
+	
+	public static final int minPartNumber = 1;
+	public static final int maxPartNumber = 10000;
+	public static final int minPartSize = 5*1024*1024;
+	public static final int maxPartSize = 5*1024*1024*1024;
 	/**
 	 * object meta 要忽略的headers
 	 */

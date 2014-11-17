@@ -3,6 +3,8 @@ package com.ksyun.ks3.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -33,6 +35,6 @@ public class HeadBucketResult {
 	}
 	public String toString()
 	{
-		return "HeadBucketResult[StatueCode:"+this.statueCode+",Headers:"+this.headers+"]";
+		return StringUtils.object2string(this);
 	}
 }

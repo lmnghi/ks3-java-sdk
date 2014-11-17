@@ -2,6 +2,8 @@ package com.ksyun.ks3.dto;
 
 import java.util.HashSet;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -34,6 +36,6 @@ public class AccessControlList {
 	@Override
 	public String toString()
 	{
-		return grants.toString();
+		return StringUtils.object2string(this);
 	}
 }

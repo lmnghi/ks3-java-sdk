@@ -2,6 +2,8 @@ package com.ksyun.ks3.dto;
 
 import java.util.Date;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -19,10 +21,7 @@ public class MultiPartInfo {
 
 	@Override
 	public String toString() {
-		return "MultiPartInfo[key=" + this.key + ";uploadid=" + this.uploadId
-				+ ";storageClass=" + this.storageClass + ";initiated="
-				+ this.initiated + ";owner=" + this.owner + ";initiator="
-				+ this.initiator + "]";
+		return StringUtils.object2string(this);
 	}
 
 	public String getKey() {

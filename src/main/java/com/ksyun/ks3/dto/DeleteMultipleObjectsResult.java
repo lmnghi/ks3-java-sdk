@@ -3,6 +3,8 @@ package com.ksyun.ks3.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -33,6 +35,6 @@ public class DeleteMultipleObjectsResult {
 	}
 	public String toString()
 	{
-		return "DeleteMultipleObjectsResult[deleted="+this.deleted+",error="+this.errors+"]";
+		return StringUtils.object2string(this);
 	}
 }

@@ -3,6 +3,8 @@ package com.ksyun.ks3.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -25,13 +27,7 @@ public class ListPartsResult {
 
 	@Override
 	public String toString() {
-		return "ListPartsResult[bucket=" + this.bucketname + ";key=" + this.key
-				+ ";uploadId=" + this.uploadId + ";partNumberMarker="
-				+ this.partNumberMarker + ";nextPartNumberMarker="
-				+ this.nextPartNumberMarker + ";maxParts=" + this.maxParts
-				+ ";isTruncated=" + this.isTruncated + ";encodingType="
-				+ this.encodingType + ";initiator=" + this.initiator
-				+ ";owner=" + this.owner + "]";
+		return StringUtils.object2string(this);
 	}
 
 	public String getBucketname() {

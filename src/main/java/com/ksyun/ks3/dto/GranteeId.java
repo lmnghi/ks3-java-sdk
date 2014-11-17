@@ -1,4 +1,7 @@
 package com.ksyun.ks3.dto;
+
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[13810414122@163.com]  
  * 
@@ -31,6 +34,6 @@ public class GranteeId implements Grantee{
     @Override
     public String toString()
     {
-    	return "GranteeId[id="+this.id+";displayName="+this.displayName+"]";
+    	return StringUtils.object2string(this);
     }
 }

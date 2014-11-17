@@ -1,5 +1,7 @@
 package com.ksyun.ks3.dto;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -43,6 +45,6 @@ public enum GranteeUri implements Grantee{
     @Override
     public String toString()
     {
-    	return "GranteeUri[uri="+this.uri+"]";
+    	return StringUtils.object2string(this);
     }
 }

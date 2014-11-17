@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * Created by 杨春建 on 2014/10/20.
  */
@@ -34,6 +36,6 @@ public class AccessControlPolicy {
     }
     public String toString()
     {
-    	return "AccessControlPolicy[accessControlList="+this.accessControlList+";owner="+this.owner+"]";
+    	return StringUtils.object2string(this);
     }
 }

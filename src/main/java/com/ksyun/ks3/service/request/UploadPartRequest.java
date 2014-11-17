@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ksyun.ks3.InputSubStream;
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.RepeatableFileInputStream;
+import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
@@ -27,10 +28,7 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class UploadPartRequest extends Ks3WebServiceRequest implements MD5CalculateAble{	
 	private final Log log = LogFactory.getLog(UploadPartRequest.class);
-	private static final int minPartNumber = 1;
-	private static final int maxPartNumber = 10000;
-	private static final int minPartSize = 5*1024*1024;
-	private static final int maxPartSize = 5*1024*1024*1024;
+
 	
 	private String uploadId;
 	private int partNumber;
@@ -91,8 +89,8 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements MD5Calcul
 			throw new IllegalArgumentException("object key can not be null");
 		if(StringUtils.isBlank(this.uploadId))
 			throw new IllegalArgumentException("uploadId can not be null");
-		if(partNumber<minPartNumber||partNumber>maxPartNumber)
-			throw new IllegalArgumentException("partNumber shoud between "+minPartNumber+" and "+maxPartNumber);
+		if(partNumber<Constants.minPartNumber||partNumber>Constants.maxPartNumber)
+			throw new IllegalArgumentException("partNumber shoud between "+Constants.minPartNumber+" and "+Constants.maxPartNumber);
 		if(file==null)
 		{
 			throw new IllegalArgumentException("file can not be null");
@@ -100,9 +98,9 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements MD5Calcul
 		{
 			if(this.fileoffset<0)
 				throw new IllegalArgumentException("fileoffset("+this.fileoffset+") should >= 0");
-		    if(this.partSize<minPartSize||this.partSize>maxPartSize)
+		    if(this.partSize<Constants.minPartSize||this.partSize>Constants.maxPartSize)
 		    {
-		    	throw new IllegalArgumentException("partsize("+this.partSize+") should between "+minPartSize+" and "+maxPartSize);
+		    	throw new IllegalArgumentException("partsize("+this.partSize+") should between "+Constants.minPartSize+" and "+Constants.maxPartSize);
 		    }
 		}
 	}
