@@ -37,6 +37,12 @@ import com.ksyun.ks3.service.request.UploadPartRequest;
  **/
 public interface Ks3 {
 	/**
+	 * 设置accesskeyid accesskeysecret
+	 * @param auth
+	 */
+	public void setAuth(Authorization auth);
+	
+	/**
 	 * GET SERVICE
 	 * 
 	 * @return {@link Bucket}
@@ -425,7 +431,32 @@ public interface Ks3 {
 	 */
 	public Bucket createBucket(CreateBucketRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
-
+	/**
+	 * 清空bucket中的所有内容，请谨慎使用。
+	 * @param bucketName
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 */
+	public void clearBucket(String bucketName) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * 新建文件夹
+	 * 
+	 * @param bucketName
+	 * @param dir
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 */
+	public void makeDir(String bucketName,String dir) throws Ks3ClientException,Ks3ServiceException;
+	
+	/**
+	 * 删除文件夹及下面的所有内容
+	 * @param bucketName
+	 * @param dir
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 */
+	public void removeDir(String bucketName,String dir) throws Ks3ClientException,Ks3ServiceException;
+	
 	/**
 	 * DELETE BUCKET
 	 * 

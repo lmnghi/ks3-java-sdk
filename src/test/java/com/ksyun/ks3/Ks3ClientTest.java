@@ -165,17 +165,20 @@ public class Ks3ClientTest {
 
     @Test
 	public void deleteObject() {
-    	ListObjectsRequest request = new ListObjectsRequest("ksc-scm",null,null,null,null);
-    	ObjectListing o = client.listObjects(request);
-    	for(Ks3ObjectSummary sum:o.getObjectSummaries())
-    	{
-		     client.deleteObject("ksc-scm", " { ^ } % ` ] ' < > [ ~ # | \" " );
-    	}
-    	for(String s :o.getCommonPrefixes())
-    	{
-    		client.deleteObject("ksc-scm", s);
-    	}
+    	client.deleteObject("ksc-scm","vre");
 	}
+    @Test
+    public void clearBucket(){
+    	this.client1.clearBucket("alert1");
+    }
+    @Test
+    public void removeDir(){
+    	this.client1.removeDir("alert1","tt/");
+    }
+    @Test
+    public void makeDir(){
+    	this.client.makeDir("ksc-scm","cewf/fewgfew/vewrgfvw/cvew/");
+    }
 	 @Test
 	public void putObject() {
 
@@ -210,7 +213,7 @@ public class Ks3ClientTest {
 		  e.printStackTrace(); }*/
 		try {
 			PutObjectRequest request = new PutObjectRequest("ksc-scm",
-					"../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php",new ByteArrayInputStream(new byte[]{44,45,46}),null);
+					".../../etc/passwd.phpinfo.php",new ByteArrayInputStream(new byte[]{44,45,46}),null);
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

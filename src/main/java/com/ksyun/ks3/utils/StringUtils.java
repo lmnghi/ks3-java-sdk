@@ -171,7 +171,9 @@ public class StringUtils {
 				} else {
 					valuesToAdd.put(field,fieldValue);
 				}
-			} 
+			} else if(fieldValue==null){
+				value.append(prefix+field.getName() + "=null" + "\n");
+			}
 		}
 		for(Entry<Field,Object> obj1:valuesToAdd.entrySet()){
 		    value.append(object2string(index + 1, obj1.getValue(),obj1.getKey()));
