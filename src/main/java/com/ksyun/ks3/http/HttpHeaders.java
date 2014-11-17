@@ -13,6 +13,7 @@ public enum HttpHeaders {
 	Date("Date"),
 	Host("Host"),
 	Server("Server"),
+	UserAgent("User-Agent"),
 	ExtendedRequestId("x-kss-id-2"),
 	ContentMD5("Content-MD5"),
 	Expect("Expect"),

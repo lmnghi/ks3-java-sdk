@@ -1,5 +1,6 @@
 package com.ksyun.ks3.service.response;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

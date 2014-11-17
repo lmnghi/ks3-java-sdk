@@ -281,6 +281,7 @@ public abstract class Ks3WebServiceRequest {
 			url = url.replace("http://", "").replace("https://", "");
 		httpMethod = HttpMethod.POST;
 		this.setContentMD5("");
+		this.addHeader(HttpHeaders.UserAgent,Constants.KS3_SDK_USER_AGENT);
 		this.setContentType("text/plain");
 		this.setDate(new Date());
 	}

@@ -69,11 +69,14 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
+	private Ks3Client client1 = new Ks3Client("GENJ6O5PQFVE37MEEMZA","9Z6VbeYUJ0BiKcuwYe5x/j76TZvYe9VRh2OdH15m");	
 	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ","ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
 	public static void main(String [] args){
-		String s = "http://lijunwei.test.kss.ksyun.com/?delimiter=%2F&key-marker=23&prefix=IM&upload-id​marker=34&uploadshttp://lijunwei.test.kss.ksyun.com/?delimiter=%2F&key-marker=23&prefix=IM&upload-id​marker=34&uploads";
+		String s = "<ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>aw2</Name><Prefix>../../../../../../../../../../../../../../../../etc/</Prefix><Marker></Marker><MaxKeys>30</MaxKeys><Delimiter>/</Delimiter><IsTruncated>false</IsTruncated><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd</Key><LastModified>2014-08-28T12:45:55.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php</Key><LastModified>2014-08-28T12:46:02.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>";
 		            
-		System.out.println((int)s.charAt(83));
+		for(int i = 600;i<700;i++){
+			System.out.print(s.charAt(i));
+		}
 	}
 	@Before
 	public void init() {
@@ -82,7 +85,7 @@ public class Ks3ClientTest {
 
 	 @Test
 	public void ListBuckets() {
-		List<Bucket> buckets = client.listBuckets();
+		List<Bucket> buckets = client1.listBuckets();
 		System.out.println(buckets);
 	}
 	 @Test
@@ -126,8 +129,8 @@ public class Ks3ClientTest {
 /*		ObjectListing o = client.listObjects("yyy");
 		Object od = o;
 		System.out.println(od);*/
-    	ListObjectsRequest request = new ListObjectsRequest("ksc-scm","123.tx",null,null,null);
-    	ObjectListing o = client.listObjects(request);
+    	ListObjectsRequest request = new ListObjectsRequest("aw2",null,null,null,null);
+    	ObjectListing o = client1.listObjects(request);
     	Object od = o;
 		System.out.println(od);
 	}
@@ -207,8 +210,7 @@ public class Ks3ClientTest {
 		  e.printStackTrace(); }*/
 		try {
 			PutObjectRequest request = new PutObjectRequest("ksc-scm",
-					"123.txt",new ByteArrayInputStream(new byte[]{44,45,46}),null);
-			request.setRedirectLocation("http://www.baidu.com");
+					"../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php",new ByteArrayInputStream(new byte[]{44,45,46}),null);
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
