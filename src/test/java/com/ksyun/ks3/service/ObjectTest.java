@@ -175,7 +175,8 @@ public class ObjectTest {
 		request.setRange(0, 299);
 		GetObjectResult object = client.getObject(request);
 		
-//		assertEquals(299, object.getObject().getObjectMetadata().getContentLength());
+		
+		assertEquals(299, object.getObject().getObjectMetadata().getContentLength());
 		File file = new File("D:/objectTest/getObjectTest1004.txt");
 
 		FileOutputStream fos = null;
@@ -192,7 +193,7 @@ public class ObjectTest {
 		
 		is.close();
 		fos.close();
-		
+		System.out.println(object);
 	}
 	
 	/**
