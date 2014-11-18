@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ksyun.ks3.AutoAbortInputStream;
+import com.ksyun.ks3.dto.AccessControlPolicy;
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.HeadObjectResult;
@@ -256,7 +257,7 @@ public class ObjectTest {
 	 * @Then {@value 若是输入不存在的bucketName, 是否应该先检查bucket的有效性，给出正确的提示}
 	 */
 	@Test(expected = Ks3ServiceException.class)
-	public void headObjectTest1001(){
+	public void headObjectTest2001(){
 
 		client.headObject(bucket, "hello");
 //		client.headObject("123", "hello");
@@ -269,7 +270,7 @@ public class ObjectTest {
 	 * @Then {@value 若是输入内容为文件夹名称 则抛出  Ks3ServiceException 异常, 若输入内容为文件名称则正常返回}
 	 */
 	@Test(expected = Ks3ServiceException.class)
-	public void headObjectTest1002(){
+	public void headObjectTest2002(){
 		boolean flag = true;//true 代表为文件名，false 代表文件夹名
 		if(flag){
 			//输入为文件名，运行正常
@@ -291,7 +292,7 @@ public class ObjectTest {
 	 * @Then 
 	 */
 	@Test(timeout=5000)
-	public void headObjectTest1003() {
+	public void headObjectTest2003() {
 		HeadObjectResult object = client.headObject(bucket, "hosts.txt");
 		
 		System.out.println(object);
@@ -304,7 +305,7 @@ public class ObjectTest {
 	 * @Then 
 	 */
 	@Test(timeout=5000)
-	public void headObjectTest1004() throws IOException{
+	public void headObjectTest2004() throws IOException{
 		HeadObjectRequest request = new HeadObjectRequest(bucket, "hosts.txt");
 		
 		request.setRange(0, 299);
@@ -314,10 +315,8 @@ public class ObjectTest {
 		System.out.println(result);
 		
 		System.out.println("getContentLength :" + result.getObjectMetadata().getContentLength());
-		System.out.println("getMeta :" + result.getObjectMetadata().getMeta(HttpHeaders.ContentLength));
 		
-
-		
+		System.out.println("getContentLength :" + result.getObjectMetadata().getMeta(HttpHeaders.ContentLength.toString()));
 	}
 	
 	/**
@@ -327,7 +326,7 @@ public class ObjectTest {
 	 * @Then 
 	 */
 	@Test()
-	public void headObjectTest1005(){
+	public void headObjectTest2005(){
 		HeadObjectRequest request = new HeadObjectRequest(bucket, "hosts.txt");
 		
 		Calendar cal = Calendar.getInstance();
@@ -346,7 +345,7 @@ public class ObjectTest {
 	 * @Then 
 	 */
 	@Test
-	public void headObjectTest1006(){
+	public void headObjectTest2006(){
 		HeadObjectResult object = clientOther.headObject(bucket, "hostsPulbic.txt");
 		System.out.println(object);
 	}
@@ -355,11 +354,23 @@ public class ObjectTest {
 	/**
 	 * @tag 权限测试
 	 * @Test 客户端访问非本用户文件---私密文件
-	 * @Then 
+	 * @Then {@value 异常抛出问题， 403 权限问题}
 	 */
-	@Test(expected=AccessDeniedException.class)
-	public void headObjectTest1007(){
+	@Test(expected=Ks3ServiceException.class)
+	public void headObjectTest2007(){
 		HeadObjectResult object = clientOther.headObject(bucket, "hosts.txt");
 		System.out.println(object);
 	}
+	
+	/**
+	 * @tag 权限测试
+	 * @Test 
+	 * @Then 
+	 */
+	@Test()
+	public void getObjectACLTest(){
+		AccessControlPolicy object = client.getObjectACL(bucket, "hosts.txt");
+		System.out.println(object);
+	}
+	
 }
