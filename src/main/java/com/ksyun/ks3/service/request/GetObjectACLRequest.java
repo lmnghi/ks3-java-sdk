@@ -9,20 +9,16 @@ import com.ksyun.ks3.utils.StringUtils;
 public class GetObjectACLRequest extends Ks3WebServiceRequest{
 
 
-    private String acl;
     @Override
     protected void configHttpRequest() {
         this.setHttpMethod(HttpMethod.GET);
-        this.addParams("acl",acl);
+        this.addParams("acl","");
     }
 
     @Override
     protected void validateParams() throws IllegalArgumentException {
         if(StringUtils.validateBucketName(this.getBucketname())==null)
             throw new IllegalArgumentException("bucket name is not correct");
-    }
-
-    public GetObjectACLRequest() {
     }
 
     public GetObjectACLRequest(String bucketName,String objectName) {

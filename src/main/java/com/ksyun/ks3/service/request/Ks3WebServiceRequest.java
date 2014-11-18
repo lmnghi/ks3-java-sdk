@@ -121,7 +121,7 @@ public abstract class Ks3WebServiceRequest {
 	@SuppressWarnings("deprecation")
 	private void initHttpRequestBase() {
 		// 准备计算 md5值
-		if (this instanceof MD5CalculateAble && this.getRequestBody() != null)
+		if (this instanceof MD5CalculateAble && this.getRequestBody() != null && StringUtils.isBlank(this.getContentMD5()))
 			if (!(this.getRequestBody() instanceof MD5DigestCalculatingInputStream))
 				this.setRequestBody(new MD5DigestCalculatingInputStream(this
 						.getRequestBody()));
@@ -185,10 +185,8 @@ public abstract class Ks3WebServiceRequest {
 				String length = headrs
 						.get(HttpHeaders.ContentLength.toString());
 				HttpEntity entity = null;
-				long availeAble = (long) (Runtime.getRuntime().freeMemory()*0.7);
-				if ((length == null || Long.valueOf(length) < availeAble)) {
+				if (length == null) {
 					try {
-						// 这时不能提供content-length,否则 详见BufferedHttpEntity构造函数
 						entity = new RepeatableInputStreamRequestEntity(
 								requestBody, "-1");
 						entity = new BufferedHttpEntity(entity);
@@ -222,7 +220,7 @@ public abstract class Ks3WebServiceRequest {
 		}
 		for (Entry<String, String> aHeader : header.entrySet()) {
 			if (!httpRequest.containsHeader(aHeader.getKey()))
-				httpRequest.addHeader(aHeader.getKey(), aHeader.getValue());
+				httpRequest.setHeader(aHeader.getKey(), aHeader.getValue());
 		}
 		this.httpRequest = httpRequest;
 		// 添加长度会报错，最后Apache http框架会自动添加

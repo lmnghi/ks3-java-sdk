@@ -45,13 +45,13 @@ public class ObjectMetadata {
         metadata.put(key, value);
     }
     public Date getLastModified() {
-        return (Date)metadata.get(HttpHeaders.LastModified);
+        return (Date)metadata.get(HttpHeaders.LastModified.toString());
     }
     public void setLastModified(Date lastModified) {
         metadata.put(HttpHeaders.LastModified.toString(), lastModified);
     }
     public long getContentLength() {
-        Long contentLength = (Long)metadata.get(HttpHeaders.ContentLength);
+        Long contentLength = (Long)metadata.get(HttpHeaders.ContentLength.toString());
 
         if (contentLength == null) return 0;
         return contentLength.longValue();
@@ -71,25 +71,25 @@ public class ObjectMetadata {
         metadata.put(HttpHeaders.ContentLength.toString(), contentLength);
     }
     public String getContentType() {
-        return (String)metadata.get(HttpHeaders.ContentType);
+        return (String)metadata.get(HttpHeaders.ContentType.toString());
     }
     public void setContentType(String contentType) {
         metadata.put(HttpHeaders.ContentType.toString(), contentType);
     }
     public String getContentEncoding() {
-        return (String)metadata.get(HttpHeaders.ContentEncoding);
+        return (String)metadata.get(HttpHeaders.ContentEncoding.toString());
     }
     public void setContentEncoding(String encoding) {
         metadata.put(HttpHeaders.ContentEncoding.toString(), encoding);
     }
     public String getCacheControl() {
-        return (String)metadata.get(HttpHeaders.CacheControl);
+        return (String)metadata.get(HttpHeaders.CacheControl.toString());
     }
     public void setCacheControl(String cacheControl) {
         metadata.put(HttpHeaders.CacheControl.toString(), cacheControl);
     }
     public String getContentMD5() {
-        return (String)metadata.get(HttpHeaders.ContentMD5);
+        return (String)metadata.get(HttpHeaders.ContentMD5.toString());
     }
     public void setContentMD5(String md5Base64) {
         if(md5Base64 == null){
@@ -100,13 +100,13 @@ public class ObjectMetadata {
 
     }
     public String getContentDisposition() {
-        return (String)metadata.get(HttpHeaders.ContentDisposition);
+        return (String)metadata.get(HttpHeaders.ContentDisposition.toString());
     }
     public void setContentDisposition(String disposition) {
         metadata.put(HttpHeaders.ContentDisposition.toString(), disposition);
     }
     public String getETag() {
-        return (String)metadata.get(HttpHeaders.ETag);
+        return (String)metadata.get(HttpHeaders.ETag.toString());
     }
     public void setHttpExpiresDate(Date httpExpiresDate) {
         this.httpExpiresDate = httpExpiresDate;

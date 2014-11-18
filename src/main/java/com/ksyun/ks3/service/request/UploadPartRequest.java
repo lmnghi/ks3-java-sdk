@@ -24,23 +24,20 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月23日 上午11:17:36
  * 
- * @description 
+ * @description
  **/
-public class UploadPartRequest extends Ks3WebServiceRequest implements MD5CalculateAble{	
+public class UploadPartRequest extends Ks3WebServiceRequest implements
+		MD5CalculateAble {
 	private final Log log = LogFactory.getLog(UploadPartRequest.class);
 
-	
 	private String uploadId;
 	private int partNumber;
 	private File file;
 	private long partSize;
 	private long fileoffset;
 	private long contentLength = -1;
-	/**
-	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
-	 * @param expectContinue
-	 */
-	private boolean expectContinue = false;
+	private InputStream content;
+
 	/**
 	 * 
 	 * @param bucketname
@@ -48,11 +45,14 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements MD5Calcul
 	 * @param uploadId
 	 * @param partNumber
 	 * @param file
-	 * @param partsize 注意类型为long
-	 * @param fileoffset 注意类型为long
+	 * @param partsize
+	 *            注意类型为long
+	 * @param fileoffset
+	 *            注意类型为long
 	 */
-	public UploadPartRequest(String bucketname,String objectkey,String uploadId,int partNumber,File file,long partsize,long fileoffset)
-	{
+	public UploadPartRequest(String bucketname, String objectkey,
+			String uploadId, int partNumber, File file, long partsize,
+			long fileoffset) {
 		this.setBucketname(bucketname);
 		this.setObjectkey(objectkey);
 		this.setUploadId(uploadId);
@@ -60,100 +60,152 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements MD5Calcul
 		this.setFile(file);
 		this.setPartSize(partsize);
 		this.setFileoffset(fileoffset);
-		this.contentLength = file.length()-fileoffset<partsize?file.length()-fileoffset:partsize;
+		this.contentLength = file.length() - fileoffset < partsize ? file
+				.length() - fileoffset : partsize;
 	}
+
+	/**
+	 * 
+	 * @param bucketname
+	 * @param objectkey
+	 * @param uploadId
+	 * @param partNumber
+	 * @param content
+	 *            要上传的块的inputstream,(已经切分好的块)
+	 * @param partSize
+	 *            content的长度
+	 * @param contentMd5
+	 *            <p>可以指定content-md5否则sdk将不在服务端进行MD5校验</p>
+	 */
+	public UploadPartRequest(String bucketname, String objectkey,
+			String uploadId, int partNumber, InputStream content,
+			long partSize, String contentMd5) {
+		this.setBucketname(bucketname);
+		this.setObjectkey(objectkey);
+		this.setUploadId(uploadId);
+		this.setPartNumber(partNumber);
+		this.setContentLength(partSize);
+		this.setContentMD5(contentMd5);
+		this.setContent(content);
+	}
+
 	@Override
 	protected void configHttpRequest() {
-		if(this.expectContinue)
-			this.addHeader(HttpHeaders.Expect,"100-continue");
 		this.setHttpMethod(HttpMethod.PUT);
 		this.addParams("uploadId", this.uploadId);
-		this.addParams("partNumber",String.valueOf(this.partNumber));
-		InputStream inputStream = null;
-		try {
-			inputStream = new InputSubStream(new RepeatableFileInputStream(this.file),
-			        this.fileoffset, partSize, true);
+		this.addParams("partNumber", String.valueOf(this.partNumber));
+		if (this.file != null) {
+			try {
+				content = new InputSubStream(new RepeatableFileInputStream(
+						this.file), this.fileoffset, partSize, true);
 
-		} catch (FileNotFoundException e) {
-			throw new Ks3ClientException("read file "+file.getName()+" error");
-		} 
-	    this.addHeader(HttpHeaders.ContentLength,String.valueOf(this.contentLength));
-		this.setRequestBody(inputStream);
+			} catch (FileNotFoundException e) {
+				throw new Ks3ClientException("read file " + file.getName()
+						+ " error");
+			}
+		}
+		this.addHeader(HttpHeaders.ContentLength,
+				String.valueOf(this.contentLength));
+		this.setRequestBody(content);
 	}
 
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
-		if(StringUtils.isBlank(this.getBucketname()))
+		if (StringUtils.isBlank(this.getBucketname()))
 			throw new IllegalArgumentException("bucket name can not be null");
-		if(StringUtils.isBlank(this.getObjectkey()))
+		if (StringUtils.isBlank(this.getObjectkey()))
 			throw new IllegalArgumentException("object key can not be null");
-		if(StringUtils.isBlank(this.uploadId))
+		if (StringUtils.isBlank(this.uploadId))
 			throw new IllegalArgumentException("uploadId can not be null");
-		if(partNumber<Constants.minPartNumber||partNumber>Constants.maxPartNumber)
-			throw new IllegalArgumentException("partNumber shoud between "+Constants.minPartNumber+" and "+Constants.maxPartNumber);
-		if(file==null)
-		{
-			throw new IllegalArgumentException("file can not be null");
-		}else
-		{
-			if(this.fileoffset<0)
-				throw new IllegalArgumentException("fileoffset("+this.fileoffset+") should >= 0");
-		    if(this.partSize<Constants.minPartSize||this.partSize>Constants.maxPartSize)
-		    {
-		    	throw new IllegalArgumentException("partsize("+this.partSize+") should between "+Constants.minPartSize+" and "+Constants.maxPartSize);
-		    }
+		if (partNumber < Constants.minPartNumber
+				|| partNumber > Constants.maxPartNumber)
+			throw new IllegalArgumentException("partNumber shoud between "
+					+ Constants.minPartNumber + " and "
+					+ Constants.maxPartNumber);
+		if (file == null && content == null) {
+			throw new IllegalArgumentException(
+					"file and content can not both be null");
+		} else {
+			if (file != null) {
+				if (this.fileoffset < 0)
+					throw new IllegalArgumentException("fileoffset("
+							+ this.fileoffset + ") should >= 0");
+				if (this.partSize < Constants.minPartSize
+						|| this.partSize > Constants.maxPartSize) {
+					throw new IllegalArgumentException("partsize("
+							+ this.partSize + ") should between "
+							+ Constants.minPartSize + " and "
+							+ Constants.maxPartSize);
+				}
+			} else {
+
+			}
 		}
 	}
+
 	public String getUploadId() {
 		return uploadId;
 	}
+
 	public void setUploadId(String uploadId) {
 		this.uploadId = uploadId;
 	}
+
 	public int getPartNumber() {
 		return partNumber;
 	}
+
 	public void setPartNumber(int partNumber) {
 		this.partNumber = partNumber;
 	}
+
 	public File getFile() {
 		return file;
 	}
+
 	public void setFile(File file) {
 		this.file = file;
 	}
+
 	public long getPartSize() {
 		return partSize;
 	}
+
 	public void setPartSize(long partSize) {
 		this.partSize = partSize;
 	}
+
 	public long getFileoffset() {
 		return fileoffset;
 	}
+
 	public void setFileoffset(long fileoffset) {
 		this.fileoffset = fileoffset;
 	}
+
 	public long getContentLength() {
 		return contentLength;
 	}
+
 	public void setContentLength(long contentLength) {
 		this.contentLength = contentLength;
 	}
+
 	public String getMd5() {
-		return com.ksyun.ks3.utils.Base64
-				.encodeAsString(((MD5DigestCalculatingInputStream)super.getRequestBody())
-						.getMd5Digest());
+		if (!StringUtils.isBlank(this.getContentMD5()))
+			return this.getContentMD5();
+		else
+			return com.ksyun.ks3.utils.Base64
+					.encodeAsString(((MD5DigestCalculatingInputStream) super
+							.getRequestBody()).getMd5Digest());
 	}
-	public boolean isExpectContinue() {
-		return expectContinue;
+
+
+	public InputStream getContent() {
+		return content;
 	}
-	/**
-	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
-	 * @param expectContinue
-	 */
-	public void setExpectContinue(boolean expectContinue) {
-		expectContinue = expectContinue;
+
+	public void setContent(InputStream content) {
+		this.content = content;
 	}
-	
 }

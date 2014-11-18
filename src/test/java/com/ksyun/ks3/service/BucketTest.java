@@ -7,9 +7,17 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ksyun.ks3.dto.AccessControlList;
+import com.ksyun.ks3.dto.AccessControlPolicy;
 import com.ksyun.ks3.dto.Bucket;
 import com.ksyun.ks3.dto.CannedAccessControlList;
+import com.ksyun.ks3.dto.Grant;
+import com.ksyun.ks3.dto.Grantee;
+import com.ksyun.ks3.dto.GranteeId;
+import com.ksyun.ks3.dto.GranteeUri;
+import com.ksyun.ks3.dto.HeadBucketResult;
 import com.ksyun.ks3.dto.ObjectListing;
+import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.exception.serviceside.AccessDeniedException;
@@ -19,11 +27,15 @@ import com.ksyun.ks3.exception.serviceside.InvalidLocationConstraintException;
 import com.ksyun.ks3.exception.serviceside.NoSuchBucketException;
 import com.ksyun.ks3.exception.serviceside.TooManyBucketsException;
 import com.ksyun.ks3.request.ErrorCannedAclCreateBucketRequest;
+import com.ksyun.ks3.request.ErrorCannedAclPutBucketAclRequest;
 import com.ksyun.ks3.request.ErrorRegionCreateBucketRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
+import com.ksyun.ks3.service.request.HeadBucketRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
+import com.ksyun.ks3.service.request.PutBucketACLRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.response.CreateBucketResponse;
+import com.ksyun.ks3.service.response.PutBucketACLResponse;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -131,15 +143,9 @@ public class BucketTest extends Ks3ClientTest {
 				client1.deleteBucket(bucket);
 			this.ste = true;
 			this.isc = false;
-			try {
-				this.controller
-						.execute(auth1, new ErrorCannedAclCreateBucketRequest(
-								bucket, "PublicR"), CreateBucketResponse.class);
-			} catch (Ks3ServiceException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			this.controller.execute(auth1,
+					new ErrorCannedAclCreateBucketRequest(bucket, "PublicR"),
+					CreateBucketResponse.class);
 		} finally {
 			if (client1.bucketExists(bucket))
 				client1.deleteBucket(bucket);
@@ -403,8 +409,9 @@ public class BucketTest extends Ks3ClientTest {
 			client1.deleteBucket(bucket);
 		}
 	}
+
 	@Test
-	public void testGetBucket_1014() throws Exception{
+	public void testGetBucket_1014() throws Exception {
 		try {
 			if (!client1.bucketExists(bucket))
 				client1.createBucket(bucket);
@@ -424,4 +431,372 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
+	@Test
+	public void testGetBucketAcl_1015() throws Exception {
+		if (client1.bucketExists(bucket)) {
+			this.client1.clearBucket(bucket);
+			this.client1.deleteBucket(bucket);
+		}
+		this.ste = true;
+		this.isc = false;
+		try {
+			client1.getBucketACL(bucket);
+		} catch (NoSuchBucketException e) {
+			isc = true;
+		}
+
+		if (!isc)
+			throw new NotThrowException();
+	}
+
+	@Test
+	public void testGetBucketAcl_1016() throws Exception {
+		if (client1.bucketExists(bucket + ".01")) {
+			this.client1.clearBucket(bucket + ".01");
+			this.client1.deleteBucket(bucket + ".01");
+		}
+		if (client1.bucketExists(bucket + ".02")) {
+			this.client1.clearBucket(bucket + ".02");
+			this.client1.deleteBucket(bucket + ".02");
+		}
+		if (client1.bucketExists(bucket + ".03")) {
+			this.client1.clearBucket(bucket + ".03");
+			this.client1.deleteBucket(bucket + ".03");
+		}
+		try {
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket
+					+ ".01");
+			request1.setCannedAcl(CannedAccessControlList.Private);
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket
+					+ ".02");
+			request2.setCannedAcl(CannedAccessControlList.PublicRead);
+			CreateBucketRequest request3 = new CreateBucketRequest(bucket
+					+ ".03");
+			request3.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.createBucket(request1);
+			client1.createBucket(request2);
+			client1.createBucket(request3);
+			client1.getBucketACL(bucket + ".01");
+			client1.getBucketACL(bucket + ".02");
+			client1.getBucketACL(bucket + ".03");
+		} finally {
+			if (client1.bucketExists(bucket + ".01")) {
+				this.client1.clearBucket(bucket + ".01");
+				this.client1.deleteBucket(bucket + ".01");
+			}
+			if (client1.bucketExists(bucket + ".02")) {
+				this.client1.clearBucket(bucket + ".02");
+				this.client1.deleteBucket(bucket + ".02");
+			}
+			if (client1.bucketExists(bucket + ".03")) {
+				this.client1.clearBucket(bucket + ".03");
+				this.client1.deleteBucket(bucket + ".03");
+			}
+		}
+	}
+
+	@Test
+	public void testGetBucketAcl_1017() throws Exception {
+		if (client1.bucketExists(bucket + ".01")) {
+			this.client1.clearBucket(bucket + ".01");
+			this.client1.deleteBucket(bucket + ".01");
+		}
+		if (client1.bucketExists(bucket + ".02")) {
+			this.client1.clearBucket(bucket + ".02");
+			this.client1.deleteBucket(bucket + ".02");
+		}
+		if (client1.bucketExists(bucket + ".03")) {
+			this.client1.clearBucket(bucket + ".03");
+			this.client1.deleteBucket(bucket + ".03");
+		}
+		try {
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket
+					+ ".01");
+			request1.setCannedAcl(CannedAccessControlList.Private);
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket
+					+ ".02");
+			request2.setCannedAcl(CannedAccessControlList.PublicRead);
+			CreateBucketRequest request3 = new CreateBucketRequest(bucket
+					+ ".03");
+			request3.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.createBucket(request1);
+			client1.createBucket(request2);
+			client1.createBucket(request3);
+			this.ste = true;
+			this.isc = false;
+			try {
+				client2.getBucketACL(bucket + ".01");
+			} catch (AccessDeniedException e) {
+				isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.ste = true;
+			this.isc = false;
+			try {
+				client2.getBucketACL(bucket + ".02");
+			} catch (AccessDeniedException e) {
+				isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			client2.getBucketACL(bucket + ".03");
+		} finally {
+			if (client1.bucketExists(bucket + ".01")) {
+				this.client1.clearBucket(bucket + ".01");
+				this.client1.deleteBucket(bucket + ".01");
+			}
+			if (client1.bucketExists(bucket + ".02")) {
+				this.client1.clearBucket(bucket + ".02");
+				this.client1.deleteBucket(bucket + ".02");
+			}
+			if (client1.bucketExists(bucket + ".03")) {
+				this.client1.clearBucket(bucket + ".03");
+				this.client1.deleteBucket(bucket + ".03");
+			}
+		}
+	}
+
+	@Test
+	public void testPutBucketAcl_1018() throws Exception {
+		if (client1.bucketExists(bucket)) {
+			this.client1.clearBucket(bucket);
+			this.client1.deleteBucket(bucket);
+		}
+		try {
+			CreateBucketRequest request = new CreateBucketRequest(bucket);
+			request.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request);
+			AccessControlPolicy policy1 = client1.getBucketACL(bucket);
+			controller.execute(auth1, new ErrorCannedAclPutBucketAclRequest(
+					bucket), PutBucketACLResponse.class);
+			AccessControlPolicy policy2 = client1.getBucketACL(bucket);
+			if (policy1.getAccessControlList().getGrants().size() < policy2
+					.getAccessControlList().getGrants().size())
+				throw new Exception("非法的canned acl生效了");
+
+			PutBucketACLRequest request1 = new PutBucketACLRequest(bucket);
+			request1.setCannedAcl(CannedAccessControlList.PublicRead);
+			client1.putBucketACL(request1);
+			AccessControlPolicy policy3 = client1.getBucketACL(bucket);
+			List<String> grants = new ArrayList<String>();
+			if (policy3.getAccessControlList().getGrants().size() == 2) {
+				for (Grant grant : policy3.getAccessControlList().getGrants()) {
+					grants.add(grant.getGrantee().getIdentifier()
+							+ grant.getPermission());
+				}
+			} else
+				throw new Exception("没有生效");
+			if (!grants.contains(GranteeUri.AllUsers.getIdentifier()
+					+ Permission.Read))
+				throw new Exception("没有生效");
+
+			PutBucketACLRequest request2 = new PutBucketACLRequest(bucket);
+			request2.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.putBucketACL(request2);
+			AccessControlPolicy policy4 = client1.getBucketACL(bucket);
+			List<String> grants1 = new ArrayList<String>();
+			if (policy4.getAccessControlList().getGrants().size() == 3) {
+				for (Grant grant : policy4.getAccessControlList().getGrants()) {
+					grants1.add(grant.getGrantee().getIdentifier()
+							+ grant.getPermission());
+				}
+			} else
+				throw new Exception("没有生效");
+			if (!grants1.contains(GranteeUri.AllUsers.getIdentifier()
+					+ Permission.Read)
+					|| !grants1.contains(GranteeUri.AllUsers.getIdentifier()
+							+ Permission.Write))
+				throw new Exception("没有生效");
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				this.client1.clearBucket(bucket);
+				this.client1.deleteBucket(bucket);
+			}
+		}
+	}
+
+	@Test
+	public void testPutBucketAcl_1019() throws Exception {
+		if (client1.bucketExists(bucket)) {
+			this.client1.clearBucket(bucket);
+			this.client1.deleteBucket(bucket);
+		}
+		try {
+			client1.createBucket(bucket);
+
+			AccessControlList acl = new AccessControlList();
+			acl.addGrant(GranteeUri.AllUsers, Permission.Read);
+			Grantee grantee = new GranteeId();
+			grantee.setIdentifier("123456");
+			acl.addGrant(grantee, Permission.Read);
+			PutBucketACLRequest request = new PutBucketACLRequest(bucket);
+			request.setAccessControlList(acl);
+			client1.putBucketACL(request);
+
+			AccessControlPolicy aclPolicy = client1.getBucketACL(bucket);
+			if (aclPolicy.getGrants().size() == 3) {
+				throw new Exception("设置acl不应该成功，但是成功了");
+			}
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				this.client1.clearBucket(bucket);
+				this.client1.deleteBucket(bucket);
+			}
+		}
+	}
+
+	@Test
+	public void testPutBucketAcl_1020() throws Exception {
+		if (client1.bucketExists(bucket)) {
+			this.client1.clearBucket(bucket);
+			this.client1.deleteBucket(bucket);
+		}
+		try {
+			client1.createBucket(bucket);
+
+			AccessControlList acl = new AccessControlList();
+			Grantee grantee = new GranteeId();
+			grantee.setIdentifier("123456");
+			acl.addGrant(grantee, Permission.Read);
+			PutBucketACLRequest request = new PutBucketACLRequest(bucket);
+			request.setAccessControlList(acl);
+			client1.putBucketACL(request);
+			AccessControlPolicy policy = client1.getBucketACL(bucket);
+			if (policy.getGrants().size() != 2) {
+				throw new Exception("授权没有生效");
+			}
+
+			AccessControlList acl1 = new AccessControlList();
+			Grantee grantee1 = new GranteeId();
+			grantee1.setIdentifier("123456");
+			acl1.addGrant(grantee1, Permission.Read);
+			PutBucketACLRequest request1 = new PutBucketACLRequest(bucket);
+			request1.setAccessControlList(acl1);
+			client1.putBucketACL(request1);
+			AccessControlPolicy policy1 = client1.getBucketACL(bucket);
+			if (policy1.getGrants().size() != 2) {
+				throw new Exception("授权没有覆盖");
+			}
+
+			AccessControlList acl11 = new AccessControlList();
+			Grantee grantee11 = new GranteeId();
+			grantee11.setIdentifier("123456");
+			acl11.addGrant(grantee11, Permission.FullControl);
+			PutBucketACLRequest request11 = new PutBucketACLRequest(bucket);
+			request11.setAccessControlList(acl11);
+			client1.putBucketACL(request11);
+			AccessControlPolicy policy11 = client1.getBucketACL(bucket);
+			if (policy11.getGrants().size() != 2) {
+				throw new Exception("授权没有覆盖");
+			}
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				this.client1.clearBucket(bucket);
+				this.client1.deleteBucket(bucket);
+			}
+		}
+	}
+
+	@Test
+	public void testHeadBucket() throws Exception {
+		if (client1.bucketExists(bucket + ".01")) {
+			this.client1.clearBucket(bucket + ".01");
+			this.client1.deleteBucket(bucket + ".01");
+		}
+		if (client1.bucketExists(bucket + ".02")) {
+			this.client1.clearBucket(bucket + ".02");
+			this.client1.deleteBucket(bucket + ".02");
+		}
+		if (client1.bucketExists(bucket + ".03")) {
+			this.client1.clearBucket(bucket + ".03");
+			this.client1.deleteBucket(bucket + ".03");
+		}
+		if (client1.bucketExists(bucket + ".04")) {
+			this.client1.clearBucket(bucket + ".04");
+			this.client1.deleteBucket(bucket + ".04");
+		}
+		if (client1.bucketExists(bucket + ".05")) {
+			this.client1.clearBucket(bucket + ".05");
+			this.client1.deleteBucket(bucket + ".05");
+		}
+		if (client1.bucketExists(bucket + ".06")) {
+			this.client1.clearBucket(bucket + ".06");
+			this.client1.deleteBucket(bucket + ".06");
+		}
+		if (client1.bucketExists(bucket + ".07")) {
+			this.client1.clearBucket(bucket + ".07");
+			this.client1.deleteBucket(bucket + ".07");
+		}
+		try {
+			if(404!=client1.headBucket(bucket+".01").getStatueCode())
+				throw new Exception("not 404");
+			
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket+".02");
+			request1.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request1);
+			if(200!=client1.headBucket(bucket+".02").getStatueCode())
+				throw new Exception("not 200");
+			
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket+".03");
+			request2.setCannedAcl(CannedAccessControlList.PublicRead);
+			client1.createBucket(request2);
+			if(200!=client1.headBucket(bucket+".03").getStatueCode())
+				throw new Exception("not 200");
+			
+			CreateBucketRequest request3 = new CreateBucketRequest(bucket+".04");
+			request1.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.createBucket(request3);
+			if(200!=client1.headBucket(bucket+".04").getStatueCode())
+				throw new Exception("not 200");
+			
+			CreateBucketRequest request4 = new CreateBucketRequest(bucket+".05");
+			request4.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request4);
+			if(403!=client2.headBucket(bucket+".05").getStatueCode())
+				throw new Exception("not 403");
+			
+			CreateBucketRequest request5 = new CreateBucketRequest(bucket+".06");
+			request5.setCannedAcl(CannedAccessControlList.PublicRead);
+			client1.createBucket(request5);
+			if(200!=client2.headBucket(bucket+".06").getStatueCode())
+				throw new Exception("not 200");
+			
+			CreateBucketRequest request6 = new CreateBucketRequest(bucket+".07");
+			request6.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.createBucket(request6);
+			if(200!=client2.headBucket(bucket+".07").getStatueCode())
+				throw new Exception("not 200");
+			
+		} finally {
+			if (client1.bucketExists(bucket + ".01")) {
+				this.client1.clearBucket(bucket + ".01");
+				this.client1.deleteBucket(bucket + ".01");
+			}
+			if (client1.bucketExists(bucket + ".02")) {
+				this.client1.clearBucket(bucket + ".02");
+				this.client1.deleteBucket(bucket + ".02");
+			}
+			if (client1.bucketExists(bucket + ".03")) {
+				this.client1.clearBucket(bucket + ".03");
+				this.client1.deleteBucket(bucket + ".03");
+			}
+			if (client1.bucketExists(bucket + ".04")) {
+				this.client1.clearBucket(bucket + ".04");
+				this.client1.deleteBucket(bucket + ".04");
+			}
+			if (client1.bucketExists(bucket + ".05")) {
+				this.client1.clearBucket(bucket + ".05");
+				this.client1.deleteBucket(bucket + ".05");
+			}
+			if (client1.bucketExists(bucket + ".06")) {
+				this.client1.clearBucket(bucket + ".06");
+				this.client1.deleteBucket(bucket + ".06");
+			}
+			if (client1.bucketExists(bucket + ".07")) {
+				this.client1.clearBucket(bucket + ".07");
+				this.client1.deleteBucket(bucket + ".07");
+			}
+		}
+	}
 }
