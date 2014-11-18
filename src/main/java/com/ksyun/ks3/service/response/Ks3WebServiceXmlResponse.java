@@ -30,6 +30,10 @@ import com.ksyun.ks3.http.HttpHeaders;
 public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler implements Ks3WebServiceResponse<T>{
 	private HttpResponse response;
 	protected T result;
+	/**
+	 * 防止解析string时断裂 比如 将 <aa>fff>ddd</aa>解析为 fff、>、ddd
+	 */
+	private String buffer = "";
 	private List<String> preTags = new ArrayList<String>();
 	/**
 	 * 0返回当前节点名，1为父节点，2为父节点的父节点，以此类推
@@ -105,6 +109,8 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 	@Override  
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
     {
+		string(buffer);
+		buffer = "";
 		if(qName.startsWith("ns2:"))
 	    	qName = qName.substring(4);
 		preTags.add(qName);
@@ -114,6 +120,8 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 	@Override  
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
+		string(buffer);
+		buffer = "";
 		if(qName.startsWith("ns2:"))
 	    	qName = qName.substring(4);
 		endEle(uri,localName,qName);
@@ -124,9 +132,10 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 	@Override  
     public void characters(char[] ch, int start, int length) throws SAXException
     {
+		
 		if(getTag()!=null){  
             String content = new String(ch,start,length);  
-	    	string(content);
+	    	buffer +=content;
 		}
     }
 	public abstract void string(String s);

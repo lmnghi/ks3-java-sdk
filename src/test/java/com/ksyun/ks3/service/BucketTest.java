@@ -424,5 +424,4 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-
 }

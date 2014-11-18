@@ -18,7 +18,7 @@ import com.ksyun.ks3.utils.XmlWriter;
  * @description 
  **/
 public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implements MD5CalculateAble{
-	private String[] keys;
+	private String[] keys = new String[]{};
 	public DeleteMultipleObjectsRequest(String bucketName,List<String> keys)
 	{
 		this.setBucketname(bucketName);
