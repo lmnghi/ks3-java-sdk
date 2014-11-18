@@ -11,6 +11,8 @@ import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.AccessControlPolicy;
 import com.ksyun.ks3.dto.Bucket;
 import com.ksyun.ks3.dto.CannedAccessControlList;
+import com.ksyun.ks3.dto.CreateBucketConfiguration;
+import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Grantee;
 import com.ksyun.ks3.dto.GranteeId;
@@ -699,7 +701,7 @@ public class BucketTest extends Ks3ClientTest {
 	}
 
 	@Test
-	public void testHeadBucket() throws Exception {
+	public void testHeadBucket_1021() throws Exception {
 		if (client1.bucketExists(bucket + ".01")) {
 			this.client1.clearBucket(bucket + ".01");
 			this.client1.deleteBucket(bucket + ".01");
@@ -729,45 +731,51 @@ public class BucketTest extends Ks3ClientTest {
 			this.client1.deleteBucket(bucket + ".07");
 		}
 		try {
-			if(404!=client1.headBucket(bucket+".01").getStatueCode())
+			if (404 != client1.headBucket(bucket + ".01").getStatueCode())
 				throw new Exception("not 404");
-			
-			CreateBucketRequest request1 = new CreateBucketRequest(bucket+".02");
+
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket
+					+ ".02");
 			request1.setCannedAcl(CannedAccessControlList.Private);
 			client1.createBucket(request1);
-			if(200!=client1.headBucket(bucket+".02").getStatueCode())
+			if (200 != client1.headBucket(bucket + ".02").getStatueCode())
 				throw new Exception("not 200");
-			
-			CreateBucketRequest request2 = new CreateBucketRequest(bucket+".03");
+
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket
+					+ ".03");
 			request2.setCannedAcl(CannedAccessControlList.PublicRead);
 			client1.createBucket(request2);
-			if(200!=client1.headBucket(bucket+".03").getStatueCode())
+			if (200 != client1.headBucket(bucket + ".03").getStatueCode())
 				throw new Exception("not 200");
-			
-			CreateBucketRequest request3 = new CreateBucketRequest(bucket+".04");
+
+			CreateBucketRequest request3 = new CreateBucketRequest(bucket
+					+ ".04");
 			request1.setCannedAcl(CannedAccessControlList.PublicReadWrite);
 			client1.createBucket(request3);
-			if(200!=client1.headBucket(bucket+".04").getStatueCode())
+			if (200 != client1.headBucket(bucket + ".04").getStatueCode())
 				throw new Exception("not 200");
-			
-			CreateBucketRequest request4 = new CreateBucketRequest(bucket+".05");
+
+			CreateBucketRequest request4 = new CreateBucketRequest(bucket
+					+ ".05");
 			request4.setCannedAcl(CannedAccessControlList.Private);
 			client1.createBucket(request4);
-			if(403!=client2.headBucket(bucket+".05").getStatueCode())
+			if (403 != client2.headBucket(bucket + ".05").getStatueCode())
 				throw new Exception("not 403");
-			
-			CreateBucketRequest request5 = new CreateBucketRequest(bucket+".06");
+
+			CreateBucketRequest request5 = new CreateBucketRequest(bucket
+					+ ".06");
 			request5.setCannedAcl(CannedAccessControlList.PublicRead);
 			client1.createBucket(request5);
-			if(200!=client2.headBucket(bucket+".06").getStatueCode())
+			if (200 != client2.headBucket(bucket + ".06").getStatueCode())
 				throw new Exception("not 200");
-			
-			CreateBucketRequest request6 = new CreateBucketRequest(bucket+".07");
+
+			CreateBucketRequest request6 = new CreateBucketRequest(bucket
+					+ ".07");
 			request6.setCannedAcl(CannedAccessControlList.PublicReadWrite);
 			client1.createBucket(request6);
-			if(200!=client2.headBucket(bucket+".07").getStatueCode())
+			if (200 != client2.headBucket(bucket + ".07").getStatueCode())
 				throw new Exception("not 200");
-			
+
 		} finally {
 			if (client1.bucketExists(bucket + ".01")) {
 				this.client1.clearBucket(bucket + ".01");
@@ -796,6 +804,813 @@ public class BucketTest extends Ks3ClientTest {
 			if (client1.bucketExists(bucket + ".07")) {
 				this.client1.clearBucket(bucket + ".07");
 				this.client1.deleteBucket(bucket + ".07");
+			}
+		}
+	}
+
+	@Test
+	public void testGetBucketLocation_1022() throws Exception {
+		if (client1.bucketExists(bucket)) {
+			this.client1.clearBucket(bucket);
+			this.client1.deleteBucket(bucket);
+		}
+		try {
+			client1.createBucket(bucket);
+			if (!REGION.HANGZHOU.toString().equals(
+					client1.getBucketLoaction(bucket).toString()))
+				throw new Exception("地点不正确");
+			client1.deleteBucket(bucket);
+
+			CreateBucketRequest request = new CreateBucketRequest(bucket);
+			CreateBucketConfiguration config = new CreateBucketConfiguration(
+					REGION.JIYANG);
+			request.setConfig(config);
+			client1.createBucket(request);
+
+			if (!REGION.JIYANG.toString().equals(
+					client1.getBucketLoaction(bucket).toString()))
+				throw new Exception("地点不正确");
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				this.client1.clearBucket(bucket);
+				this.client1.deleteBucket(bucket);
+			}
+		}
+	}
+
+	@Test
+	public void testPutBucketLogging_1023() throws Exception {
+		if (client1.bucketExists(bucket + "1")) {
+			this.client1.clearBucket(bucket + "1");
+			this.client1.deleteBucket(bucket + "1");
+		}
+		if (client1.bucketExists(bucket + "2")) {
+			this.client1.clearBucket(bucket + "2");
+			this.client1.deleteBucket(bucket + "2");
+		}
+		try {
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket + "1");
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket + "2");
+
+			request1.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request1);
+			request2.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request2);
+
+			client1.putBucketACL(bucket + "1", CannedAccessControlList.Private);
+
+			client1.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicRead);
+
+			client1.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicReadWrite);
+
+			client1.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+		} finally {
+			if (client1.bucketExists(bucket + "1")) {
+				this.client1.clearBucket(bucket + "1");
+				this.client1.deleteBucket(bucket + "1");
+			}
+			if (client1.bucketExists(bucket + "2")) {
+				this.client1.clearBucket(bucket + "2");
+				this.client1.deleteBucket(bucket + "2");
+			}
+		}
+	}
+
+	@Test
+	public void testPutBucketLogging_1024() throws Exception {
+		if (client1.bucketExists(bucket + "1")) {
+			this.client1.clearBucket(bucket + "1");
+			this.client1.deleteBucket(bucket + "1");
+		}
+		if (client1.bucketExists(bucket + "2")) {
+			this.client1.clearBucket(bucket + "2");
+			this.client1.deleteBucket(bucket + "2");
+		}
+		try {
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket + "1");
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket + "2");
+
+			request1.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request1);
+			request2.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request2);
+
+			client1.putBucketACL(bucket + "1", CannedAccessControlList.Private);
+
+			client1.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicRead);
+
+			client1.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicReadWrite);
+
+			client1.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+		} finally {
+			if (client1.bucketExists(bucket + "1")) {
+				this.client1.clearBucket(bucket + "1");
+				this.client1.deleteBucket(bucket + "1");
+			}
+			if (client1.bucketExists(bucket + "2")) {
+				this.client1.clearBucket(bucket + "2");
+				this.client1.deleteBucket(bucket + "2");
+			}
+		}
+	}
+
+	@Test
+	public void testPutBucketLogging_1025() throws Exception {
+		if (client1.bucketExists(bucket + "1")) {
+			this.client1.clearBucket(bucket + "1");
+			this.client1.deleteBucket(bucket + "1");
+		}
+		if (client2.bucketExists(bucket + "2")) {
+			this.client2.clearBucket(bucket + "2");
+			this.client2.deleteBucket(bucket + "2");
+		}
+		try {
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket + "1");
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket + "2");
+
+			request1.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request1);
+			request2.setCannedAcl(CannedAccessControlList.Private);
+			client2.createBucket(request2);
+
+			client1.putBucketACL(bucket + "1", CannedAccessControlList.Private);
+
+			client2.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicRead);
+
+			client2.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicReadWrite);
+
+			client2.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client2.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+		} finally {
+			if (client1.bucketExists(bucket + "1")) {
+				this.client1.clearBucket(bucket + "1");
+				this.client1.deleteBucket(bucket + "1");
+			}
+			if (client2.bucketExists(bucket + "2")) {
+				this.client2.clearBucket(bucket + "2");
+				this.client2.deleteBucket(bucket + "2");
+			}
+		}
+	}
+
+	@Test
+	public void testPutBucketLogging_1026() {
+		if (client1.bucketExists(bucket + "1")) {
+			this.client1.clearBucket(bucket + "1");
+			this.client1.deleteBucket(bucket + "1");
+		}
+		if (client2.bucketExists(bucket + "2")) {
+			this.client2.clearBucket(bucket + "2");
+			this.client2.deleteBucket(bucket + "2");
+		}
+		try {
+			CreateBucketRequest request1 = new CreateBucketRequest(bucket + "1");
+			CreateBucketRequest request2 = new CreateBucketRequest(bucket + "2");
+
+			request1.setCannedAcl(CannedAccessControlList.Private);
+			client1.createBucket(request1);
+			request2.setCannedAcl(CannedAccessControlList.Private);
+			client2.createBucket(request2);
+
+			client1.putBucketACL(bucket + "1", CannedAccessControlList.Private);
+
+			client2.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicRead);
+
+			client2.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client1.putBucketACL(bucket + "1",
+					CannedAccessControlList.PublicReadWrite);
+
+			client2.putBucketACL(bucket + "2", CannedAccessControlList.Private);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicRead);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+			client2.putBucketACL(bucket + "2",
+					CannedAccessControlList.PublicReadWrite);
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", true, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+			this.isc = false;
+			try {
+				client1.putBucketLogging(bucket + "1", false, bucket + "2");
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if (!isc)
+				throw new NotThrowException();
+
+		} finally {
+			if (client1.bucketExists(bucket + "1")) {
+				this.client1.clearBucket(bucket + "1");
+				this.client1.deleteBucket(bucket + "1");
+			}
+			if (client2.bucketExists(bucket + "2")) {
+				this.client2.clearBucket(bucket + "2");
+				this.client2.deleteBucket(bucket + "2");
+			}
+		}
+	}
+
+	@Test
+	public void testGetBucketLogging_1027() {
+		if (client1.bucketExists(bucket)) {
+			client1.clearBucket(bucket);
+			client1.deleteBucket(bucket);
+		}
+		try {
+			client1.createBucket(bucket);
+
+			PutBucketACLRequest request = new PutBucketACLRequest(bucket);
+			request.setCannedAcl(CannedAccessControlList.Private);
+			client1.putBucketACL(request);
+			client1.getBucketLogging(bucket);
+
+			request.setCannedAcl(CannedAccessControlList.PublicRead);
+			client1.putBucketACL(request);
+			client1.getBucketLogging(bucket);
+
+			request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.putBucketACL(request);
+			client1.getBucketLogging(bucket);
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				client1.clearBucket(bucket);
+				client1.deleteBucket(bucket);
+			}
+		}
+	}
+
+	@Test
+	public void testGetBucketLogging_1028() {
+		if (client1.bucketExists(bucket)) {
+			client1.clearBucket(bucket);
+			client1.deleteBucket(bucket);
+		}
+		try {
+			client1.createBucket(bucket);
+
+			PutBucketACLRequest request = new PutBucketACLRequest(bucket);
+			request.setCannedAcl(CannedAccessControlList.Private);
+			client1.putBucketACL(request);
+			this.isc = false;
+			try {
+				client2.getBucketLogging(bucket);
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if(!isc)
+				throw new NotThrowException();
+
+			request.setCannedAcl(CannedAccessControlList.PublicRead);
+			client1.putBucketACL(request);
+			this.isc = false;
+			try {
+				client2.getBucketLogging(bucket);
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if(!isc)
+				throw new NotThrowException();
+
+			request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.putBucketACL(request);
+			try {
+				client2.getBucketLogging(bucket);
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if(!isc)
+				throw new NotThrowException();
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				client1.clearBucket(bucket);
+				client1.deleteBucket(bucket);
 			}
 		}
 	}

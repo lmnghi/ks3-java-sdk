@@ -36,10 +36,6 @@ public class CreateBucketConfiguration {
 	}
 
 	public String toString() {
-		return "CreateBucketConfiguration[location=" + this.location + "]";
-	}
-
-	public String toXml() {
 		return StringUtils.object2string(this);
 	}
 }
