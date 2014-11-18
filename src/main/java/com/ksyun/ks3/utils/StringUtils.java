@@ -168,7 +168,11 @@ public class StringUtils {
 
 					value.append(prefix+field.getName() + "=" + fieldValue.toString()
 							+ "\n");
-				} else {
+				} else if(fieldValue.getClass().isEnum()){
+					value.append(prefix+field.getName() + "=" + fieldValue.toString()
+							+ "\n");
+				}
+				else {
 					valuesToAdd.put(field,fieldValue);
 				}
 			} else if(fieldValue==null){

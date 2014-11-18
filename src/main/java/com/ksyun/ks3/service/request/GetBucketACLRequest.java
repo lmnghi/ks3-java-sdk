@@ -11,20 +11,16 @@ import java.security.Permission;
 public class GetBucketACLRequest extends Ks3WebServiceRequest{
 
 
-    private String acl;
     @Override
     protected void configHttpRequest() {
         this.setHttpMethod(HttpMethod.GET);
-        this.addParams("acl",acl);
+        this.addParams("acl","");
     }
 
     @Override
     protected void validateParams() throws IllegalArgumentException {
-        if(StringUtils.validateBucketName(this.getBucketname())==null)
+        if(StringUtils.isBlank(this.getBucketname()))
             throw new IllegalArgumentException("bucket name is not correct");
-    }
-
-    public GetBucketACLRequest() {
     }
 
     public GetBucketACLRequest(String bucketName) {

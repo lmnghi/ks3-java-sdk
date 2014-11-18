@@ -42,12 +42,6 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	private CannedAccessControlList cannedAcl;
 	private AccessControlList acl = new AccessControlList();
 	private String redirectLocation;
-	/**
-	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
-	 * 
-	 * @param expectContinue
-	 */
-	private boolean expectContinue = false;
 
 	public PutObjectRequest(String bucketname, String key, File file) {
 		this.setBucketname(bucketname);
@@ -67,8 +61,6 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	@Override
 	protected void configHttpRequest() {
 		this.setContentType("binary/octet-stream");
-		if (this.expectContinue)
-			this.addHeader(HttpHeaders.Expect, "100-continue");
 		/**
 		 * 设置request body meta
 		 */
@@ -83,11 +75,9 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 					.setContentType(Mimetypes.getInstance().getMimetype(file));
 			long length = file.length();
 			objectMeta.setContentLength(length);
-			this.addHeader(HttpHeaders.ContentLength, String.valueOf(length));
 			try {
 				String contentMd5_b64 = Md5Utils.md5AsBase64(file);
-				this.addHeader(HttpHeaders.ContentMD5.toString(),
-						contentMd5_b64);
+				this.objectMeta.setContentMD5(contentMd5_b64);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				throw new Ks3ClientException("file :" + file.getName()
@@ -97,8 +87,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				throw new Ks3ClientException("calculate file md5 error (" + e
 						+ ")", e);
 			}
-		} 
-		// 添加meta data content-length 是由Apache HTTP框架自动添加的
+		}
 		if (this.objectMeta != null) {
 			if (!StringUtils.isBlank(this.objectMeta.getContentType()))
 				this.addHeader(HttpHeaders.ContentType,
@@ -112,9 +101,15 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			if (!StringUtils.isBlank(this.objectMeta.getContentEncoding()))
 				this.addHeader(HttpHeaders.ContentEncoding,
 						this.objectMeta.getContentEncoding());
+			if (this.objectMeta.getContentLength() > 0)
+				this.addHeader(HttpHeaders.ContentLength,
+						String.valueOf(this.objectMeta.getContentLength()));
 			if (this.objectMeta.getHttpExpiresDate() != null)
 				this.addHeader(HttpHeaders.Expires, this.objectMeta
 						.getHttpExpiresDate().toGMTString());
+			if (this.objectMeta.getContentMD5() != null)
+				this.addHeader(HttpHeaders.ContentMD5,
+						this.objectMeta.getContentMD5());
 			// 添加user meta
 			for (Entry<String, String> entry : this.objectMeta.getAllUserMeta()
 					.entrySet()) {
@@ -145,9 +140,12 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			throw new IllegalArgumentException("object key can not be null");
 		if (file == null && this.getRequestBody() == null)
 			throw new IllegalArgumentException("upload object can not be null");
-		if(this.redirectLocation!=null){
-			if(!this.redirectLocation.startsWith("/")&&!this.redirectLocation.startsWith("http://")&&!this.redirectLocation.startsWith("https://"))
-				throw new IllegalArgumentException("redirectLocation should start with / http:// or https://");
+		if (this.redirectLocation != null) {
+			if (!this.redirectLocation.startsWith("/")
+					&& !this.redirectLocation.startsWith("http://")
+					&& !this.redirectLocation.startsWith("https://"))
+				throw new IllegalArgumentException(
+						"redirectLocation should start with / http:// or https://");
 		}
 	}
 
@@ -192,21 +190,12 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	}
 
 	public String getMd5() {
-		return com.ksyun.ks3.utils.Base64
-				.encodeAsString(((MD5DigestCalculatingInputStream) super
-						.getRequestBody()).getMd5Digest());
+		if (!StringUtils.isBlank(this.getContentMD5()))
+			return this.getContentMD5();
+		else
+			return com.ksyun.ks3.utils.Base64
+					.encodeAsString(((MD5DigestCalculatingInputStream) super
+							.getRequestBody()).getMd5Digest());
 	}
 
-	public boolean isExpectContinue() {
-		return expectContinue;
-	}
-
-	/**
-	 * 将添加100-continue的header，在确定可以传输数据之后才真正上传数据
-	 * 
-	 * @param expectContinue
-	 */
-	public void setExpectContinue(boolean expectContinue) {
-		this.expectContinue = expectContinue;
-	}
 }

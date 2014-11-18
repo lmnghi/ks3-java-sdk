@@ -212,8 +212,8 @@ public class Ks3ClientTest {
 		  (FileNotFoundException e) { // TODO Auto-generated catch block
 		  e.printStackTrace(); }*/
 		try {
-			PutObjectRequest request = new PutObjectRequest("ksc-scm",
-					".../../etc/passwd.phpinfo.php",new ByteArrayInputStream(new byte[]{44,45,46}),null);
+			PutObjectRequest request = new PutObjectRequest("ksc-sc",
+					"ddd.txt",new File("D://123.txt"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -356,7 +356,7 @@ public class Ks3ClientTest {
     	PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm",CannedAccessControlList.PublicReadWrite);
     	client.putBucketACL(request);
     }
-    //@Test
+    @Test
     public void deleteObjects()
     {
     	System.out.println(client.deleteObjects(new String[]{"11112018rln5.pdf","dfdfdsf.pdf","sssss","square/"}, "ksc-scm"));

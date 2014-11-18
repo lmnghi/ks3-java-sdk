@@ -13,6 +13,7 @@ import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
+import com.ksyun.ks3.utils.XmlWriter;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -71,7 +72,9 @@ public class CreateBucketRequest extends Ks3WebServiceRequest{
 		this.setHttpMethod(HttpMethod.PUT);
 		if(this.config!=null&&this.config.getLocation()!=null)
 		{
-			this.setRequestBody(new ByteArrayInputStream(this.config.toXml().getBytes()));
+			XmlWriter writer = new XmlWriter();
+			writer.startWithNs("CreateBucketConfiguration").start("LocationConstraint").value(config.getLocation().toString()).end().end();
+			this.setRequestBody(new ByteArrayInputStream(writer.toString().getBytes()));
 		}
 		if(this.cannedAcl!=null)
 		{
