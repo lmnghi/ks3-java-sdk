@@ -51,7 +51,7 @@ public class ObjectMetadata {
         metadata.put(HttpHeaders.LastModified.toString(), lastModified);
     }
     public long getContentLength() {
-        Long contentLength = (Long)metadata.get(HttpHeaders.ContentLength.toString());
+        Long contentLength = Long.parseLong(metadata.get(HttpHeaders.ContentLength.toString()).toString());
 
         if (contentLength == null) return 0;
         return contentLength.longValue();
