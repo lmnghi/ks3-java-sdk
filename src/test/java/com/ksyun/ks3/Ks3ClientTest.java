@@ -212,8 +212,8 @@ public class Ks3ClientTest {
 		  (FileNotFoundException e) { // TODO Auto-generated catch block
 		  e.printStackTrace(); }*/
 		try {
-			PutObjectRequest request = new PutObjectRequest("ksc-sc",
-					"ddd.txt",new File("D://123.txt"));
+			PutObjectRequest request = new PutObjectRequest("ksc-scm",
+					"新建文件夹 (2).rar",new File("D://新建文件夹 (2).rar"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

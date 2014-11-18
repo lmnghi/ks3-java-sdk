@@ -48,7 +48,13 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		this.setObjectkey(key);
 		this.setFile(file);
 	}
-
+	/**
+	 * 
+	 * @param bucketname
+	 * @param key
+	 * @param inputStream
+	 * @param metadata 请尽量提供content-length,否则可能会导致jvm内存溢出
+	 */
 	public PutObjectRequest(String bucketname, String key,
 			InputStream inputStream, ObjectMetadata metadata) {
 		this.setBucketname(bucketname);
