@@ -1614,4 +1614,81 @@ public class BucketTest extends Ks3ClientTest {
 			}
 		}
 	}
+	@Test
+	public void testGetBucketLocation_1029() {
+		if (client1.bucketExists(bucket)) {
+			client1.clearBucket(bucket);
+			client1.deleteBucket(bucket);
+		}
+		try {
+			client1.createBucket(bucket);
+
+			PutBucketACLRequest request = new PutBucketACLRequest(bucket);
+			request.setCannedAcl(CannedAccessControlList.Private);
+			client1.putBucketACL(request);
+			client1.getBucketLoaction(bucket);
+
+			request.setCannedAcl(CannedAccessControlList.PublicRead);
+			client1.putBucketACL(request);
+			client1.getBucketLoaction(bucket);
+
+			request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.putBucketACL(request);
+			client1.getBucketLoaction(bucket);
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				client1.clearBucket(bucket);
+				client1.deleteBucket(bucket);
+			}
+		}
+	}
+
+	@Test
+	public void testGetBucketLocation_1030() {
+		if (client1.bucketExists(bucket)) {
+			client1.clearBucket(bucket);
+			client1.deleteBucket(bucket);
+		}
+		try {
+			client1.createBucket(bucket);
+
+			PutBucketACLRequest request = new PutBucketACLRequest(bucket);
+			request.setCannedAcl(CannedAccessControlList.Private);
+			client1.putBucketACL(request);
+			this.isc = false;
+			try {
+				client2.getBucketLoaction(bucket);
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if(!isc)
+				throw new NotThrowException();
+
+			request.setCannedAcl(CannedAccessControlList.PublicRead);
+			client1.putBucketACL(request);
+			this.isc = false;
+			try {
+				client2.getBucketLoaction(bucket);
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if(!isc)
+				throw new NotThrowException();
+
+			request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+			client1.putBucketACL(request);
+			try {
+				client2.getBucketLoaction(bucket);
+			} catch (AccessDeniedException e) {
+				this.isc = true;
+			}
+			if(!isc)
+				throw new NotThrowException();
+		} finally {
+			if (client1.bucketExists(bucket)) {
+				client1.clearBucket(bucket);
+				client1.deleteBucket(bucket);
+			}
+		}
+	}
 }
