@@ -17,4 +17,29 @@ Logging
 
 sdk包
 
-sdk使用说明
+com.ksyun.ks3:几个在上传时用到的特殊的流
+com.ksyun.ks3.config:sdk客户端配置
+com.ksyun.ks3.dto:数据传输对象
+com.ksyun.ks3.exception:异常
+com.ksyun.ks3.exception.serviceside:ks3服务端的异常
+com.ksyun.ks3.http:http相关内容及对Apache Http Client的封装
+com.ksyun.ks3.service:Ks3客户端，所有的对API的操作都是在这里进行的
+com.ksyun.ks3.service.request:对API请求时参数的封装，用户进行使用时首先应该实例化并配置一个request然后通过com.ksyun.ks3.service包下的客户端进行操作
+com.ksyun.ks3.service.response:对请求API返回的结果的解析器
+com.ksyun.ks3.signer:签名生成器，具体使用哪个签名生成器可以在ClientConfig中配置
+com.ksyun.ks3.utils:工具包
+
+
+sdk使用示例
+
+//客户端初始化
+final String accesskeyId = "accesskeyid";
+final String accesskeySecret = "accesskeysecret";
+Ks3 client = new Ks3Client(accesskeyId,accesskeySecret);
+//初始化新建bucket请求
+CreateBucketConfiguration config = new CreateBucketConfiguration(REGION.BEIJING);
+
+CreateBucketRequest request = new CreateBucketRequest("example");
+request.setCannedAcl(CannedAccessControlList.PublicRead);//设置bucket访问权限
+request.setConfig(config);//设置bucket存储地点
+Bucket bucket = client.createBucket(request);//执行操作
