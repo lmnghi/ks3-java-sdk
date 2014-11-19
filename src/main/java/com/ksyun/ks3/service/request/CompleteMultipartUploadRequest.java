@@ -44,6 +44,8 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 		this.setBucketname(bucketname);
 		this.setObjectkey(objectkey);
 		this.uploadId = uploadId;
+		if(eTags == null)
+			eTags = new ArrayList<PartETag>();
 		this.partETags = eTags;
 	}
 	public CompleteMultipartUploadRequest(ListPartsResult result)
@@ -95,6 +97,8 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 			throw new IllegalArgumentException("object key can not be null");
 		if(StringUtils.isBlank(this.uploadId))
 			throw new IllegalArgumentException("uploadId can not be null");
+		if(this.partETags == null)
+			throw new IllegalArgumentException("partETags can not be null");
 	}
 	/**
 	 * 通过Init Multipart Upload 初始化得到的uploadId

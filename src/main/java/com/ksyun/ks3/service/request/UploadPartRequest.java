@@ -102,7 +102,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 
 			} catch (FileNotFoundException e) {
 				throw new Ks3ClientException("read file " + file.getName()
-						+ " error");
+						+ " error",e);
 			}
 		}else{
 			this.content = new RepeatableInputStream(content,Constants.DEFAULT_STREAM_BUFFER_SIZE);

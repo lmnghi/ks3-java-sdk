@@ -1,13 +1,18 @@
 package com.ksyun.ks3.service;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 import com.ksyun.ks3.config.ClientConfig;
+import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.*;
 import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.exception.Ks3ClientException;
@@ -49,6 +54,7 @@ import com.ksyun.ks3.service.response.ListPartsResponse;
 import com.ksyun.ks3.service.response.PutObjectResponse;
 import com.ksyun.ks3.service.request.*;
 import com.ksyun.ks3.service.response.*;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -196,13 +202,7 @@ public class Ks3Client implements Ks3 {
 
 	public void clearBucket(String bucketName) throws Ks3ClientException,
 			Ks3ServiceException {
-		ObjectListing list = this.listObjects(bucketName);
-		for (String subDir : list.getCommonPrefixes()) {
-			this.removeDir(bucketName, subDir);
-		}
-		for (Ks3ObjectSummary obj : list.getObjectSummaries()) {
-			this.deleteObject(obj.getBucketName(), obj.getKey());
-		}
+		this.removeDir(bucketName,null);
 	}
 
 	public void makeDir(String bucketName, String dir)
@@ -215,8 +215,8 @@ public class Ks3Client implements Ks3 {
 	
 	public void removeDir(String bucketName, String dir)
 			throws Ks3ClientException, Ks3ServiceException {
-		if(!dir.endsWith("/"))
-			throw new IllegalArgumentException("dir should be end with /");
+		if(dir!=null&&!dir.endsWith("/")&&!StringUtils.isBlank(dir))
+			throw new IllegalArgumentException("dir should be end with / or null(clear bucket)");
 		String marker = null;
 		ObjectListing list = null;
 		do {
@@ -230,12 +230,15 @@ public class Ks3Client implements Ks3 {
 			for (Ks3ObjectSummary obj : list.getObjectSummaries()) {
 				keys.add(obj.getKey());
 			}
-			this.deleteObjects(keys, bucketName);
+			if(keys.size()>0)
+		    	this.deleteObjects(keys, bucketName);
 			for (String subDir : list.getCommonPrefixes()) {
 				this.removeDir(bucketName, subDir);
 			}
+			//若不为0，当将下面的子文件夹全部删除掉时会自动将dir删掉
+			if(list.getCommonPrefixes().size()==0&&!StringUtils.isBlank(dir))
+				this.deleteObject(bucketName, dir);
 		} while (list.isTruncated());
-		this.deleteObject(bucketName, dir);
 	}
 
 	public void deleteBucket(String bucketname) throws Ks3ClientException,
@@ -290,7 +293,32 @@ public class Ks3Client implements Ks3 {
 		object.getObject().setKey(objectkey);
 		return object;
 	}
-
+	public String generatePresignedUrl(String bucket, String key,
+			int expiration) throws Ks3ClientException {
+		boolean isPrivate = false;
+		AccessControlList acl = this.getObjectACL(bucket, key).getAccessControlList();
+        final Collection<Permission> allUsersPermissions = new LinkedHashSet<Permission>();
+        for (final Grant grant : acl.getGrants()) {
+            if (GranteeUri.AllUsers.equals(grant.getGrantee())) {
+                allUsersPermissions.add(grant.getPermission());
+            }
+        }
+        final boolean read = allUsersPermissions.contains(Permission.Read);
+        final boolean write = allUsersPermissions.contains(Permission.Write);
+        if (read && write) {
+        	isPrivate = false;
+        } else if (read) {
+        	isPrivate = false;
+        } else {
+           isPrivate = true;
+        }
+        if(isPrivate){
+        	
+        }else{
+        	return "http://"+bucket+"."+Constants.KS3_CDN_END_POINT+"/"+key;
+        }
+		return null;
+	}
 	public HeadBucketResult headBucket(String bucketname)
 			throws Ks3ClientException, Ks3ServiceException {
 		return this.headBucket(new HeadBucketRequest(bucketname));

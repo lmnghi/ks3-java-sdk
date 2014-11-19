@@ -33,7 +33,7 @@ public class AuthUtils {
 		String value = "KSS "+auth.getAccessKeyId()+":"+signature;
 		return value;
 	}
-	private static String calcSignature (String accessKeySecret,Ks3WebServiceRequest request) throws SignatureException
+	public static String calcSignature (String accessKeySecret,Ks3WebServiceRequest request) throws SignatureException
 	{
         String resource = CanonicalizedKSSResource(request);
         String requestMethod = request.getHttpMethod().toString();

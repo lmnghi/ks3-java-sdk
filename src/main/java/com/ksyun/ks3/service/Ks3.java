@@ -2,6 +2,7 @@ package com.ksyun.ks3.service;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -561,7 +562,6 @@ public interface Ks3 {
 	 */
 	public void deleteObject(DeleteObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
-
 	/**
 	 * DELETE Multiple Objects
 	 * 
@@ -639,7 +639,15 @@ public interface Ks3 {
 	 */
 	public GetObjectResult getObject(GetObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
-
+	/**
+	 * 生成object的外链地址
+	 * @param bucket
+	 * @param key
+	 * @param expiration 外链地址过期时间，单位秒
+	 * @return
+	 * @throws Ks3ClientException
+	 */
+	public String generatePresignedUrl(String bucket,String key,int expiration) throws Ks3ClientException;
 	/**
 	 * PUT OBJECT
 	 * 
