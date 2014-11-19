@@ -45,6 +45,6 @@ public enum GranteeUri implements Grantee{
     @Override
     public String toString()
     {
-    	return StringUtils.object2string(this);
+    	return super.toString()+"("+this.uri+")";
     }
 }
