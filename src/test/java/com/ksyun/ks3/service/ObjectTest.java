@@ -22,6 +22,7 @@ import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.HeadObjectResult;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.exception.serviceside.AccessDeniedException;
+import com.ksyun.ks3.exception.serviceside.NoSuchBucketException;
 import com.ksyun.ks3.exception.serviceside.NoSuchKeyException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.Ks3CoreController;
@@ -140,7 +141,7 @@ public class ObjectTest {
 	 * @Test 测试文件输出，获取相应文件。
 	 * @Then {@value 有时会出现异常}
 	 */
-	@Test(timeout=10000)
+	@Test(timeout=20000)
 	public void getObjectTest1003() throws IOException {
 		GetObjectResult object = client.getObject(bucket, "hosts.txt");
 		
@@ -176,7 +177,7 @@ public class ObjectTest {
 		GetObjectResult object = client.getObject(request);
 		
 		
-		assertEquals(299, object.getObject().getObjectMetadata().getContentLength());
+		assertEquals(300, object.getObject().getObjectMetadata().getContentLength());
 		File file = new File("D:/objectTest/getObjectTest1004.txt");
 
 		FileOutputStream fos = null;
@@ -240,7 +241,7 @@ public class ObjectTest {
 	}
 	
 	/**
-	 * @tag 权限测试
+	 * @tag 测试  GET Object
 	 * @Test 
 	 * @Then 
 	 */
@@ -323,7 +324,7 @@ public class ObjectTest {
 	/**
 	 * @tag 功能测试
 	 * @DoTask
-	 * @Test 关于modify属性的测试 
+	 * @Test 关于部分属性的测试 
 	 * @Then 
 	 */
 	@Test()
@@ -364,14 +365,83 @@ public class ObjectTest {
 	}
 	
 	/**
-	 * @tag 权限测试
+	 * @tag 测试 HEAD Object
 	 * @Test 
 	 * @Then 
 	 */
-	@Test()
-	public void getObjectACLTest(){
+	@Test
+	public void headObjectTest(){
+		HeadObjectResult object = client.headObject(bucket, "hosts.txt");
+		System.out.println(object);
+	}
+	
+	
+	/**
+	 * @tag 功能测试
+	 * @Test 正确的 key 以及  bucketName
+	 * @Then 
+	 */
+	public void getObjectACLTest3001(){
 		AccessControlPolicy object = client.getObjectACL(bucket, "hosts.txt");
 		System.out.println(object);
 	}
 	
+	/**
+	 * @tag 功能测试
+	 * @Test 错误的 key, 抛出  NoSuchKeyException 异常
+	 * @Then 
+	 */
+	@Test(expected = NoSuchKeyException.class)
+	public void getObjectACLTest3002(){
+		AccessControlPolicy object = client.getObjectACL(bucket, "host.txt");
+		System.out.println(object);
+	}
+	
+	/**
+	 * @tag 功能测试
+	 * @Test 错误的 bucket, 抛出  NoSuchBucketException 异常
+	 * @Then 
+	 */
+	@Test(expected = NoSuchBucketException.class)
+	public void getObjectACLTest3003(){
+		String tempbucket = "abc";
+		AccessControlPolicy object = client.getObjectACL(tempbucket, "host.txt");
+		System.out.println(object);
+	}
+	
+	/**
+	 * @tag 权限测试 
+	 * @Test 客户端访问非本用户文件---公开文件
+	 * @Then {@value 应该正常访问，但是结果非预期}
+	 */
+	@Test
+	public void getObjectACLTest3004(){
+
+		AccessControlPolicy object = clientOther.getObjectACL(bucket, "hostsPulbic.txt");
+		System.out.println(object);
+	}
+	
+	/**
+	 * @tag 权限测试 
+	 * @Test 客户端访问非本用户文件---私密文件
+	 * @Then 
+	 */
+	@Test(expected=AccessDeniedException.class)
+	public void getObjectACLTest3005(){
+
+		AccessControlPolicy object = clientOther.getObjectACL(bucket, "hosts.txt");
+		System.out.println(object);
+	}
+	
+	/**
+	 * @tag 测试  GET Object ACL
+	 * @Test 打印对象内容
+	 * @Then 
+	 */
+	@Test()
+	public void getObjectACLTest(){
+
+		AccessControlPolicy object = client.getObjectACL(bucket, "hosts.txt");
+		System.out.println(object);
+	}
 }
