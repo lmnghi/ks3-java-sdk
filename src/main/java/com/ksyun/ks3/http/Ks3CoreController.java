@@ -94,7 +94,6 @@ public class Ks3CoreController {
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
-			httpRequest.abort();
 			throw new Ks3ClientException(
 					"Request to Ks3 has occured an exception:(" + e + ")", e);
 		}
@@ -121,6 +120,7 @@ public class Ks3CoreController {
 				&& request instanceof MD5CalculateAble) {
 			String ETag = ((Md5CheckAble) ksResponse).getETag();
 			String MD5 = ((MD5CalculateAble) request).getMd5();
+			log.info("returned etag is:"+ETag);
 			if (!ETag.equals(Converter.MD52ETag(MD5))) {
 				throw new Ks3ClientException(
 						"the MD5 value we calculated dose not match the MD5 value Ks3 Service returned.please try again");

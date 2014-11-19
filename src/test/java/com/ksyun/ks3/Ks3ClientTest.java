@@ -120,7 +120,7 @@ public class Ks3ClientTest {
 	 }
 	 @Test
 	 public void listBucketParts(){
-		 ListMultipartUploadsResult result = client.listMultipartUploads("lijunwei.test","IM","23","34");
+		 ListMultipartUploadsResult result = client.listMultipartUploads("ksc-scm");
 		 System.out.println(result);
 	 }
     @Test
@@ -181,60 +181,17 @@ public class Ks3ClientTest {
     }
 	 @Test
 	public void putObject() {
-
-/*		PutObjectRequest request = new PutObjectRequest("lijunwei.test",
-				"scrt712-x86.exe", new File("C:\\Users\\lijunwei\\Downloads\\scrt712-x86.exe"));
-		request.getObjectMeta().addOrEditUserMeta("x-kss-meta-lijunwei",
-				"lijunwei");
-		request.getObjectMeta().addOrEditMeta(Meta.CacheControl,
-				"only-if-cached");
-		client.putObject(request);*/
-		
-/*		  request.setCannedAcl(CannedAccessControlList.PublicRead);
-		  AccessControlList acl = new AccessControlList(); HashSet<Grant>
-		  grants = new HashSet<Grant>(); GranteeId g1 = new GranteeId();
-		  g1.setIdentifier("1234");
-		  g1.setDisplayName("123"); Grant gt1 = new
-		  Grant(g1,Permission.FullControl); grants.add(gt1); GranteeId g2 = new
-				  GranteeId(); g2.setIdentifier("aaaa");g2.setDisplayName("aaa"); Grant gt2 = new
-		  Grant(g2,Permission.Read); grants.add(gt2); acl.setGrants(grants);
-		request.setAcl(acl);
-		  
-		   client.putObject(request); */
-/*		   ObjectMetadata meta = new ObjectMetadata();
-		  meta.addOrEditUserMeta(ObjectMetadata.userMetaPrefix + "test",
-		  "123"); // meta.setUserMetadata(userMetadata); try {
-		  client.PutObject("lijunwei.test", "IMG_16721.jpg", new
-		  FileInputStream(new File("D://IMG_16721.jpg")), meta); } catch
-		  (Ks3ServiceException e) { // TODO Auto-generated catch block
-		  e.printStackTrace(); } catch (Ks3ClientException e) { // TODO
-		  Auto-generated catch block e.printStackTrace(); } catch
-		  (FileNotFoundException e) { // TODO Auto-generated catch block
-		  e.printStackTrace(); }*/
+		 CreateBucketRequest request1 = new CreateBucketRequest("beijing.bucket");
+		 request1.setConfig(new CreateBucketConfiguration(REGION.BEIJING));
+		 client.createBucket(request1);
 		try {
-			PutObjectRequest request = new PutObjectRequest("ksc-scm",
+			PutObjectRequest request = new PutObjectRequest("beijing.bucket",
 					"新建文件夹 (2).rar",new File("D://新建文件夹 (2).rar"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-/*		GetObjectRequest request = new GetObjectRequest("lijunwei.test", "IMG_16721。exe");
-		request.setRange(0,499);
-		request.setModifiedSinceConstraint(new Date());
-		//List<String> aa = new ArrayList<String>();
-		//aa.add("73a2ec41f952b0d62e1dacff25889d5a");
-	//	request.setNonmatchingEtagConstraints(aa);
-		GetObjectResult obj = client.getObject(request);
-		System.out.println(obj);*/
-/*			try {
-				PutObjectRequest request = new PutObjectRequest("lijunwei.test",
-						"%2f",new ByteArrayInputStream(new byte[]{}),new ObjectMetadata());
-				client.putObject(request);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 		 
 	}
 
@@ -259,10 +216,10 @@ public class Ks3ClientTest {
 	@Test
 	public void uploadPart() {
 		long part = 5*1024*1024;
-		String bucket = "lijunwei.test";
-		String key = "IMG_16721.jpg";
+		String bucket = "ksc-scm";
+		String key = "我的D盘压缩.rar";
 		//String filename = "D://新建文件夹.rar";
-		String filename = "D://IMG_16721.jpg";
+		String filename = "D://新建文件夹.rar";
 		
 		
 		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
