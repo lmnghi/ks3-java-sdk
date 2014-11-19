@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
+import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
@@ -60,7 +61,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		this.setBucketname(bucketname);
 		this.setObjectkey(key);
 		this.setObjectMeta(metadata);
-		this.setRequestBody(inputStream);
+		this.setRequestBody(new RepeatableInputStream(inputStream,Constants.DEFAULT_STREAM_BUFFER_SIZE));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -72,7 +73,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		 */
 		if (file != null) {
 			try {
-				this.setRequestBody(new FileInputStream(file));
+				this.setRequestBody(new RepeatableFileInputStream(file));
 			} catch (FileNotFoundException e) {
 				throw new Ks3ClientException("file :" + file.getName()
 						+ " not found");
