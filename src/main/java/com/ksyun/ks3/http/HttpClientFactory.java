@@ -101,7 +101,6 @@ public class HttpClientFactory {
                 httpClient.addRequestInterceptor(new PreemptiveProxyAuth(proxyHttpHost), 0);
             }
         }
-
         return httpClient;
     }
 

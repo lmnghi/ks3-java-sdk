@@ -13,6 +13,7 @@ import com.ksyun.ks3.dto.Bucket;
  **/
 public class CreateBucketResponse extends Ks3WebServiceDefaultResponse<Bucket> {
 	public int[] expectedStatus() {
+		//TODO 307特殊处理
 		return new int[]{200,307};
 	}
 

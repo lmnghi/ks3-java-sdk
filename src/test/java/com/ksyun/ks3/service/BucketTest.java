@@ -1634,11 +1634,11 @@ public class BucketTest extends Ks3ClientTest {
 	@Test
 	public void testListMultiPartUploads_1035() throws Exception{
 		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest("ksc-scm");
-		request.setDelimiter("delimiter");
-		request.setKeyMarker("keyMarker");
+		request.setDelimiter("");
+		request.setKeyMarker("");
 		request.setMaxUploads(10);
-		request.setPrefix("prefix");
-		request.setUploadIdMarker("uploadIdMarker");
+		request.setPrefix("");
+		request.setUploadIdMarker("56182c1cd7ae4718bb15fe6380e81d18");
 		ListMultipartUploadsResult result = client1.listMultipartUploads(request);
 		if(!"delimiter".equals(result.getDelimiter())){
 			throw new Exception();

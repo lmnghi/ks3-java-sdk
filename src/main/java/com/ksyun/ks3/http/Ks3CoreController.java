@@ -41,10 +41,12 @@ import com.ksyun.ks3.utils.Timer;
  **/
 public class Ks3CoreController {
 	private static final Log log = LogFactory.getLog(Ks3CoreController.class);
-	private HttpClient client = new HttpClientFactory().createHttpClient();
+	private HttpClientFactory factory = new HttpClientFactory();
+	private HttpClient client;
 
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
+		log.info("Ks3WebServiceRequest:"+request.getClass()+";Ks3WebServiceResponse:"+clazz);
 		Y result = null;
 		try {
 			if (auth == null || StringUtils.isBlank(auth.getAccessKeyId())
@@ -82,6 +84,7 @@ public class Ks3CoreController {
 	private <X extends Ks3WebServiceResponse<Y>, Y> Y doExecute(
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
 		Timer.start();
+		this.client = this.factory.createHttpClient();
 		HttpResponse response = null;
 		HttpRequestBase httpRequest = request.getHttpRequest();
 		log.info("finished convert httprequest : " + Timer.end());
@@ -99,7 +102,10 @@ public class Ks3CoreController {
 		log.info("finished calculate authorization: " + Timer.end());
 		try {
 			log.info("sending http request..... please wait");
+			log.info(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
+			log.info(response.getStatusLine());
+			//TODO 307retry
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
@@ -136,6 +142,8 @@ public class Ks3CoreController {
 			}
 		}
 		log.info("finished handle response : " + Timer.end());
+		if(result!=null&&!(result instanceof Boolean))
+		     log.info(result);
 		return result;
 	}
 

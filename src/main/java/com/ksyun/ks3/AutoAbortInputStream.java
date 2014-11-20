@@ -28,6 +28,13 @@ public class AutoAbortInputStream extends FilterInputStream{
 		}
 		return ch;
 	}
+	@Override
+	public int read(byte b[], int off, int len) throws IOException{
+		int i = super.read();
+		if(i == -1)
+			this.abort();
+		return i;
+	}
 	public void abort(){
 		if(this.request instanceof HttpRequestBase){
 			((HttpRequestBase) request).abort();
