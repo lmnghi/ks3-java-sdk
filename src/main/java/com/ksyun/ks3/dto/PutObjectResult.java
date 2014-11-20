@@ -7,7 +7,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月22日 下午1:54:37
  * 
- * @description 
+ * @description PUT Object返回的结果
  **/
 public class PutObjectResult {
 	private String eTag;

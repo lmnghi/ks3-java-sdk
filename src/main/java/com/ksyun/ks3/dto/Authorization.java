@@ -6,7 +6,7 @@ package com.ksyun.ks3.dto;
  * 
  * @date 2014年10月15日 下午1:43:03
  * 
- * @description 
+ * @description 用户访问ks3服务需要的ak sk
  **/
 public class Authorization {
 	private String accessKeyId;

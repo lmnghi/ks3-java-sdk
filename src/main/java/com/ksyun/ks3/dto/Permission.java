@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ClientException;
  * 
  * @date 2014年10月22日 上午10:41:31
  * 
- * @description
+ * @description ACL中授权时的权限
  **/
 public enum Permission {
 	FullControl("FULL_CONTROL", "x-kss-grant-full-control"), 

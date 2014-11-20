@@ -11,7 +11,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月16日 下午3:26:00
  * 
- * @description 
+ * @description GET Bucket(List objects)的返回结果
  **/
 public class ObjectListing {
     private List<Ks3ObjectSummary> objectSummaries = new ArrayList<Ks3ObjectSummary>();
@@ -29,6 +29,9 @@ public class ObjectListing {
     private String marker;
     private int maxKeys;
     private String delimiter;
+    /**
+     * ks3服务器对返回的xml中object key的编码方式
+     */
     private String encodingType;
     @Override
     public String toString()

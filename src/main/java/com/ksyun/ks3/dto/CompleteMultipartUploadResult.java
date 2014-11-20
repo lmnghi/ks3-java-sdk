@@ -7,15 +7,24 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月23日 下午1:43:32
  * 
- * @description 
+ * @description CompleteMutipartUpload 操作返回的结果
  **/
 public class CompleteMultipartUploadResult {
 	/**
 	 * 新建对象的uri
 	 */
 	private String location;
+	/**
+	 * 新建object存放的bucket
+	 */
 	private String bucket;
+	/**
+	 * 新建object的object key
+	 */
 	private String key;
+	/**
+	 * 新建object的etag
+	 */
 	private String eTag;
 	public String toString()
 	{

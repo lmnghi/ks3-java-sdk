@@ -59,17 +59,9 @@ public class Ks3CoreController {
 			return result;
 		}
 		catch (RuntimeException e) {
-			// 异常格式转化统一
-			if (e instanceof Ks3ClientException) {
-				log.error(e);
-				e.printStackTrace();
-				throw e;
-			} else {
-				Ks3ClientException exception = new Ks3ClientException(e);
-				log.error(exception);
-				exception.printStackTrace();
-				throw exception;
-			}
+			log.error(e);
+			e.printStackTrace();
+			throw e;
 		} catch (Exception e){
 			Ks3ClientException exception = new Ks3ClientException(e);
 			log.error(exception);
@@ -161,7 +153,7 @@ public class Ks3CoreController {
 		int num = kscResponse.expectedStatus().length;
 		int code = response.getStatusLine().getStatusCode();
 		for (int i = 0; i < num; i++) {
-			if (code == Ks3WebServiceResponse.allStatueCode)
+			if (kscResponse.expectedStatus()[i] == Ks3WebServiceResponse.allStatueCode)
 				return true;
 			if (code == kscResponse.expectedStatus()[i])
 				return true;

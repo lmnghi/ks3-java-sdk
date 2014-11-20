@@ -27,7 +27,7 @@ public class BucketLoggingStatus {
 	 */
 	private String targetPrefix;
 	/**
-	 * 日志权限信息
+	 * 日志权限信息（暂不支持）
 	 */
 	private HashSet<Grant> targetGrants = new HashSet<Grant>();
 

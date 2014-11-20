@@ -8,7 +8,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月24日 下午1:18:38
  * 
- * @description 通过uri指定被授权者
+ * @description 通过uri指定被授权者,指定是一组的人
  **/
 public enum GranteeUri implements Grantee{
 	/**

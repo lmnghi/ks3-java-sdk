@@ -9,15 +9,33 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月16日 下午3:23:58
  * 
- * @description
+ * @description 
  **/
 public class Ks3ObjectSummary {
+	/**
+	 * bucket名称
+	 */
 	protected String bucketName;
+	/**
+	 * object key
+	 */
 	protected String key;
 	protected String eTag;
+	/**
+	 * 该object的大小，（字节数）
+	 */
 	protected long size;
+	/**
+	 * 上次修改时间
+	 */
 	protected Date lastModified;
+	/**
+	 * 存储类型，目前支持STANDARD
+	 */
 	protected String storageClass;
+	/**
+	 * object拥有者
+	 */
 	protected Owner owner;
 
 	public String toString() {

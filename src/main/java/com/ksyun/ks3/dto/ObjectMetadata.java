@@ -16,8 +16,14 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description object元数据
  **/
 public class ObjectMetadata {
+	/**
+	 * 用户自定义的元数据
+	 */
 	private Map<String, String> userMetadata = new HashMap<String,String>();
 	private Map<String, Object> metadata = new HashMap<String,Object>();
+	/**
+	 * Http Expires,metadat中预留了一个bucket lifecycle的Expires，所以把它放在了外面
+	 */
 	private Date httpExpiresDate;
 	@Override
 	public String toString()

@@ -12,6 +12,9 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description Copy Object 和 Copy Part的结果
  **/
 public class CopyResult {
+	/**
+	 * 上次修改时间
+	 */
 	private Date lastModified;
 	private String ETag;
 	public Date getLastModified() {

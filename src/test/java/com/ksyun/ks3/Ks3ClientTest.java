@@ -279,6 +279,46 @@ public class Ks3ClientTest {
 		client.completeMultipartUpload(request);
 	}
 	@Test
+	public void uploadPart_01() {
+		long part = 5 * 1024 * 1024;
+		String bucket = "ksc-scm";
+		String key = "我的D盘压缩.rar";
+		// String filename = "D://新建文件夹.rar";
+		String filename = "D://新建文件夹.rar";
+
+		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
+				bucket, key);
+		request1.setCannedAcl(CannedAccessControlList.PublicRead);
+		InitiateMultipartUploadResult result = client
+				.initiateMultipartUpload(request1);
+		System.out.println(result);
+		// upload
+		File file = new File(filename);
+		long n = file.length() / part;
+		System.out.println(n);
+		for (int i = 0; i <= n; i++) {
+			UploadPartRequest request = new UploadPartRequest(
+					result.getBucket(), result.getKey(), result.getUploadId(),
+					i + 1, file, part, (long) i * part);
+			PartETag tag = client.uploadPart(request);
+			System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
+			try {
+				UploadPartTime.print(i + 1, Timer.end());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// list parts
+		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
+				result.getKey(), result.getUploadId());
+		ListPartsResult tags = client.listParts(requestList);
+		// complete
+		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
+				tags);
+		client.completeMultipartUpload(request);
+	}
+	@Test
 	public void testETag()
 	{
 		List<String> s = new ArrayList<String>();
@@ -348,13 +388,12 @@ public class Ks3ClientTest {
 		System.out.println(getBucketACL.getAccessControlList());
 	}
 
-	// @Test
+	 @Test
 	public void putBucketACL() {
 		PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm");
-		AccessControlList acl = new AccessControlList();
-		acl.addGrant(GranteeUri.AllUsers, Permission.Read);
-		// request.setCannedAcl(CannedAccessControlList.Private);
-		request.setAccessControlList(acl);
+		
+		
+		 request.setCannedAcl(CannedAccessControlList.Private);
 		client.putBucketACL(request);
 	}
 

@@ -15,7 +15,7 @@ public class DeleteMultipleObjectsError {
 	 */
 	private String key;
 	/**
-	 * 错误码，详见readme.txt
+	 * 错误码，详见<a href="http://ks3.ksyun.com/doc/api/index.html">http://ks3.ksyun.com/doc/api/index.html</a>
 	 */
 	private String code;
 	/**

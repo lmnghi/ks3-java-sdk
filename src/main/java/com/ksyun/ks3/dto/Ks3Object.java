@@ -14,8 +14,13 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description 存放object信息
  **/
 public class Ks3Object  implements Closeable{
-	
+	/**
+	 * object key
+	 */
 	private String key = null;
+	/**
+	 * 存放该object的bucket
+	 */
 	private String bucketName = null;
 	/**
 	 * object 元数据
@@ -25,6 +30,9 @@ public class Ks3Object  implements Closeable{
 	 * object 数据
 	 */
 	private AutoAbortInputStream objectContent;
+	/**
+	 * 暂不支持
+	 */
 	private String redirectLocation;
 	
 	@Override

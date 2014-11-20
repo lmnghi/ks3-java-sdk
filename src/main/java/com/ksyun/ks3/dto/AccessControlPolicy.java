@@ -11,6 +11,9 @@ import com.ksyun.ks3.utils.StringUtils;
  */
 public class AccessControlPolicy {
 
+	/**
+	 * acl
+	 */
 	private AccessControlList accessControlList = new AccessControlList();
     private Owner owner;
 

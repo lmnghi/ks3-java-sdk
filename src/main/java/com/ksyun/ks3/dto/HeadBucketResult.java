@@ -18,7 +18,7 @@ public class HeadBucketResult {
 	 */
 	private int statueCode;
 	/**
-	 * 返回的htpp状态码
+	 * 返回的htpp头信息
 	 */
 	private Map<String,String> headers = new HashMap<String,String>();
 	public int getStatueCode() {

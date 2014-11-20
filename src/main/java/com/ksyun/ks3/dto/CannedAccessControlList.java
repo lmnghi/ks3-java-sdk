@@ -8,8 +8,17 @@ package com.ksyun.ks3.dto;
  * @description 对ks3 bucket或object的{@link AccessControlList}的一种快捷配置方式
  **/
 public enum CannedAccessControlList {
+	/**
+	 * 私有
+	 */
 	Private("private"),
+	/**
+	 * 公开读
+	 */
 	PublicRead("public-read"), 
+	/**
+	 * 公开读写
+	 */
 	PublicReadWrite("public-read-write");
 	private final String cannedAclHeader;
 

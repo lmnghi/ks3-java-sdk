@@ -10,7 +10,13 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description 初始化分块上传的返回结果
  **/
 public class InitiateMultipartUploadResult {
+	/**
+	 * 目标bucket
+	 */
 	private String bucket;
+	/**
+	 * 最后complete multipart upload时生成的object的object key
+	 */
 	private String key;
 	/**
 	 * upload id

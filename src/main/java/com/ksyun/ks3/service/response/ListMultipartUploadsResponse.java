@@ -6,7 +6,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import com.ksyun.ks3.dto.ListMultipartUploadsResult;
-import com.ksyun.ks3.dto.MultiPartInfo;
+import com.ksyun.ks3.dto.MultiPartUploadInfo;
 import com.ksyun.ks3.dto.Owner;
 import com.ksyun.ks3.utils.DateUtils;
 
@@ -20,7 +20,7 @@ import com.ksyun.ks3.utils.DateUtils;
 public class ListMultipartUploadsResponse extends
 		Ks3WebServiceXmlResponse<ListMultipartUploadsResult> {
 
-	private MultiPartInfo upload = null;
+	private MultiPartUploadInfo upload = null;
 	private Owner owner = null;
 
 	public int[] expectedStatus() {
@@ -36,14 +36,14 @@ public class ListMultipartUploadsResponse extends
 	public void startDocument() throws SAXException {
 		result = new ListMultipartUploadsResult();
 		result.setCommonPrefixes(new ArrayList<String>());
-		result.setUploads(new ArrayList<MultiPartInfo>());
+		result.setUploads(new ArrayList<MultiPartUploadInfo>());
 	}
 
 	@Override
 	public void startEle(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
 		if ("Upload".equals(getTag())) {
-			this.upload = new MultiPartInfo();
+			this.upload = new MultiPartUploadInfo();
 		} else if ("Initiator".equals(getTag())) {
 			this.owner = new Owner();
 		} else if ("Owner".equals(getTag())) {

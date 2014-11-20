@@ -11,6 +11,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * @date 2014年11月10日 下午6:26:44
  * 
  * @description 用于{@link GetObjectRequest}{@link HeadObjectRequest}
+ * 使返回结果时将返回的http headers覆盖
  **/
 public class ResponseHeaderOverrides {
 	private Map<String,String> overrides = new HashMap<String,String>();

@@ -14,8 +14,17 @@ import com.ksyun.ks3.utils.StringUtils;
 public class Bucket {
 	private static final long serialVersionUID = -8646831898339939580L;
 
+	/**
+	 * 存储空间名称，全局唯一
+	 */
     private String name = null;
+    /**
+     * bucket拥有者
+     */
     private Owner owner = null;
+    /**
+     * bucket创建时间
+     */
     private Date creationDate = null;
     public Bucket() {}
     public Bucket(String name) {
