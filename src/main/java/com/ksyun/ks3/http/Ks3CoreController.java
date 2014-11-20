@@ -19,6 +19,7 @@ import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.exception.client.InvalidDigestException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.request.support.MD5CalculateAble;
@@ -44,6 +45,7 @@ public class Ks3CoreController {
 
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
+		Y result = null;
 		try {
 			if (auth == null || StringUtils.isBlank(auth.getAccessKeyId())
 					|| StringUtils.isBlank(auth.getAccessKeySecret()))
@@ -51,21 +53,28 @@ public class Ks3CoreController {
 						"client not login!AccessKeyId or AccessKeySecret is blank");
 			if (request == null || clazz == null)
 				throw new IllegalArgumentException();
-			Y result = doExecute(auth, request, clazz);
+			result = doExecute(auth, request, clazz);
 			return result;
-		} catch (Exception e) {
+		}
+		catch (RuntimeException e) {
 			// 异常格式转化统一
 			if (e instanceof Ks3ClientException) {
 				log.error(e);
 				e.printStackTrace();
-				throw (Ks3ClientException) e;
+				throw e;
 			} else {
 				Ks3ClientException exception = new Ks3ClientException(e);
 				log.error(exception);
 				exception.printStackTrace();
 				throw exception;
 			}
-		} finally {
+		} catch (Exception e){
+			Ks3ClientException exception = new Ks3ClientException(e);
+			log.error(exception);
+			exception.printStackTrace();
+			throw exception;
+		} 
+		finally {
 			System.out.println();
 		}
 	}
@@ -94,7 +103,6 @@ public class Ks3CoreController {
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
-			httpRequest.abort();
 			throw new Ks3ClientException(
 					"Request to Ks3 has occured an exception:(" + e + ")", e);
 		}
@@ -121,9 +129,10 @@ public class Ks3CoreController {
 				&& request instanceof MD5CalculateAble) {
 			String ETag = ((Md5CheckAble) ksResponse).getETag();
 			String MD5 = ((MD5CalculateAble) request).getMd5();
+			log.info("returned etag is:"+ETag);
 			if (!ETag.equals(Converter.MD52ETag(MD5))) {
-				throw new Ks3ClientException(
-						"the MD5 value we calculated dose not match the MD5 value Ks3 Service returned.please try again");
+				throw new InvalidDigestException(
+						"success,but the MD5 value we calculated dose not match the MD5 value Ks3 Service returned,the part of data may has been lost");
 			}
 		}
 		log.info("finished handle response : " + Timer.end());

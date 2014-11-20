@@ -13,7 +13,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月16日 下午3:54:46
  * 
- * @description
+ * @description object元数据
  **/
 public class ObjectMetadata {
 	private Map<String, String> userMetadata = new HashMap<String,String>();
@@ -56,6 +56,7 @@ public class ObjectMetadata {
         if (contentLength == null) return 0;
         return contentLength.longValue();
     }
+    /**分块下载时获取文件的总大小*/
     public long getInstanceLength() {
         // See Content-Range in
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html

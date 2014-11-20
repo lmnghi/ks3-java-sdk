@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -15,8 +17,7 @@ import java.security.NoSuchAlgorithmException;
  **/
 public class MD5DigestCalculatingInputStream extends FilterInputStream {
 	private MessageDigest digest;
-	private MessageDigest digestLastMarked;
-	private byte[] lastDigest = null;
+	private byte[] lastDigest;
 
 	public MD5DigestCalculatingInputStream(InputStream in) {
 		super(in);
@@ -28,8 +29,8 @@ public class MD5DigestCalculatingInputStream extends FilterInputStream {
 	}
 
 	public byte[] getMd5Digest() {
-		if(lastDigest==null)
-		    return this.lastDigest =digest.digest();
+		if(this.lastDigest==null)
+		    return this.lastDigest = digest.digest();
 		else{
 			return this.lastDigest;
 		}
@@ -38,13 +39,6 @@ public class MD5DigestCalculatingInputStream extends FilterInputStream {
 	@Override
 	public void mark(int readlimit) {
 		super.mark(readlimit);
-		if (markSupported()) {
-			try {
-				digestLastMarked = (MessageDigest) digest.clone();
-			} catch (CloneNotSupportedException e) { // should never occur
-				throw new IllegalStateException("unexpected", e);
-			}
-		}
 	}
 
 	/**
@@ -53,19 +47,18 @@ public class MD5DigestCalculatingInputStream extends FilterInputStream {
 	@Override
 	public void reset() throws IOException {
 		super.reset();
-		if (digestLastMarked != null) {
-			try {
-				digest = (MessageDigest) digestLastMarked.clone();
-			} catch (CloneNotSupportedException e) { // should never occur
-				throw new IllegalStateException("unexpected", e);
-			}
+		try {
+			digest = MessageDigest.getInstance("MD5");
+			this.lastDigest = null;
+		} catch (NoSuchAlgorithmException e) { // should never occur
+			throw new IllegalStateException("unexpected", e);
 		}
 	}
-
 	@Override
 	public int read() throws IOException {
 		int ch = super.read();
 		if (ch != -1) {
+			this.lastDigest = null;
 			digest.update((byte) ch);
 		}
 		return ch;
@@ -75,6 +68,7 @@ public class MD5DigestCalculatingInputStream extends FilterInputStream {
 	public int read(byte[] b, int off, int len) throws IOException {
 		int result = super.read(b, off, len);
 		if (result != -1) {
+			this.lastDigest = null;
 			digest.update(b, off, result);
 		}
 		return result;

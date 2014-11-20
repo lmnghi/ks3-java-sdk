@@ -69,80 +69,93 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
-	private Ks3Client client1 = new Ks3Client("GENJ6O5PQFVE37MEEMZA","9Z6VbeYUJ0BiKcuwYe5x/j76TZvYe9VRh2OdH15m");	
-	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ","ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
-	public static void main(String [] args){
+	private Ks3Client client1 = new Ks3Client("GENJ6O5PQFVE37MEEMZA",
+			"9Z6VbeYUJ0BiKcuwYe5x/j76TZvYe9VRh2OdH15m");
+	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ",
+			"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
+
+	public static void main(String[] args) {
 		String s = "<ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>aw2</Name><Prefix>../../../../../../../../../../../../../../../../etc/</Prefix><Marker></Marker><MaxKeys>30</MaxKeys><Delimiter>/</Delimiter><IsTruncated>false</IsTruncated><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd</Key><LastModified>2014-08-28T12:45:55.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php</Key><LastModified>2014-08-28T12:46:02.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>";
-		            
-		for(int i = 600;i<700;i++){
+
+		for (int i = 600; i < 700; i++) {
 			System.out.print(s.charAt(i));
 		}
 	}
+
 	@Before
 	public void init() {
 		ClientConfig config = ClientConfig.getConfig();
 	}
 
-	 @Test
+	@Test
 	public void ListBuckets() {
 		List<Bucket> buckets = client1.listBuckets();
 		System.out.println(buckets);
 	}
-	 @Test
-	 public void getBucketLocation(){
-		 System.out.println(client.getBucketLoaction("ksc-scm"));
-	 }
-	 @Test 
-	 public void getBucketLogging(){
-		 System.out.println(client.getBucketLogging("ksc-scm"));
-	 }
-	 @Test
-	 public void putBucketLogging(){
-		 BucketLoggingStatus status = new BucketLoggingStatus();
-		 status.setEnable(true);
-		 status.setTargetBucket("lijunwei.test");
-		 status.setTargetPrefix("ddd");
-		 
-		 GranteeEmail grantee1 = new GranteeEmail();
-		 grantee1.setIdentifier("lijunwei@kingsoft.com");
-		 status.addGrant(new Grant(grantee1,Permission.Read));
-		 
-		 GranteeUri grantee2 = GranteeUri.AllUsers;
-		 status.addGrant(new Grant(grantee2,Permission.FullControl));
-		 
-		 GranteeId grantee = new GranteeId();
-		 grantee.setIdentifier("12344");
-		 status.addGrant(new Grant(grantee,Permission.Write));
-		 
-		 PutBucketLoggingRequest request = new PutBucketLoggingRequest("ksc-scm");
-		 request.setBucketLoggingStatus(status);
-		 client.putBucketLogging(request);
-	 }
-	 @Test
-	 public void listBucketParts(){
-		 ListMultipartUploadsResult result = client.listMultipartUploads("lijunwei.test","IM","23","34");
-		 System.out.println(result);
-	 }
-    @Test
+
+	@Test
+	public void getBucketLocation() {
+		System.out.println(client.getBucketLoaction("ksc-scm"));
+	}
+
+	@Test
+	public void getBucketLogging() {
+		System.out.println(client.getBucketLogging("ksc-scm"));
+	}
+
+	@Test
+	public void putBucketLogging() {
+		BucketLoggingStatus status = new BucketLoggingStatus();
+		status.setEnable(true);
+		status.setTargetBucket("lijunwei.test");
+		status.setTargetPrefix("ddd");
+
+		GranteeEmail grantee1 = new GranteeEmail();
+		grantee1.setIdentifier("lijunwei@kingsoft.com");
+		status.addGrant(new Grant(grantee1, Permission.Read));
+
+		GranteeUri grantee2 = GranteeUri.AllUsers;
+		status.addGrant(new Grant(grantee2, Permission.FullControl));
+
+		GranteeId grantee = new GranteeId();
+		grantee.setIdentifier("12344");
+		status.addGrant(new Grant(grantee, Permission.Write));
+
+		PutBucketLoggingRequest request = new PutBucketLoggingRequest("ksc-scm");
+		request.setBucketLoggingStatus(status);
+		client.putBucketLogging(request);
+	}
+
+	@Test
+	public void listBucketParts() {
+		ListMultipartUploadsResult result = client
+				.listMultipartUploads("ksc-scm");
+		System.out.println(result);
+	}
+
+	@Test
 	public void ListObjects() {
-    	
-/*		ObjectListing o = client.listObjects("yyy");
+
+		/*
+		 * ObjectListing o = client.listObjects("yyy"); Object od = o;
+		 * System.out.println(od);
+		 */
+		ListObjectsRequest request = new ListObjectsRequest("aw2", null, null,
+				null, null);
+		ObjectListing o = client1.listObjects(request);
 		Object od = o;
-		System.out.println(od);*/
-    	ListObjectsRequest request = new ListObjectsRequest("aw2",null,null,null,null);
-    	ObjectListing o = client1.listObjects(request);
-    	Object od = o;
 		System.out.println(od);
 	}
 
-	 @Test
+	@Test
 	public void createAndDeleteBucket() {
-		CreateBucketRequest request = new CreateBucketRequest("lijunwei",REGION.BEIJING); 
+		CreateBucketRequest request = new CreateBucketRequest("lijunwei",
+				REGION.BEIJING);
 		client.createBucket(request);
 		client.deleteBucket("lijunwei");
 	}
 
-	 @Test
+	@Test
 	public void getObject() throws IOException {
 		GetObjectResult obj = client.getObject("ksc-scm", "123.txt");
 		System.out.println(obj);
@@ -150,8 +163,8 @@ public class Ks3ClientTest {
 			OutputStream os = new FileOutputStream(new File("D://"
 					+ obj.getObject().getKey()));
 			int bytesRead = 0;
-			byte[] buffer = new byte[1024*10];
-			InputStream in=obj.getObject().getObjectContent();
+			byte[] buffer = new byte[1024 * 10];
+			InputStream in = obj.getObject().getObjectContent();
 			while ((bytesRead = in.read(buffer)) != -1) {
 				os.write(buffer, 0, bytesRead);
 			}
@@ -163,79 +176,45 @@ public class Ks3ClientTest {
 
 	}
 
-    @Test
+	@Test
 	public void deleteObject() {
-    	client.deleteObject("ksc-scm","vre");
+		client.deleteObject("ksc-scm", "vre");
 	}
-    @Test
-    public void clearBucket(){
-    	this.client1.clearBucket("alert1");
-    }
-    @Test
-    public void removeDir(){
-    	this.client1.removeDir("alert1","tt/");
-    }
-    @Test
-    public void makeDir(){
-    	this.client.makeDir("ksc-scm","cewf/fewgfew/vewrgfvw/cvew/");
-    }
-	 @Test
-	public void putObject() {
 
-/*		PutObjectRequest request = new PutObjectRequest("lijunwei.test",
-				"scrt712-x86.exe", new File("C:\\Users\\lijunwei\\Downloads\\scrt712-x86.exe"));
-		request.getObjectMeta().addOrEditUserMeta("x-kss-meta-lijunwei",
-				"lijunwei");
-		request.getObjectMeta().addOrEditMeta(Meta.CacheControl,
-				"only-if-cached");
-		client.putObject(request);*/
+	@Test
+	public void clearBucket() {
+		this.client.makeDir("ksc-scm", "cewf/fewgfew/vewrgfvw/cvew/");
+		this.client.makeDir("ksc-scm", "cewf/fewgfess/");
+		this.client.clearBucket("ksc-scm");
+	}
+
+	@Test
+	public void removeDir() {
+		this.client1.removeDir("alert1", "tt/");
+	}
+
+	@Test
+	public void makeDir() {
 		
-/*		  request.setCannedAcl(CannedAccessControlList.PublicRead);
-		  AccessControlList acl = new AccessControlList(); HashSet<Grant>
-		  grants = new HashSet<Grant>(); GranteeId g1 = new GranteeId();
-		  g1.setIdentifier("1234");
-		  g1.setDisplayName("123"); Grant gt1 = new
-		  Grant(g1,Permission.FullControl); grants.add(gt1); GranteeId g2 = new
-				  GranteeId(); g2.setIdentifier("aaaa");g2.setDisplayName("aaa"); Grant gt2 = new
-		  Grant(g2,Permission.Read); grants.add(gt2); acl.setGrants(grants);
-		request.setAcl(acl);
-		  
-		   client.putObject(request); */
-/*		   ObjectMetadata meta = new ObjectMetadata();
-		  meta.addOrEditUserMeta(ObjectMetadata.userMetaPrefix + "test",
-		  "123"); // meta.setUserMetadata(userMetadata); try {
-		  client.PutObject("lijunwei.test", "IMG_16721.jpg", new
-		  FileInputStream(new File("D://IMG_16721.jpg")), meta); } catch
-		  (Ks3ServiceException e) { // TODO Auto-generated catch block
-		  e.printStackTrace(); } catch (Ks3ClientException e) { // TODO
-		  Auto-generated catch block e.printStackTrace(); } catch
-		  (FileNotFoundException e) { // TODO Auto-generated catch block
-		  e.printStackTrace(); }*/
+	}
+
+	@Test
+	public void putObject() {
+		if (!client.bucketExists("beijing.bucket")) {
+			CreateBucketRequest request1 = new CreateBucketRequest(
+					"beijing.bucket");
+			request1.setConfig(new CreateBucketConfiguration(REGION.BEIJING));
+			client.createBucket(request1);
+		}
 		try {
-			PutObjectRequest request = new PutObjectRequest("ksc-scm",
-					"新建文件夹 (2).rar",new File("D://新建文件夹 (2).rar"));
+			PutObjectRequest request = new PutObjectRequest("beijing.bucket",
+					"新建文件夹 (2).rar", new File("D://新建文件夹 (2).rar"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-/*		GetObjectRequest request = new GetObjectRequest("lijunwei.test", "IMG_16721。exe");
-		request.setRange(0,499);
-		request.setModifiedSinceConstraint(new Date());
-		//List<String> aa = new ArrayList<String>();
-		//aa.add("73a2ec41f952b0d62e1dacff25889d5a");
-	//	request.setNonmatchingEtagConstraints(aa);
-		GetObjectResult obj = client.getObject(request);
-		System.out.println(obj);*/
-/*			try {
-				PutObjectRequest request = new PutObjectRequest("lijunwei.test",
-						"%2f",new ByteArrayInputStream(new byte[]{}),new ObjectMetadata());
-				client.putObject(request);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-		 
+
 	}
 
 	@Test
@@ -258,43 +237,82 @@ public class Ks3ClientTest {
 
 	@Test
 	public void uploadPart() {
-		long part = 5*1024*1024;
-		String bucket = "lijunwei.test";
-		String key = "IMG_16721.jpg";
-		//String filename = "D://新建文件夹.rar";
-		String filename = "D://IMG_16721.jpg";
-		
-		
+		long part = 5 * 1024 * 1024;
+		String bucket = "ksc-scm";
+		String key = "我的D盘压缩.rar";
+		// String filename = "D://新建文件夹.rar";
+		String filename = "D://新建文件夹.rar";
+
 		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
 				bucket, key);
 		request1.setCannedAcl(CannedAccessControlList.PublicRead);
-		InitiateMultipartUploadResult result = client.initiateMultipartUpload(request1);
+		InitiateMultipartUploadResult result = client
+				.initiateMultipartUpload(request1);
 		System.out.println(result);
-		//upload
+		// upload
 		File file = new File(filename);
 		long n = file.length() / part;
 		System.out.println(n);
 		for (int i = 0; i <= n; i++) {
-			UploadPartRequest request = new UploadPartRequest(result.getBucket(),
-					result.getKey(), result.getUploadId(), i+1, file,
-					part, (long)i * part);
+			UploadPartRequest request = new UploadPartRequest(
+					result.getBucket(), result.getKey(), result.getUploadId(),
+					i + 1, file, part, (long) i * part);
 			PartETag tag = client.uploadPart(request);
-			System.out.println(String.valueOf(i+1)+"  "+tag+"\n");
+			System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
 			try {
-				UploadPartTime.print(i+1,Timer.end());
+				UploadPartTime.print(i + 1, Timer.end());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		//list parts
-		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),result.getKey(),result.getUploadId());
+		// list parts
+		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
+				result.getKey(), result.getUploadId());
 		ListPartsResult tags = client.listParts(requestList);
-		//complete
-		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(tags);
+		// complete
+		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
+				tags);
 		client.completeMultipartUpload(request);
 	}
+	@Test
+	public void testETag()
+	{
+		List<String> s = new ArrayList<String>();
+		for(int m = 0;m<100;m++){
+			long part = 5 * 1024 * 1024;
+			String bucket = "ksc-scm";
+			String key = m+".jpeg";
+			// String filename = "D://新建文件夹.rar";
+			String filename = "D://1234.jpeg";
 
+			InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
+					bucket, key);
+			request1.setCannedAcl(CannedAccessControlList.PublicRead);
+			InitiateMultipartUploadResult result = client
+					.initiateMultipartUpload(request1);
+			System.out.println(result);
+			// upload
+			File file = new File(filename);
+			long n = file.length() / part;
+			System.out.println(n);
+			for (int i = 0; i <= n; i++) {
+				UploadPartRequest request = new UploadPartRequest(
+						result.getBucket(), result.getKey(), result.getUploadId(),
+						i + 1, file, part, (long) i * part);
+				PartETag tag = client.uploadPart(request);
+			}
+			// list parts
+			ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
+					result.getKey(), result.getUploadId());
+			ListPartsResult tags = client.listParts(requestList);
+			// complete
+			CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
+					tags);
+			client.completeMultipartUpload(request);
+		}
+		System.out.println(s);
+	}
 	@Test
 	public void completeMulti() {
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
@@ -315,87 +333,101 @@ public class Ks3ClientTest {
 		System.out.println(result);
 	}
 
-	 //@Test
+	// @Test
 	public void abortMulti() {
 		client.abortMultipartUpload("lijunwei.test", "bigFile.rar",
 				"44157d71c6e741699c8c5fb1f4f61aff");
 	}
-    //@Test
-    public void getBucketACL(){
-        AccessControlPolicy getBucketACL = client.getBucketACL("ksc-scm");
-        System.out.println(getBucketACL.getAccessControlList());
-    }
-    //@Test
-    public void putBucketACL(){
-    	PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm");
-    	AccessControlList acl = new AccessControlList();
-    	acl.addGrant(GranteeUri.AllUsers, Permission.Read);
-    //	request.setCannedAcl(CannedAccessControlList.Private);
-    	request.setAccessControlList(acl);
-    	client.putBucketACL(request);
-    }
-    //@Test
-    public void putObjectACL(){
-    	PutObjectACLRequest request = new PutObjectACLRequest("ksc-scm","这个事测试.doc");
-    	AccessControlList acl = new AccessControlList();
-/*    	Grantee grantee = new GranteeId();
-    	grantee.setIdentifier("1E74015858B022A60108039F");*/
-    	acl.addGrant(GranteeUri.AllUsers, Permission.Read);
-    	request.setAccessControlList(acl);
-    	//request.setCannedAcl(CannedAccessControlList.Private);
-    	client.putObjectACL(request);
-    }
-   //@Test
-    public void getObjectACL(){
-	   AccessControlPolicy getObjectACL = client.getObjectACL("ksc-scm","这个事测试.doc");
-        System.out.println(getObjectACL.getAccessControlList());
-    }
-  //  //@Test
-    public void configBucketAcl()
-    {
-    	PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm",CannedAccessControlList.PublicReadWrite);
-    	client.putBucketACL(request);
-    }
-    @Test
-    public void deleteObjects()
-    {
-    	System.out.println(client.deleteObjects(new String[]{"11112018rln5.pdf","dfdfdsf.pdf","sssss","square/"}, "ksc-scm"));
-    }
-    static int i = 0;
-    @Test
-    public void test()
-    {
-    	
-    	for(;;i++){
-    		partDownLoad();
-    	}
-    }
-    @Test
-    public void partDownLoad()
-    {
-    	GetObjectRequest request = new GetObjectRequest("lijunwei.test","IMG_16721。exe");
-    	long max = 1024*1024;
-    	long index = 0;
-    	long step = 1024*1024*1024;
-    	for(;index<=max;index=index+step+1){
-    		request.setRange(index,index+step);
-    		GetObjectResult result = client.getObject(request);
-    		max = result.getObject().getObjectMetadata().getInstanceLength();
-    		
-    		try {
-    			OutputStream os = new FileOutputStream(new File("D://ggg/"+i+"--"
-    					+ result.getObject().getKey()),true);
-    			
-    			int bytesRead = 0;
-    			byte[] buffer = new byte[ 8192];
-    			while ((bytesRead = result.getObject().getObjectContent().read(buffer, 0, 8192)) != -1) {
-    				os.write(buffer, 0, bytesRead);
-    			}
-    			os.close();
-    			result.getObject().close();
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
-    	}
-    }
+
+	// @Test
+	public void getBucketACL() {
+		AccessControlPolicy getBucketACL = client.getBucketACL("ksc-scm");
+		System.out.println(getBucketACL.getAccessControlList());
+	}
+
+	// @Test
+	public void putBucketACL() {
+		PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm");
+		AccessControlList acl = new AccessControlList();
+		acl.addGrant(GranteeUri.AllUsers, Permission.Read);
+		// request.setCannedAcl(CannedAccessControlList.Private);
+		request.setAccessControlList(acl);
+		client.putBucketACL(request);
+	}
+
+	// @Test
+	public void putObjectACL() {
+		PutObjectACLRequest request = new PutObjectACLRequest("ksc-scm",
+				"这个事测试.doc");
+		AccessControlList acl = new AccessControlList();
+		/*
+		 * Grantee grantee = new GranteeId();
+		 * grantee.setIdentifier("1E74015858B022A60108039F");
+		 */
+		acl.addGrant(GranteeUri.AllUsers, Permission.Read);
+		request.setAccessControlList(acl);
+		// request.setCannedAcl(CannedAccessControlList.Private);
+		client.putObjectACL(request);
+	}
+
+	// @Test
+	public void getObjectACL() {
+		AccessControlPolicy getObjectACL = client.getObjectACL("ksc-scm",
+				"这个事测试.doc");
+		System.out.println(getObjectACL.getAccessControlList());
+	}
+
+	// //@Test
+	public void configBucketAcl() {
+		PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm",
+				CannedAccessControlList.PublicReadWrite);
+		client.putBucketACL(request);
+	}
+
+	@Test
+	public void deleteObjects() {
+		System.out.println(client.deleteObjects(new String[] {
+				"11112018rln5.pdf", "dfdfdsf.pdf", "sssss", "square/","prop.txt" },
+				"ksc-scm"));
+	}
+
+	static int i = 0;
+
+	@Test
+	public void test() {
+
+		for (;; i++) {
+			partDownLoad();
+		}
+	}
+
+	@Test
+	public void partDownLoad() {
+		GetObjectRequest request = new GetObjectRequest("lijunwei.test",
+				"IMG_16721。exe");
+		long max = 1024 * 1024;
+		long index = 0;
+		long step = 1024 * 1024 * 1024;
+		for (; index <= max; index = index + step + 1) {
+			request.setRange(index, index + step);
+			GetObjectResult result = client.getObject(request);
+			max = result.getObject().getObjectMetadata().getInstanceLength();
+
+			try {
+				OutputStream os = new FileOutputStream(new File("D://ggg/" + i
+						+ "--" + result.getObject().getKey()), true);
+
+				int bytesRead = 0;
+				byte[] buffer = new byte[8192];
+				while ((bytesRead = result.getObject().getObjectContent()
+						.read(buffer, 0, 8192)) != -1) {
+					os.write(buffer, 0, bytesRead);
+				}
+				os.close();
+				result.getObject().close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ksyun.ks3.InputSubStream;
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.RepeatableFileInputStream;
+import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
@@ -101,8 +102,10 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 
 			} catch (FileNotFoundException e) {
 				throw new Ks3ClientException("read file " + file.getName()
-						+ " error");
+						+ " error",e);
 			}
+		}else{
+			this.content = new RepeatableInputStream(content,Constants.DEFAULT_STREAM_BUFFER_SIZE);
 		}
 		this.addHeader(HttpHeaders.ContentLength,
 				String.valueOf(this.contentLength));

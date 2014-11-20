@@ -24,7 +24,8 @@ public class Constants {
 	public final static String KS3_USER_META_PREFIX = "x-kss-meta-";
 	
 	public final static String KS3_SDK_USER_AGENT = "ks3-kss-java-sdk";
-	
+	public final static String KS3_CDN_END_POINT = "kssws.ks-cdn.com";
+	public static final int DEFAULT_STREAM_BUFFER_SIZE = 128 * 1024;
 	public static final int minPartNumber = 1;
 	public static final int maxPartNumber = 10000;
 	public static final int minPartSize = 5*1024*1024;
