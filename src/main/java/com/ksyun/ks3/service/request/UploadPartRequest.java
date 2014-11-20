@@ -25,7 +25,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月23日 上午11:17:36
  * 
- * @description
+ * @description 分块上传时，Upload Part的请求
  **/
 public class UploadPartRequest extends Ks3WebServiceRequest implements
 		MD5CalculateAble {

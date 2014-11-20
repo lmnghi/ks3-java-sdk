@@ -9,7 +9,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月16日 下午3:30:01
  * 
- * @description
+ * @description GET Bucket(List Objects)的请求
  **/
 public class ListObjectsRequest extends Ks3WebServiceRequest {
 

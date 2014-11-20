@@ -28,7 +28,7 @@ import com.ksyun.ks3.utils.XmlWriter;
  * 
  * @date 2014年10月23日 下午1:55:03
  * 
- * @description 完成分块上传
+ * @description 完成分块上传,使Ks3服务器将之前上传的块整合成一个object
  **/
 public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	/**
@@ -39,6 +39,13 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	 * 通过Upload Part返回的内容集合
 	 */
 	private List<PartETag> partETags = new ArrayList<PartETag>();
+	/**
+	 * 
+	 * @param bucketname
+	 * @param objectkey
+	 * @param uploadId
+	 * @param eTags
+	 */
 	public CompleteMultipartUploadRequest(String bucketname,String objectkey,String uploadId,List<PartETag> eTags)
 	{
 		this.setBucketname(bucketname);
@@ -48,6 +55,10 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 			eTags = new ArrayList<PartETag>();
 		this.partETags = eTags;
 	}
+	/**
+	 * List Parts返回的结果
+	 * @param result
+	 */
 	public CompleteMultipartUploadRequest(ListPartsResult result)
 	{
 		this.setBucketname(result.getBucketname());
@@ -61,6 +72,11 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 		    this.partETags.add(tag);
 		}
 	}
+	/**
+	 * 这个构造函数生成的request是无法直接使用的，得调用setUploadId、setPartETags
+	 * @param bucketname
+	 * @param objectkey
+	 */
 	public CompleteMultipartUploadRequest(String bucketname,String objectkey)
 	{
 		super.setBucketname(bucketname);

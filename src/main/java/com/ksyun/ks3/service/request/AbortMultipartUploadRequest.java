@@ -15,6 +15,12 @@ public class AbortMultipartUploadRequest extends Ks3WebServiceRequest{
 	 * 通过Init Multipart Upload 初始化得到的uploadId
 	 */
 	private String uploadId;
+	/**
+	 * 
+	 * @param bucketname
+	 * @param objectkey
+	 * @param uploadId
+	 */
 	public AbortMultipartUploadRequest(String bucketname,String objectkey,String uploadId)
 	{
 		super.setBucketname(bucketname);

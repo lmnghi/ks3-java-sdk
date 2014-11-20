@@ -7,7 +7,7 @@ import com.ksyun.ks3.exception.Ks3ClientException;
  * 
  * @date 2014年11月19日 下午3:00:15
  * 
- * @description 
+ * @description 客户端MD5校验出错
  **/
 public class InvalidDigestException extends Ks3ClientException{
 
