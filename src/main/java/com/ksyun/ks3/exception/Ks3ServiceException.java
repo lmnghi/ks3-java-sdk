@@ -155,8 +155,10 @@ public class Ks3ServiceException extends Ks3ClientException {
 			else if(this.statueCode == 405)
 				this.setErrorCode("MethodNotAllowed");
 		}
+		String error  = this.getErrorCode();
+		error = error.substring(0,1).toUpperCase()+error.substring(1);
 		String classString = Constants.KS3_PACAKAGE + ".exception.serviceside."
-				+ this.getErrorCode() + "Exception";
+				+ error + "Exception";
 		try {
 			@SuppressWarnings("unchecked")
 			X e = (X) Class.forName(classString).newInstance();
@@ -168,7 +170,7 @@ public class Ks3ServiceException extends Ks3ClientException {
 			e.setStatueCode(this.getStatueCode());
 			e.setStackTrace(this.getStackTrace());
 			return e;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			return this;
 		}
 

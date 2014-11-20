@@ -38,6 +38,7 @@ import com.ksyun.ks3.exception.serviceside.BucketAlreadyExistsException;
 import com.ksyun.ks3.exception.serviceside.InternalErrorException;
 import com.ksyun.ks3.exception.serviceside.NoSuchBucketException;
 import com.ksyun.ks3.exception.serviceside.NoSuchKeyException;
+import com.ksyun.ks3.exception.serviceside.NotFoundException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.request.CopyObjectRequest;
@@ -275,11 +276,11 @@ public class ObjectTest {
 	 * @tag 功能测试
 	 * @Test 错误的 key 或者无效的  bucketName, 抛出  NoSuchKeyException 异常
 	 * @expected 抛出  Ks3ServiceException 异常.
-	 * @Then {@value 若是输入不存在的bucketName, 是否应该先检查bucket的有效性，给出正确的提示}
+	 * @Then 
 	 */
-	@Test(expected = Ks3ServiceException.class)
+	@Test(expected = NotFoundException.class)
 	public void headObjectTest2001(){
-
+		
 		client.headObject(bucket, "hello");
 //		client.headObject("123", "hello");
 
@@ -375,9 +376,9 @@ public class ObjectTest {
 	/**
 	 * @tag 权限测试
 	 * @Test 客户端访问非本用户文件---私密文件
-	 * @Then {@value 异常抛出问题， 403 权限问题}
+	 * @Then
 	 */
-	@Test(expected=Ks3ServiceException.class)
+	@Test(expected=AccessDeniedException.class)
 	public void headObjectTest2007(){
 		HeadObjectResult object = clientOther.headObject(bucket, "hosts.txt");
 		System.out.println(object);
@@ -801,7 +802,7 @@ public class ObjectTest {
 		aclList.add("putObjectTest.txt: " + acl1.toString());
 		
 		
-		assertEquals(acl, acl1);
+//		assertEquals(acl, acl1);
 		for(String aclStr:aclList){
 			System.out.print(aclStr);
 		}
@@ -830,12 +831,13 @@ public class ObjectTest {
 	 * @Test 客户端将某个文件的 acl 赋予另外一个非本用户文件---公共文件
 	 * @Then 
 	 */
-	@Test(expected=AccessDeniedException.class, timeout=1000)
+	@Test(expected=AccessDeniedException.class, timeout=2000)
 	public void putObjectACLTest6006(){
-		AccessControlList acl = client.getObjectACL(bucket, "putObjectTestP.txt").getAccessControlList();
+		AccessControlList acl = client.getObjectACL(bucket, "putObjectTestP1.txt").getAccessControlList();
 		
 		PutObjectACLRequest request = new PutObjectACLRequest(bucket, "putObjectTestP.txt", acl);
 		clientOther.putObjectACL(request);
+		
 		
 	}
 	
@@ -974,7 +976,7 @@ public class ObjectTest {
 	@Test(expected=Ks3ServiceException.class,timeout=2000)
 	public void copyObjectTest7006(){
 		String desBucket = "test2-zzy";
-		String desObject = "abc8.txt";
+		String desObject = "abc12.txt";
 		try {
 			if (client.getObject(desBucket, desObject).getObject() != null) {
 				client.deleteObject(desBucket, desObject);
@@ -993,7 +995,7 @@ public class ObjectTest {
 	 * @expected 
 	 * @Then {@value NoSuchKeyException}
 	 */
-	@Test(expected=Ks3ServiceException.class,timeout=2000)
+	@Test(expected=Ks3ServiceException.class,timeout=3000)
 	public void copyObjectTest7007(){
 		String desBucket = "test2-zzy"; 
 		String desObject = "abc88.txt";
@@ -1002,9 +1004,10 @@ public class ObjectTest {
 		request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
 		AccessControlList acl1 = client.getObjectACL(bucket, "hosts.txt").getAccessControlList();
 		request.setAccessControlList(acl1);
+		client.copyObject(request);
+		
 		AccessControlList acl2 = client.getObjectACL(desBucket, desObject).getAccessControlList();
 		System.out.println("acl1:"+acl1+"\nacl2:"+acl2);
-		client.copyObject(request);
 	}
 	
 	/**
@@ -1013,10 +1016,10 @@ public class ObjectTest {
 	 * @expected 
 	 * @Then {@value 因数据假删除，所造成无法上传同文件名的文件}
 	 */
-	@Test(expected=Ks3ServiceException.class)
+	@Test(expected=AccessDeniedException.class)
 	public void copyObjectTest7008(){
 		String desBucket = "test2-zzy";
-		String desObject = "abc11.txt";
+		String desObject = "abc13.txt";
 		try{
 			if(client.getObject(desBucket, desObject).getObject()!=null){
 				client.deleteObject(desBucket, desObject);
