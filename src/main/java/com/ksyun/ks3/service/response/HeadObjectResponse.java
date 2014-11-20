@@ -7,6 +7,7 @@ import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.HeadObjectResult;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.http.HttpHeaders;
+import com.ksyun.ks3.utils.Converter;
 import com.ksyun.ks3.utils.DateUtils;
 
 /**
@@ -44,15 +45,15 @@ public class HeadObjectResponse extends
 					String value = headers[i].getValue();
 					if (Constants.KS3_IGNOREG_HEADERS.contains(key)) {
 						// ignore...
-					} else if (key.equals(HttpHeaders.LastModified)) {
+					} else if (key.equals(HttpHeaders.LastModified.toString())) {
 						try {
 							metaData.setLastModified(DateUtils
-									.convertStr2Date(key));
+									.convertStr2Date(value));
 						} catch (Exception pe) {
 							log.warn("Unable to parse last modified date: "
 									+ value, pe);
 						}
-					} else if (key.equals(HttpHeaders.ContentLength)) {
+					} else if (key.equals(HttpHeaders.ContentLength.toString())) {
 						try {
 							metaData.setHeader(key, Long.parseLong(value));
 						} catch (NumberFormatException nfe) {
@@ -60,9 +61,10 @@ public class HeadObjectResponse extends
 									"Unable to parse content length: " + value,
 									nfe);
 						}
-					} else if (key.equals(HttpHeaders.ETag)) {
+					} else if (key.equals(HttpHeaders.ETag.toString())) {
 						metaData.setHeader(key, value.replace("\"", ""));
-					} else if (key.equals(HttpHeaders.Expires)) {
+						metaData.setHeader(HttpHeaders.ContentMD5.toString(), Converter.ETag2MD5(value));
+					} else if (key.equals(HttpHeaders.Expires.toString())) {
 						try {
 							metaData.setHttpExpiresDate(DateUtils
 									.convertStr2Date(value));

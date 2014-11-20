@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.SimpleTimeZone;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -11,7 +12,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.ksyun.ks3.exception.Ks3ClientException;
-
 
 /**
  * @author lijunwei[13810414122@163.com]  
@@ -44,24 +44,35 @@ public class DateUtils {
 		}
 		return null;
 	}
-	public static Date convertStr2Date(String datetimeText,SimpleDateFormat sdf)
-	{
+
+	public static Date convertStr2Date(String datetimeText, SimpleDateFormat sdf) {
 		try {
 			return sdf.parse(datetimeText);
 		} catch (ParseException e) {
-			throw new Ks3ClientException("The server did not return the expected value,it is "+datetimeText,e);
+			throw new Ks3ClientException(
+					"The server did not return the expected value,it is "
+							+ datetimeText, e);
 		}
 	}
-	public static Date convertStr2Date(String datetimeText)
-	{
-		datetimeText = datetimeText.replace("Z"," GMT");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS z");
+
+	public static Date convertStr2Date(String datetimeText) {
+		SimpleDateFormat sdf = new SimpleDateFormat(
+				"E, dd MMM yyyy HH:mm:ss z", Locale.UK);
+		sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+		if (datetimeText.endsWith("Z")) {
+			datetimeText = datetimeText.replace("Z", " GMT");
+			sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS z");
+		}
 		try {
 			return sdf.parse(datetimeText);
 		} catch (ParseException e) {
-			throw new Ks3ClientException("The server did not return the expected value,it is "+datetimeText,e);
+			throw new Ks3ClientException(
+					"The server did not return the expected value,it is "
+							+ datetimeText, e);
 		}
+
 	}
+
 	public static String convertDate2Str(Date date, DATETIME_PROTOCOL protocol) {
 		if (protocol.equals(DATETIME_PROTOCOL.RFC1123)) {
 

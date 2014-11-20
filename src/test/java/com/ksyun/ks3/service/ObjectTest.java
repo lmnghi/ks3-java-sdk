@@ -8,12 +8,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.codec.DecoderException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,6 +29,7 @@ import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.HeadObjectResult;
+import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.PutObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
@@ -37,10 +40,12 @@ import com.ksyun.ks3.exception.serviceside.NoSuchBucketException;
 import com.ksyun.ks3.exception.serviceside.NoSuchKeyException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.Ks3CoreController;
+import com.ksyun.ks3.service.request.CopyObjectRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
 import com.ksyun.ks3.service.request.PutObjectACLRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
+import com.ksyun.ks3.utils.Converter;
 
 /**
  * @description Tests about Object
@@ -480,8 +485,13 @@ public class ObjectTest {
 	 */
 	@Test
 	public void deleteObjectTest4001(){
-
+		
+		try{
+			client.PutObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
+		}catch(Exception e){}
+		
 		client.deleteObject(bucket, "deleteTestP.txt");
+		client.PutObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
 		
 	}
 	
@@ -516,9 +526,9 @@ public class ObjectTest {
 	 */
 	@Test(expected=AccessDeniedException.class)
 	public void deleteObjectTest4004(){
-
-		clientOther.deleteObject(bucket, "deleteTestP.txt");
 		
+		clientOther.deleteObject(bucket, "deleteTestP.txt");
+		client.PutObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
 	}
 	
 	/**
@@ -687,13 +697,42 @@ public class ObjectTest {
 		System.out.println(result);
 		
 	}
+	
+	/**
+	 * @tag 测试	 PUT Object
+	 * @Test 
+	 * @expected objectMeta 一致
+	 * @Then 
+	 */
+	@Test
+	public void putObjectTest5012() {
+		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTestMeta.txt", new File("D:/objectTest/putObjectTest.txt"));
+		
+		ObjectMetadata objectMeta = new ObjectMetadata();
+		objectMeta.setContentLength(47);
+		objectMeta.setContentType("application/octet-stream");
+		objectMeta.setContentMD5("ruzU5HevHvJyciYjskBwbw==");
+		request.setObjectMeta(objectMeta);
+		
+		client.putObject(request);
+		
+		GetObjectResult result = client.getObject(bucket,"putObjectTestMeta.txt");
+		ObjectMetadata objectMetaGet = result.getObject().getObjectMetadata();
+		System.out.println(objectMetaGet);
+		
+		assertEquals(objectMeta.getContentMD5(), objectMetaGet.getContentMD5());
+		assertEquals(objectMeta.getContentLength(), objectMetaGet.getContentLength());
+		assertEquals(objectMeta.getContentType(), objectMetaGet.getContentType());
+		
+	}
+	
 	/**
 	 * @tag 权限测试	 PUT Object
 	 * @Test 客户端向非本用户bucket添加文件
 	 * @Then 
 	 */
 	@Test(expected=AccessDeniedException.class)
-	public void putObjectTest5012() throws FileNotFoundException{
+	public void putObjectTest5013() throws FileNotFoundException{
 		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest1.txt", new File("D:/objectTest/putObjectTest.txt"));
 //		request.setCannedAcl(CannedAccessControlList.Private);
 		PutObjectResult result = clientOther.putObject(request);
@@ -791,7 +830,7 @@ public class ObjectTest {
 	 * @Test 客户端将某个文件的 acl 赋予另外一个非本用户文件---公共文件
 	 * @Then 
 	 */
-	@Test
+	@Test(expected=AccessDeniedException.class, timeout=1000)
 	public void putObjectACLTest6006(){
 		AccessControlList acl = client.getObjectACL(bucket, "putObjectTestP.txt").getAccessControlList();
 		
@@ -803,6 +842,7 @@ public class ObjectTest {
 	/**
 	 * @tag 权限测试	 PUT Object ACL
 	 * @Test 客户端将某个文件的 acl 赋予另外一个非本用户文件---私密文件
+	 * @expected AccessDeniedException
 	 * @Then 
 	 */
 	@Test(expected=AccessDeniedException.class)
@@ -821,6 +861,178 @@ public class ObjectTest {
 	 */
 	@Test()
 	public void putObjectACLTest(){
+		
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中
+	 * @expected 
+	 * @Then {@value 因数据假删除，所造成无法上传同文件名的文件}
+	 */
+	@Test(expected=Ks3ServiceException.class)
+	public void copyObjectTest7001(){
+		String desBucket = "test2-zzy";
+		String desObject = "abc.txt";
+		try{
+			if(client.getObject(desBucket, desObject).getObject().getObjectContent()!=null){
+				client.deleteObject(desBucket, desObject);
+			}
+		}catch(Exception e){/*屏蔽异常 */}
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
+		client.copyObject(request);
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中，已存在desObject
+	 * @expected Ks3ServiceException 异常  Error code:invalidkey
+	 * @Then 
+	 */
+	@Test(expected=Ks3ServiceException.class, timeout=2000)
+	public void copyObjectTest7002(){
+		String desBucket = "test2-zzy";
+		String desObject = "abc.txt";
+		if(client.getObject(desBucket, desObject).getObject()==null){
+			CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
+			client.copyObject(request);
+		}
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
+		client.copyObject(request);
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中, destinationBucket不存在
+	 * @expected NoSuchBucketException
+	 * @Then 
+	 */
+	@Test(expected=NoSuchBucketException.class, timeout=2000)
+	public void copyObjectTest7003(){
+		String desBucket = "test3-zzy";
+		String desObject = "abc.txt";
+		try {
+			if (client.getObject(desBucket, desObject).getObject() != null) {
+				client.deleteObject(desBucket, desObject);
+			}
+		} catch (Exception e) {// 屏蔽异常，方便测试
+		}
+		
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
+		client.copyObject(request);
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中， sourceBucket不存在
+	 * @expected NoSuchBucketException
+	 * @Then 
+	 */
+	@Test(expected=NoSuchBucketException.class, timeout=2000)
+	public void copyObjectTest7004(){
+		String desBucket = "test2-zzy";
+		String desObject = "abc.txt";
+		try {
+			if (client.getObject(desBucket, desObject).getObject() != null) {
+				client.deleteObject(desBucket, desObject);
+			}
+		} catch (Exception e) {// 屏蔽异常，方便测试
+		}
+		String tempBucket = "notExist";
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, tempBucket, "hosts.txt");
+		client.copyObject(request);
+	}
+	
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中， sourceObject不存在
+	 * @expected NoSuchKeyException
+	 * @Then 
+	 */
+	@Test(expected=NoSuchKeyException.class, timeout=2000)
+	public void copyObjectTest7005(){
+		String desBucket = "test2-zzy";
+		String desObject = "abc.txt";
+		try {
+			if (client.getObject(desBucket, desObject).getObject() != null) {
+				client.deleteObject(desBucket, desObject);
+			}
+		} catch (Exception e) {// 屏蔽异常，方便测试
+		}
+		
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "notExist");
+		client.copyObject(request);
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中，设定Canned为公开
+	 * @expected 权限为公开
+	 * @Then {@value 因数据假删除，所造成无法上传同文件名的文件}
+	 */
+	@Test(expected=Ks3ServiceException.class,timeout=2000)
+	public void copyObjectTest7006(){
+		String desBucket = "test2-zzy";
+		String desObject = "abc8.txt";
+		try {
+			if (client.getObject(desBucket, desObject).getObject() != null) {
+				client.deleteObject(desBucket, desObject);
+			}
+		} catch (Exception e) {// 屏蔽异常，方便测试
+		}
+		
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
+		request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+		client.copyObject(request);
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中，设定accessControlList
+	 * @expected 
+	 * @Then {@value NoSuchKeyException}
+	 */
+	@Test(expected=Ks3ServiceException.class,timeout=2000)
+	public void copyObjectTest7007(){
+		String desBucket = "test2-zzy"; 
+		String desObject = "abc88.txt";
+		
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
+		request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+		AccessControlList acl1 = client.getObjectACL(bucket, "hosts.txt").getAccessControlList();
+		request.setAccessControlList(acl1);
+		AccessControlList acl2 = client.getObjectACL(desBucket, desObject).getAccessControlList();
+		System.out.println("acl1:"+acl1+"\nacl2:"+acl2);
+		client.copyObject(request);
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object COPY
+	 * @Test 从非本用户sourceBucket 拷贝 object 到 destinationBucket中
+	 * @expected 
+	 * @Then {@value 因数据假删除，所造成无法上传同文件名的文件}
+	 */
+	@Test(expected=Ks3ServiceException.class)
+	public void copyObjectTest7008(){
+		String desBucket = "test2-zzy";
+		String desObject = "abc11.txt";
+		try{
+			if(client.getObject(desBucket, desObject).getObject()!=null){
+				client.deleteObject(desBucket, desObject);
+			}
+		}catch(Exception e){/*屏蔽异常 */}
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
+		clientOther.copyObject(request);
+	}
+	
+	/**
+	 * @tag 测试	 PUT Object COPY
+	 * @Test 
+	 * @Then 
+	 */
+	@Test()
+	public void copyObjectTest(){
 		
 	}
 	
