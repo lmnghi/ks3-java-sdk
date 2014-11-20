@@ -33,6 +33,15 @@ public class AuthUtils {
 		String value = "KSS "+auth.getAccessKeyId()+":"+signature;
 		return value;
 	}
+	public static String calcSignature(String accessKeySecret,String resource,String requestMethod) throws SignatureException
+	{
+		 List<String> signList = new ArrayList<String>();
+	        signList.addAll(Arrays.asList(new String[] {
+	                requestMethod,resource
+	        }));
+	    String signStr = StringUtils.join(signList.toArray(), "\n");
+		return calculateRFC2104HMAC(signStr, accessKeySecret);
+	}
 	public static String calcSignature (String accessKeySecret,Ks3WebServiceRequest request) throws SignatureException
 	{
         String resource = CanonicalizedKSSResource(request);

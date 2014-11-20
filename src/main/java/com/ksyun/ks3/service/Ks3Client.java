@@ -1,9 +1,9 @@
 package com.ksyun.ks3.service;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -54,6 +54,7 @@ import com.ksyun.ks3.service.response.ListPartsResponse;
 import com.ksyun.ks3.service.response.PutObjectResponse;
 import com.ksyun.ks3.service.request.*;
 import com.ksyun.ks3.service.response.*;
+import com.ksyun.ks3.utils.AuthUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -202,21 +203,23 @@ public class Ks3Client implements Ks3 {
 
 	public void clearBucket(String bucketName) throws Ks3ClientException,
 			Ks3ServiceException {
-		this.removeDir(bucketName,null);
+		this.removeDir(bucketName, null);
 	}
 
 	public void makeDir(String bucketName, String dir)
 			throws Ks3ClientException, Ks3ServiceException {
-		if(!dir.endsWith("/"))
+		if (!dir.endsWith("/"))
 			throw new IllegalArgumentException("dir should be end with /");
-		PutObjectRequest request = new PutObjectRequest(bucketName,dir,new ByteArrayInputStream(new byte[]{}),null);
+		PutObjectRequest request = new PutObjectRequest(bucketName, dir,
+				new ByteArrayInputStream(new byte[] {}), null);
 		this.putObject(request);
 	}
-	
+
 	public void removeDir(String bucketName, String dir)
 			throws Ks3ClientException, Ks3ServiceException {
-		if(dir!=null&&!dir.endsWith("/")&&!StringUtils.isBlank(dir))
-			throw new IllegalArgumentException("dir should be end with / or null(clear bucket)");
+		if (dir != null && !dir.endsWith("/") && !StringUtils.isBlank(dir))
+			throw new IllegalArgumentException(
+					"dir should be end with / or null(clear bucket)");
 		String marker = null;
 		ObjectListing list = null;
 		do {
@@ -225,18 +228,19 @@ public class Ks3Client implements Ks3 {
 			request.setMarker(marker);
 			list = this.listObjects(request);
 			marker = list.getNextMarker();
-			
+
 			List<String> keys = new ArrayList<String>();
 			for (Ks3ObjectSummary obj : list.getObjectSummaries()) {
 				keys.add(obj.getKey());
 			}
-			if(keys.size()>0)
-		    	this.deleteObjects(keys, bucketName);
+			if (keys.size() > 0)
+				this.deleteObjects(keys, bucketName);
 			for (String subDir : list.getCommonPrefixes()) {
 				this.removeDir(bucketName, subDir);
 			}
-			//若不为0，当将下面的子文件夹全部删除掉时会自动将dir删掉
-			if(list.getCommonPrefixes().size()==0&&!StringUtils.isBlank(dir))
+			// 若不为0，当将下面的子文件夹全部删除掉时会自动将dir删掉
+			if (list.getCommonPrefixes().size() == 0
+					&& !StringUtils.isBlank(dir))
 				this.deleteObject(bucketName, dir);
 		} while (list.isTruncated());
 	}
@@ -293,32 +297,46 @@ public class Ks3Client implements Ks3 {
 		object.getObject().setKey(objectkey);
 		return object;
 	}
-	public String generatePresignedUrl(String bucket, String key,
-			int expiration) throws Ks3ClientException {
+
+	public String generatePresignedUrl(String bucket, String key, int expiration)
+			throws Ks3ClientException {
 		boolean isPrivate = false;
-		AccessControlList acl = this.getObjectACL(bucket, key).getAccessControlList();
-        final Collection<Permission> allUsersPermissions = new LinkedHashSet<Permission>();
-        for (final Grant grant : acl.getGrants()) {
-            if (GranteeUri.AllUsers.equals(grant.getGrantee())) {
-                allUsersPermissions.add(grant.getPermission());
-            }
-        }
-        final boolean read = allUsersPermissions.contains(Permission.Read);
-        final boolean write = allUsersPermissions.contains(Permission.Write);
-        if (read && write) {
-        	isPrivate = false;
-        } else if (read) {
-        	isPrivate = false;
-        } else {
-           isPrivate = true;
-        }
-        if(isPrivate){
-        	
-        }else{
-        	return "http://"+bucket+"."+Constants.KS3_CDN_END_POINT+"/"+key;
-        }
-		return null;
+		AccessControlList acl = this.getObjectACL(bucket, key)
+				.getAccessControlList();
+		final Collection<Permission> allUsersPermissions = new LinkedHashSet<Permission>();
+		for (final Grant grant : acl.getGrants()) {
+			if (GranteeUri.AllUsers.equals(grant.getGrantee())) {
+				allUsersPermissions.add(grant.getPermission());
+			}
+		}
+		final boolean read = allUsersPermissions.contains(Permission.Read);
+		final boolean write = allUsersPermissions.contains(Permission.Write);
+		if (read && write) {
+			isPrivate = false;
+		} else if (read) {
+			isPrivate = false;
+		} else {
+			isPrivate = true;
+		}
+		if (isPrivate) {
+			String signature = "";
+			try {
+				signature = AuthUtils.calcSignature(auth.getAccessKeySecret(),
+						"/" + bucket + "/" + key, "GET");
+			} catch (SignatureException e) {
+				e.printStackTrace();
+				throw new Ks3ClientException("calc signature error", e);
+			}
+			int expires = (int) ((System.currentTimeMillis() / 1000) + expiration);
+			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
+					+ key + "?AccessKeyId=" + auth.getAccessKeyId()
+					+ "&Expires=" + expires + "&Signature=" + signature;
+		} else {
+			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
+					+ key;
+		}
 	}
+
 	public HeadBucketResult headBucket(String bucketname)
 			throws Ks3ClientException, Ks3ServiceException {
 		return this.headBucket(new HeadBucketRequest(bucketname));

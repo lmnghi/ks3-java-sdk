@@ -18,6 +18,7 @@ import com.ksyun.ks3.dto.Grantee;
 import com.ksyun.ks3.dto.GranteeId;
 import com.ksyun.ks3.dto.GranteeUri;
 import com.ksyun.ks3.dto.HeadBucketResult;
+import com.ksyun.ks3.dto.ListMultipartUploadsResult;
 import com.ksyun.ks3.dto.ObjectListing;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.Ks3ClientException;
@@ -33,6 +34,7 @@ import com.ksyun.ks3.request.ErrorCannedAclPutBucketAclRequest;
 import com.ksyun.ks3.request.ErrorRegionCreateBucketRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
+import com.ksyun.ks3.service.request.ListMultipartUploadsRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.PutBucketACLRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
@@ -1356,55 +1358,37 @@ public class BucketTest extends Ks3ClientTest {
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
 			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 			client2.putBucketACL(bucket + "2",
 					CannedAccessControlList.PublicRead);
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
 			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 
 			client2.putBucketACL(bucket + "2",
 					CannedAccessControlList.PublicReadWrite);
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 
 			client1.putBucketACL(bucket + "1",
 					CannedAccessControlList.PublicRead);
@@ -1413,58 +1397,36 @@ public class BucketTest extends Ks3ClientTest {
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 
 			client2.putBucketACL(bucket + "2",
 					CannedAccessControlList.PublicRead);
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 
 			client2.putBucketACL(bucket + "2",
 					CannedAccessControlList.PublicReadWrite);
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 
 			client1.putBucketACL(bucket + "1",
 					CannedAccessControlList.PublicReadWrite);
@@ -1473,58 +1435,36 @@ public class BucketTest extends Ks3ClientTest {
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 
 			client2.putBucketACL(bucket + "2",
 					CannedAccessControlList.PublicRead);
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 
 			client2.putBucketACL(bucket + "2",
 					CannedAccessControlList.PublicReadWrite);
 			this.isc = false;
 			try {
 				client1.putBucketLogging(bucket + "1", true, bucket + "2");
-			} catch (AccessDeniedException e) {
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-			this.isc = false;
-			try {
-				client1.putBucketLogging(bucket + "1", false, bucket + "2");
-			} catch (AccessDeniedException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
-
+			client1.putBucketLogging(bucket + "1", false, bucket + "2");
 		} finally {
 			if (client1.bucketExists(bucket + "1")) {
 				this.client1.clearBucket(bucket + "1");
@@ -1689,6 +1629,31 @@ public class BucketTest extends Ks3ClientTest {
 				client1.clearBucket(bucket);
 				client1.deleteBucket(bucket);
 			}
+		}
+	}
+	@Test
+	public void testListMultiPartUploads_1035() throws Exception{
+		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest("ksc-scm");
+		request.setDelimiter("delimiter");
+		request.setKeyMarker("keyMarker");
+		request.setMaxUploads(10);
+		request.setPrefix("prefix");
+		request.setUploadIdMarker("uploadIdMarker");
+		ListMultipartUploadsResult result = client1.listMultipartUploads(request);
+		if(!"delimiter".equals(result.getDelimiter())){
+			throw new Exception();
+		}
+		if(!"keyMarker".equals(result.getKeyMarker())){
+			throw new Exception();
+		}
+		if(!"prefix".equals(result.getPrefix())){
+			throw new Exception();
+		}
+		if(!"uploadIdMarker".equals(result.getUploadIdMarker())){
+			throw new Exception();
+		}
+		if(result.getMaxUploads()!=10){
+			throw new Exception();
 		}
 	}
 }

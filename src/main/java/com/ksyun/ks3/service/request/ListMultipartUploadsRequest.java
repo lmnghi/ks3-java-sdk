@@ -13,14 +13,14 @@ public class ListMultipartUploadsRequest extends Ks3WebServiceRequest{
 	/**
 	 * 分隔符
 	 */
-	private String delimiter = "/";
+	private String delimiter;
 	/**
 	 * <p>keyMarker为空，uploadIdMarker不为空<P>
 	 * <p>无意义</p>
 	 * <p>keyMarker不为空，uploadIdMarker不为空<P>
-	 * <p>列出分块上传object key为keyMarker，且upload id 大于uploadIdMarker的块</p>
+	 * <p>列出分块上传object key为keyMarker，且upload id 大于uploadIdMarker的结果</p>
 	 * <p>keyMarker不为空，uploadIdMarker为空<P>
-	 * <p>列出分块上传object key大于keyMarker的块</p>
+	 * <p>列出分块上传object key大于keyMarker的结果</p>
 	 */
 	private String keyMarker;
 	private String uploadIdMarker;

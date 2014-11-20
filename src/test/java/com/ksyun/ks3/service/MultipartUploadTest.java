@@ -62,7 +62,7 @@ public class MultipartUploadTest extends Ks3ClientTest {
 					.initiateMultipartUpload(request);
 			client1.abortMultipartUpload(result1.getBucket(), result1.getKey(),
 					result1.getUploadId());
-			
+
 			aclRequest.setCannedAcl(CannedAccessControlList.PublicRead);
 			client1.putBucketACL(aclRequest);
 			InitiateMultipartUploadResult result2 = client1
@@ -126,48 +126,52 @@ public class MultipartUploadTest extends Ks3ClientTest {
 			}
 		}
 	}
+
 	@Test
-	public void testInitAndComplete_1032(){
+	public void testInitAndComplete_1032() {
 		if (client1.bucketExists(bucketName)) {
 			client1.clearBucket(bucketName);
 			client1.deleteBucket(bucketName);
 		}
 		try {
 			client1.createBucket(bucketName);
-			
+
 			InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
 					bucketName, file);
 			InitiateMultipartUploadResult result1 = client1
 					.initiateMultipartUpload(request);
 			this.isc = false;
-			try{
-		    	this.client1.completeMultipartUpload(result1.getBucket(),result1.getKey(),result1.getUploadId()+"1",null);
-			}catch(NoSuchUploadException e){
+			try {
+				this.client1.completeMultipartUpload(result1.getBucket(),
+						result1.getKey(), result1.getUploadId() + "1", null);
+			} catch (NoSuchUploadException e) {
 				this.isc = true;
 			}
-			if(!isc)
+			if (!isc)
 				throw new NotThrowException();
-			this.client1.completeMultipartUpload(result1.getBucket(),result1.getKey(),result1.getUploadId(),null);
-		}finally{
+			this.client1.completeMultipartUpload(result1.getBucket(),
+					result1.getKey(), result1.getUploadId(), null);
+		} finally {
 			if (client1.bucketExists(bucketName)) {
 				client1.clearBucket(bucketName);
 				client1.deleteBucket(bucketName);
-			}	
+			}
 		}
 	}
+
 	@Test
-	public void testInitAndComplete_1033(){
+	public void testInitAndComplete_1033() {
 		if (client1.bucketExists(bucketName)) {
 			client1.clearBucket(bucketName);
 			client1.deleteBucket(bucketName);
 		}
 		try {
 			client1.createBucket(bucketName);
-			
+
 			long part = 5 * 1024 * 1024;
 			String bucket = bucketName;
-			URL filename = this.getClass().getClassLoader().
-					getResource("git.exe");
+			URL filename = this.getClass().getClassLoader()
+					.getResource("git.exe");
 			InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
 					bucket, file);
 			request1.setCannedAcl(CannedAccessControlList.PublicRead);
@@ -179,8 +183,9 @@ public class MultipartUploadTest extends Ks3ClientTest {
 			long n = file.length() / part;
 			for (int i = 0; i <= n; i++) {
 				UploadPartRequest request = new UploadPartRequest(
-						result.getBucket(), result.getKey(), result.getUploadId(),
-						i + 1, file, part, (long) i * part);
+						result.getBucket(), result.getKey(),
+						result.getUploadId(), i + 1, file, part, (long) i
+								* part);
 				PartETag tag = client1.uploadPart(request);
 				System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
 				try {
@@ -191,69 +196,70 @@ public class MultipartUploadTest extends Ks3ClientTest {
 				}
 			}
 			// list parts
-			ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
-					result.getKey(), result.getUploadId());
+			ListPartsRequest requestList = new ListPartsRequest(
+					result.getBucket(), result.getKey(), result.getUploadId());
 			ListPartsResult tags = client1.listParts(requestList);
 			CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 					tags);
 			// complete
-			int i =0;
-			for(PartETag etag:request.getPartETags()){
-				if(etag.getPartNumber()==1){
+			int i = 0;
+			for (PartETag etag : request.getPartETags()) {
+				if (etag.getPartNumber() == 1) {
 					request.getPartETags().remove(i);
 					break;
 				}
 				i++;
 			}
 			this.isc = false;
-			try{
+			try {
 				client1.completeMultipartUpload(request);
-			}catch(Ks3ServiceException e){
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
-			if(!isc)
+			if (!isc)
 				throw new NotThrowException();
-			
-			i =0;
-			for(PartETag etag:request.getPartETags()){
-				if(etag.getPartNumber()==2){
+
+			i = 0;
+			for (PartETag etag : request.getPartETags()) {
+				if (etag.getPartNumber() == 2) {
 					request.getPartETags().remove(i);
 					break;
 				}
 				i++;
 			}
 			this.isc = false;
-			try{
+			try {
 				client1.completeMultipartUpload(request);
-			}catch(Ks3ServiceException e){
+			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
-			if(!isc)
+			if (!isc)
 				throw new NotThrowException();
-			
-			request.getPartETags().remove(n-1);
+
+			request.getPartETags().remove(n - 1);
 			client1.completeMultipartUpload(request);
-			
-		}finally{
+
+		} finally {
 			if (client1.bucketExists(bucketName)) {
 				client1.clearBucket(bucketName);
 				client1.deleteBucket(bucketName);
-			}	
+			}
 		}
 	}
+
 	@Test
-	public void testInitAndComplete_1034(){
+	public void testInitAndComplete_1034() {
 		if (client1.bucketExists(bucketName)) {
 			client1.clearBucket(bucketName);
 			client1.deleteBucket(bucketName);
 		}
 		try {
 			client1.createBucket(bucketName);
-			
-			long part = 5 * 1024 * 1024-1;
+
+			long part = 5 * 1024 * 1024 - 1;
 			String bucket = bucketName;
-			URL filename = this.getClass().getClassLoader().
-					getResource("git.exe");
+			URL filename = this.getClass().getClassLoader()
+					.getResource("git.exe");
 			InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
 					bucket, file);
 			request1.setCannedAcl(CannedAccessControlList.PublicRead);
@@ -265,9 +271,18 @@ public class MultipartUploadTest extends Ks3ClientTest {
 			long n = file.length() / part;
 			for (int i = 0; i <= n; i++) {
 				UploadPartRequest request = new UploadPartRequest(
-						result.getBucket(), result.getKey(), result.getUploadId(),
-						i + 1, file, part, (long) i * part);
-				PartETag tag = client1.uploadPart(request);
+						result.getBucket(), result.getKey(),
+						result.getUploadId(), i + 1, file, part, (long) i
+								* part);
+				PartETag tag = null;
+				this.isc = false;
+				try {
+					 tag = client1.uploadPart(request);
+				} catch (Ks3ClientException e) {
+					this.isc = true;
+				}
+				if (!isc)
+					throw new NotThrowException();
 				System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
 				try {
 					UploadPartTime.print(i + 1, Timer.end());
@@ -277,26 +292,26 @@ public class MultipartUploadTest extends Ks3ClientTest {
 				}
 			}
 			// list parts
-			ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
-					result.getKey(), result.getUploadId());
+			ListPartsRequest requestList = new ListPartsRequest(
+					result.getBucket(), result.getKey(), result.getUploadId());
 			ListPartsResult tags = client1.listParts(requestList);
 			CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 					tags);
 			// complete
 			this.isc = false;
-			try{
+			try {
 				client1.completeMultipartUpload(request);
-			}catch(Ks3ClientException e){
+			} catch (Ks3ClientException e) {
 				this.isc = true;
 			}
-			if(!isc)
+			if (!isc)
 				throw new NotThrowException();
-			
-		}finally{
+
+		} finally {
 			if (client1.bucketExists(bucketName)) {
 				client1.clearBucket(bucketName);
 				client1.deleteBucket(bucketName);
-			}	
+			}
 		}
 	}
 }

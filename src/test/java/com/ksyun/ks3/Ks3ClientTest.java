@@ -97,7 +97,10 @@ public class Ks3ClientTest {
 	public void getBucketLocation() {
 		System.out.println(client.getBucketLoaction("ksc-scm"));
 	}
-
+	@Test
+	public void testGenerateUrl(){
+		System.out.println(client.generatePresignedUrl("lijunwei.test", "IMG_16721.jpg", 60));
+	}
 	@Test
 	public void getBucketLogging() {
 		System.out.println(client.getBucketLogging("ksc-scm"));
