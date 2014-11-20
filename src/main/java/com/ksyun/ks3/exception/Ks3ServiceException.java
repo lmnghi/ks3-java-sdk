@@ -156,7 +156,8 @@ public class Ks3ServiceException extends Ks3ClientException {
 				this.setErrorCode("MethodNotAllowed");
 		}
 		String error  = this.getErrorCode();
-		error = error.substring(0,1).toUpperCase()+error.substring(1);
+		if(!StringUtils.isBlank(error))
+		    error = error.substring(0,1).toUpperCase()+error.substring(1);
 		String classString = Constants.KS3_PACAKAGE + ".exception.serviceside."
 				+ error + "Exception";
 		try {
