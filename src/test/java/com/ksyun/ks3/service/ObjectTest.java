@@ -366,6 +366,18 @@ public class ObjectTest {
 	
 	/**
 	 * @tag 测试 HEAD Object
+	 * @Test 错误的bucketName， 抛出 Ks3ServiceException 异常
+	 * @Then {@value 是否应该抛出 NoSuchBucketException}
+	 */
+	@Test(expected=Ks3ServiceException.class)
+	public void headObjectTest2008(){
+		String noBucket = "notExist";
+		HeadObjectResult object = client.headObject(noBucket, "hosts.txt");
+		System.out.println(object);
+	}
+	
+	/**
+	 * @tag 测试 HEAD Object
 	 * @Test 
 	 * @Then 
 	 */
@@ -381,6 +393,7 @@ public class ObjectTest {
 	 * @Test 正确的 key 以及  bucketName
 	 * @Then 
 	 */
+	@Test
 	public void getObjectACLTest3001(){
 		AccessControlPolicy object = client.getObjectACL(bucket, "hosts.txt");
 		System.out.println(object);
@@ -412,9 +425,9 @@ public class ObjectTest {
 	/**
 	 * @tag 权限测试 
 	 * @Test 客户端访问非本用户文件---公开文件
-	 * @Then {@value 应该正常访问，但是结果非预期}
+	 * @Then 
 	 */
-	@Test
+	@Test(expected=AccessDeniedException.class)
 	public void getObjectACLTest3004(){
 
 		AccessControlPolicy object = clientOther.getObjectACL(bucket, "hostsPulbic.txt");
@@ -444,4 +457,6 @@ public class ObjectTest {
 		AccessControlPolicy object = client.getObjectACL(bucket, "hosts.txt");
 		System.out.println(object);
 	}
+	
+	
 }
