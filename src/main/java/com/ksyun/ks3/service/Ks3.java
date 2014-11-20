@@ -1061,7 +1061,7 @@ public interface Ks3 {
 	 * 
 	 * @param bucketName
 	 * @param prefix
-	 *            前缀
+	 *            object key前缀
 	 * @return {@link ListMultipartUploadsResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ClientException
@@ -1077,7 +1077,7 @@ public interface Ks3 {
 	 * 
 	 * @param bucketName
 	 * @param prefix
-	 *            前缀
+	 *            object key前缀
 	 * @param keyMarker
 	 * @param uploadIdMarker
 	 *            <p>

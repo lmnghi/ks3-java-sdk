@@ -38,6 +38,7 @@ import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.Ks3ObjectSummary;
 import com.ksyun.ks3.dto.ListMultipartUploadsResult;
 import com.ksyun.ks3.dto.ListPartsResult;
+import com.ksyun.ks3.dto.MultiPartUploadInfo;
 import com.ksyun.ks3.dto.ObjectListing;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.PartETag;
@@ -130,10 +131,17 @@ public class Ks3ClientTest {
 	}
 
 	@Test
-	public void listBucketParts() {
+	public void listBucketParts() throws Exception {
+		
+		for(int i= 0;i<100;i++){
 		ListMultipartUploadsResult result = client
-				.listMultipartUploads("ksc-scm");
-		System.out.println(result);
+				.listMultipartUploads("ksc-scm","我的D盘压缩.rar");
+		for(MultiPartUploadInfo info :result.getUploads()){
+			if(info.getInitiated()==null)
+				throw new Exception(i+"");
+		//	client.abortMultipartUpload("ksc-scm",info.getKey(), info.getUploadId());
+		}
+		}
 	}
 
 	@Test
@@ -369,10 +377,10 @@ public class Ks3ClientTest {
 		System.out.println(response);
 	}
 
-	// //@Test
+	@Test
 	public void listParts() {
-		ListPartsResult result = client.listParts("lijunwei.test",
-				"eclipse.zip", "aedf953924f34d0ba93b74188de1596b");
+		ListPartsResult result = client.listParts("ksc-scm",
+				"我的D盘压缩.rar", "ec7f258585e04cf1998503d3db7c3826");
 		System.out.println(result);
 	}
 

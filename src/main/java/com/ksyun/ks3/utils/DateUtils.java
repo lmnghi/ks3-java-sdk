@@ -59,16 +59,21 @@ public class DateUtils {
 		SimpleDateFormat sdf = new SimpleDateFormat(
 				"E, dd MMM yyyy HH:mm:ss z", Locale.UK);
 		sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
-		if (datetimeText.endsWith("Z")) {
-			datetimeText = datetimeText.replace("Z", " GMT");
-			sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS z");
+		if (datetimeText.contains("-") && datetimeText.contains("T")) {
+			if (datetimeText.endsWith("Z")) {
+				datetimeText = datetimeText.replace("Z", " GMT");
+				sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS z");
+			} else if(datetimeText.endsWith("+08:00")){
+				datetimeText = datetimeText.replace("+08:00", " GMT");
+				sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS z");
+			}
 		}
 		try {
 			return sdf.parse(datetimeText);
 		} catch (ParseException e) {
 			throw new Ks3ClientException(
-					"The server did not return the expected value,it is "
-							+ datetimeText, e);
+						"The server did not return the expected value,it is "
+								+ datetimeText, e);
 		}
 
 	}

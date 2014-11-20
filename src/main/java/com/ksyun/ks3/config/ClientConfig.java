@@ -60,6 +60,7 @@ public class ClientConfig {
 	 * httpclient配置  值为配置的key
 	 */
 	public static final String SOCKET_RECEIVE_BUFFER_SIZE_HINT = "httpclient.socketReceiveBufferSzieHint";
+	public static final String MAX_RETRY = "httpclient.maxRetry";
 	/**
 	 * httpclient配置  值为配置的key
 	 */

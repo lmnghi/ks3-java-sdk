@@ -25,6 +25,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
@@ -63,7 +64,8 @@ public class HttpClientFactory {
                 .createPoolingClientConnManager(httpClientParams);
         DefaultHttpClient httpClient = new DefaultHttpClient(connectionManager, httpClientParams);
         httpClient.setRedirectStrategy(new LocationHeaderNotRequiredRedirectStrategy());
-
+        httpClient.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(config.getInt(ClientConfig.MAX_RETRY), false));
+        
         try {
             Scheme http = new Scheme("http", 80, PlainSocketFactory.getSocketFactory());
             SSLSocketFactory sf = new SSLSocketFactory(
