@@ -24,21 +24,47 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 	 */
 	private String sourceKey;
 	
-	
-	
+	/**
+	 * 通过CannedAccessControlList设置新的object的acl
+	 */
 	private CannedAccessControlList cannedAcl;
+	/**
+	 * 设置新的object的acl
+	 */
 	private AccessControlList accessControlList;
-	
+	/**
+	 * 
+	 * @param destinationBucket 目标bucket
+	 * @param destinationObject 目标object
+	 * @param sourceBucket 源bucket
+	 * @param sourceKey 源object
+	 */
 	public CopyObjectRequest(String destinationBucket,String destinationObject,String sourceBucket,String sourceKey){
 		super.setBucketname(destinationBucket);
 		super.setObjectkey(destinationObject);
 		this.setSourceBucket(sourceBucket);
 		this.setSourceKey(sourceKey);
 	}
+	/**
+	 * 
+	 * @param destinationBucket 目标bucket
+	 * @param destinationObject 目标object
+	 * @param sourceBucket 源bucket
+	 * @param sourceKey 源bucket
+	 * @param cannedAcl 设置新object的acl
+	 */
 	public CopyObjectRequest(String destinationBucket,String destinationObject,String sourceBucket,String sourceKey,CannedAccessControlList cannedAcl){
 		this(destinationBucket,destinationObject,sourceBucket,sourceKey);
 		this.setCannedAcl(cannedAcl);
 	}
+	/**
+	 * 
+	 * @param destinationBucket 目标bucket
+	 * @param destinationObject 目标object
+	 * @param sourceBucket 源bucket
+	 * @param sourceKey 源bucket
+	 * @param accessControlList 设置新object的acl
+	 */
 	public CopyObjectRequest(String destinationBucket,String destinationObject,String sourceBucket,String sourceKey,AccessControlList accessControlList){
 		this(destinationBucket,destinationObject,sourceBucket,sourceKey);
 		this.setAccessControlList(accessControlList);

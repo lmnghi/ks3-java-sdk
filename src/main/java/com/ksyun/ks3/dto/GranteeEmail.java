@@ -11,6 +11,12 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class GranteeEmail implements Grantee{
 	private String email;
+	public GranteeEmail(){
+		
+	}
+	public GranteeEmail(String email){
+		this.setIdentifier(email);
+	}
 	public String getTypeIdentifier() {
 		return "emailAddress";
 	}

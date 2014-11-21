@@ -74,6 +74,10 @@ public class Ks3ClientTest {
 			"9Z6VbeYUJ0BiKcuwYe5x/j76TZvYe9VRh2OdH15m");
 	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ",
 			"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
+	/**
+	 * 测试环境
+	 */
+	private Ks3Client client2 = new Ks3Client("8oN7siZgTOSGuaC1i/er","ZoWO9uGe4p59aHDljcWRRecoCW+noJK11Dilz2r+");
 
 	public static void main(String[] args) {
 		String s = "<ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>aw2</Name><Prefix>../../../../../../../../../../../../../../../../etc/</Prefix><Marker></Marker><MaxKeys>30</MaxKeys><Delimiter>/</Delimiter><IsTruncated>false</IsTruncated><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd</Key><LastModified>2014-08-28T12:45:55.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php</Key><LastModified>2014-08-28T12:46:02.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>";
@@ -98,10 +102,13 @@ public class Ks3ClientTest {
 	public void getBucketLocation() {
 		System.out.println(client.getBucketLoaction("ksc-scm"));
 	}
+
 	@Test
-	public void testGenerateUrl(){
-		System.out.println(client.generatePresignedUrl("lijunwei.test", "IMG_16721.jpg", 60));
+	public void testGenerateUrl() {
+		System.out.println(client.generatePresignedUrl("lijunwei.test",
+				"IMG_16721.jpg", 60));
 	}
+
 	@Test
 	public void getBucketLogging() {
 		System.out.println(client.getBucketLogging("ksc-scm"));
@@ -114,15 +121,13 @@ public class Ks3ClientTest {
 		status.setTargetBucket("lijunwei.test");
 		status.setTargetPrefix("ddd");
 
-		GranteeEmail grantee1 = new GranteeEmail();
-		grantee1.setIdentifier("lijunwei@kingsoft.com");
+		GranteeEmail grantee1 = new GranteeEmail("lijunwei@kingsoft.com");
 		status.addGrant(new Grant(grantee1, Permission.Read));
 
 		GranteeUri grantee2 = GranteeUri.AllUsers;
 		status.addGrant(new Grant(grantee2, Permission.FullControl));
 
-		GranteeId grantee = new GranteeId();
-		grantee.setIdentifier("12344");
+		GranteeId grantee = new GranteeId("dwed");
 		status.addGrant(new Grant(grantee, Permission.Write));
 
 		PutBucketLoggingRequest request = new PutBucketLoggingRequest("ksc-scm");
@@ -132,15 +137,16 @@ public class Ks3ClientTest {
 
 	@Test
 	public void listBucketParts() throws Exception {
-		
-		for(int i= 0;i<100;i++){
-		ListMultipartUploadsResult result = client
-				.listMultipartUploads("ksc-scm","我的D盘压缩.rar");
-		for(MultiPartUploadInfo info :result.getUploads()){
-			if(info.getInitiated()==null)
-				throw new Exception(i+"");
-		//	client.abortMultipartUpload("ksc-scm",info.getKey(), info.getUploadId());
-		}
+
+		for (int i = 0; i < 100; i++) {
+			ListMultipartUploadsResult result = client.listMultipartUploads(
+					"ksc-scm", "我的D盘压缩.rar");
+			for (MultiPartUploadInfo info : result.getUploads()) {
+				if (info.getInitiated() == null)
+					throw new Exception(i + "");
+				// client.abortMultipartUpload("ksc-scm",info.getKey(),
+				// info.getUploadId());
+			}
 		}
 	}
 
@@ -206,7 +212,7 @@ public class Ks3ClientTest {
 
 	@Test
 	public void makeDir() {
-		
+
 	}
 
 	@Test
@@ -248,7 +254,7 @@ public class Ks3ClientTest {
 
 	@Test
 	public void uploadPart() {
-		long part = 5 * 1024 * 1024;
+		long part = 10 * 1024 * 1024;
 		String bucket = "ksc-scm";
 		String key = "我的D盘压缩.rar";
 		// String filename = "D://新建文件夹.rar";
@@ -286,6 +292,7 @@ public class Ks3ClientTest {
 				tags);
 		client.completeMultipartUpload(request);
 	}
+
 	@Test
 	public void uploadPart_01() {
 		long part = 5 * 1024 * 1024;
@@ -326,14 +333,14 @@ public class Ks3ClientTest {
 				tags);
 		client.completeMultipartUpload(request);
 	}
+
 	@Test
-	public void testETag()
-	{
+	public void testETag() {
 		List<String> s = new ArrayList<String>();
-		for(int m = 0;m<100;m++){
+		for (int m = 0; m < 100; m++) {
 			long part = 5 * 1024 * 1024;
 			String bucket = "ksc-scm";
-			String key = m+".jpeg";
+			String key = m + ".jpeg";
 			// String filename = "D://新建文件夹.rar";
 			String filename = "D://1234.jpeg";
 
@@ -349,13 +356,14 @@ public class Ks3ClientTest {
 			System.out.println(n);
 			for (int i = 0; i <= n; i++) {
 				UploadPartRequest request = new UploadPartRequest(
-						result.getBucket(), result.getKey(), result.getUploadId(),
-						i + 1, file, part, (long) i * part);
+						result.getBucket(), result.getKey(),
+						result.getUploadId(), i + 1, file, part, (long) i
+								* part);
 				PartETag tag = client.uploadPart(request);
 			}
 			// list parts
-			ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
-					result.getKey(), result.getUploadId());
+			ListPartsRequest requestList = new ListPartsRequest(
+					result.getBucket(), result.getKey(), result.getUploadId());
 			ListPartsResult tags = client.listParts(requestList);
 			// complete
 			CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
@@ -364,6 +372,7 @@ public class Ks3ClientTest {
 		}
 		System.out.println(s);
 	}
+
 	@Test
 	public void completeMulti() {
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
@@ -379,8 +388,8 @@ public class Ks3ClientTest {
 
 	@Test
 	public void listParts() {
-		ListPartsResult result = client.listParts("ksc-scm",
-				"我的D盘压缩.rar", "ec7f258585e04cf1998503d3db7c3826");
+		ListPartsResult result = client.listParts("ksc-scm", "我的D盘压缩.rar",
+				"ec7f258585e04cf1998503d3db7c3826");
 		System.out.println(result);
 	}
 
@@ -396,13 +405,39 @@ public class Ks3ClientTest {
 		System.out.println(getBucketACL.getAccessControlList());
 	}
 
-	 @Test
+	@Test
 	public void putBucketACL() {
-		PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm");
-		
-		
-		 request.setCannedAcl(CannedAccessControlList.Private);
-		client.putBucketACL(request);
+/*		if (client2.bucketExists("lijunwei.test")) {
+			client2.clearBucket("lijunwei.test");
+			client2.deleteBucket("lijunwei.test");
+			client2.createBucket("lijunwei.test");
+		}*/
+		PutBucketACLRequest request = new PutBucketACLRequest("lijunwei.test");
+
+		AccessControlList acl = new AccessControlList();
+
+		Grant grant1 = new Grant();
+		GranteeId grantee1 = new GranteeId("1233ddd");
+		grant1.setGrantee(grantee1);
+		grant1.setPermission(Permission.Write);
+
+		Grant grant2 = new Grant();
+		GranteeId grantee2 = new GranteeId("ddddx");
+		grant2.setGrantee(grantee2);
+		grant2.setPermission(Permission.Write);
+
+		Grant grant3 = new Grant();
+		GranteeId grantee3 = new GranteeId("dwdqwdqw");
+		grant3.setGrantee(grantee3);
+		grant3.setPermission(Permission.Write);
+
+		acl.addGrant(grant1);
+		acl.addGrant(grant2);
+		acl.addGrant(grant3);
+		//request.setAccessControlList(acl);
+		request.setCannedAcl(CannedAccessControlList.PublicRead);
+		client2.putBucketACL(request);
+		System.out.println(client2.getBucketACL("lijunwei.test"));
 	}
 
 	// @Test
@@ -437,8 +472,8 @@ public class Ks3ClientTest {
 	@Test
 	public void deleteObjects() {
 		System.out.println(client.deleteObjects(new String[] {
-				"11112018rln5.pdf", "dfdfdsf.pdf", "sssss", "square/","prop.txt" },
-				"ksc-scm"));
+				"11112018rln5.pdf", "dfdfdsf.pdf", "sssss", "square/",
+				"prop.txt" }, "ksc-scm"));
 	}
 
 	static int i = 0;

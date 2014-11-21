@@ -67,17 +67,21 @@ public class HttpUtils {
 		List<String> grants_write= new ArrayList<String>();
 		for(Grant grant:acl.getGrants())
 		{
+			String id = grant.getGrantee().getIdentifier();
+			if(StringUtils.isBlank(id)){
+				throw new IllegalArgumentException("Grantee Identifier can not be null or blank");
+			}
 			if(grant.getPermission().equals(Permission.FullControl))
 			{
-				grants_fullcontrol.add(grant.getGrantee().getTypeIdentifier()+"=\""+grant.getGrantee().getIdentifier()+"\"");
+				grants_fullcontrol.add(grant.getGrantee().getTypeIdentifier()+"=\""+id+"\"");
 			}
 			else if(grant.getPermission().equals(Permission.Read))
 			{
-				grants_read.add(grant.getGrantee().getTypeIdentifier()+"=\""+grant.getGrantee().getIdentifier()+"\"");
+				grants_read.add(grant.getGrantee().getTypeIdentifier()+"=\""+id+"\"");
 			}
 			else if(grant.getPermission().equals(Permission.Write))
 			{
-				grants_write.add(grant.getGrantee().getTypeIdentifier()+"=\""+grant.getGrantee().getIdentifier()+"\"");
+				grants_write.add(grant.getGrantee().getTypeIdentifier()+"=\""+id+"\"");
 			}
 		}
 		if(grants_fullcontrol.size()>0)

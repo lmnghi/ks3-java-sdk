@@ -12,6 +12,16 @@ import com.ksyun.ks3.utils.StringUtils;
 public class GranteeId implements Grantee{
 	private String id;
 	private String displayName;
+	public GranteeId(){
+		
+	}
+	public GranteeId(String id){
+		this.setIdentifier(id);
+	}
+	public GranteeId(String id,String displayName){
+		this.setIdentifier(id);
+		this.setDisplayName(displayName);
+	}
 	public String getTypeIdentifier() {
 		return "id";
 	}

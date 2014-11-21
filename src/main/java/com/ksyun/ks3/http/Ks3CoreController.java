@@ -134,8 +134,6 @@ public class Ks3CoreController {
 			}
 		}
 		log.info("finished handle response : " + Timer.end());
-		if(result!=null&&!(result instanceof Boolean))
-		     log.info(result);
 		return result;
 	}
 

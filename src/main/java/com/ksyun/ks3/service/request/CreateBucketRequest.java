@@ -24,9 +24,12 @@ import com.ksyun.ks3.utils.XmlWriter;
  **/
 public class CreateBucketRequest extends Ks3WebServiceRequest{
 	/**
-	 * {@link CannedAccessControlList}
+	 * {@link CannedAccessControlList}设置新建的bucket的acl
 	 */
 	private CannedAccessControlList cannedAcl;
+	/**
+	 * 设置新建的bucket的acl
+	 */
 	private AccessControlList acl = new AccessControlList();
 	/**
 	 * Bucket存储地点配置

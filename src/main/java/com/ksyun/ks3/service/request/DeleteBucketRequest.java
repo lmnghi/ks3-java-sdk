@@ -8,7 +8,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月16日 下午3:07:07
  * 
- * @description 
+ * @description 删除bucket的请求
  **/
 public class DeleteBucketRequest extends Ks3WebServiceRequest{
 	public DeleteBucketRequest(String bucketname)
