@@ -3,19 +3,15 @@ package com.ksyun.ks3.service;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.codec.DecoderException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,6 +27,7 @@ import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.HeadObjectResult;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.PutObjectResult;
+import com.ksyun.ks3.dto.ResponseHeaderOverrides;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.exception.serviceside.AccessDeniedException;
@@ -46,7 +43,6 @@ import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
 import com.ksyun.ks3.service.request.PutObjectACLRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
-import com.ksyun.ks3.utils.Converter;
 
 /**
  * @description Tests about Object
@@ -64,15 +60,7 @@ public class ObjectTest {
 	private static Properties credential;
 	
 	private static Logger logger = LoggerFactory.getLogger(ObjectTest.class);
-	/**
-	 * 方法是否应该抛出异常
-	 * shouldThrowException
-	 */
-	private boolean ste = false;
-	/**
-	 * 是否接受到异常
-	 */
-	private boolean isc = false;
+
 	
 	/**
 	 * @description 加载类时调用，配置测试客户端数据，权限数据，和基础数据信息。
@@ -259,6 +247,41 @@ public class ObjectTest {
 		GetObjectResult object = clientOther.getObject(bucket, "hosts.txt");
 		System.out.println(object);
 	}
+	
+	/**
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @tag 功能测试  GET Object
+	 * @Test 
+	 * @Then 
+	 */
+	@Test()
+	public void getObjectTest1008() throws IllegalArgumentException, IllegalAccessException{
+		GetObjectRequest request = new GetObjectRequest(bucket, "hosts.txt");
+		ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
+		overrides.setCacheControl("no-cache");
+		overrides.setContentDisposition("D:/");
+		overrides.setContentEncoding("gb2312");
+		/*overrides.setContentLanguage("En");*/
+		overrides.setContentType("txt");
+		overrides.setExpires(new Date());
+		request.setOverrides(overrides);
+		GetObjectResult object = client.getObject(request);
+		
+//		HeadObjectResult result = client.headObject(bucket, "hosts.txt");
+		
+		ObjectMetadata metas = object.getObject().getObjectMetadata();
+		
+		System.out.println(metas.getCacheControl());
+		System.out.println(metas.getContentDisposition());
+		System.out.println(metas.getContentEncoding());
+		System.out.println(metas.getContentType());
+		System.out.println(metas.getHttpExpiresDate());
+//		System.out.println("abc\n" + result.getObjectMetadata());
+		
+//		System.out.println(object);
+	}
+	
 	
 	/**
 	 * @tag 测试  GET Object
@@ -669,7 +692,7 @@ public class ObjectTest {
 	 * @Then 
 	 */
 	@Test
-	public void putObjectTest509(){
+	public void putObjectTest5009(){
 		PutObjectResult result = client.PutObject(bucket, "/./putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
@@ -710,9 +733,12 @@ public class ObjectTest {
 		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTestMeta.txt", new File("D:/objectTest/putObjectTest.txt"));
 		
 		ObjectMetadata objectMeta = new ObjectMetadata();
-		objectMeta.setContentLength(47);
-		objectMeta.setContentType("application/octet-stream");
-		objectMeta.setContentMD5("ruzU5HevHvJyciYjskBwbw==");
+		objectMeta.setContentType("txt");
+		objectMeta.setContentMD5("ruzU5HevHvJyciYjskBwbw=");
+		objectMeta.setContentDisposition("D:/abc/");
+		objectMeta.setHttpExpiresDate(new Date());
+		objectMeta.setContentEncoding("gb2312");
+		objectMeta.setCacheControl("abc");
 		request.setObjectMeta(objectMeta);
 		
 		client.putObject(request);
@@ -722,9 +748,9 @@ public class ObjectTest {
 		System.out.println(objectMetaGet);
 		
 		assertEquals(objectMeta.getContentMD5(), objectMetaGet.getContentMD5());
-		assertEquals(objectMeta.getContentLength(), objectMetaGet.getContentLength());
 		assertEquals(objectMeta.getContentType(), objectMetaGet.getContentType());
-		
+		assertEquals(objectMeta.getContentDisposition(), objectMetaGet.getContentDisposition());
+//		System.out.println(objectMeta);
 	}
 	
 	/**
@@ -738,6 +764,29 @@ public class ObjectTest {
 //		request.setCannedAcl(CannedAccessControlList.Private);
 		PutObjectResult result = clientOther.putObject(request);
 		System.out.println(result);
+	}
+	
+	/**
+	 * @tag 功能测试	 PUT Object
+	 * @Test 设置objectMeta中的UserMeta
+	 * @Then 
+	 */
+	@Test()
+	public void putObjectTest5014(){
+		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTestUserMeta.txt", new File("D:/objectTest/putObjectTest.txt"));
+		ObjectMetadata objectMeta = new ObjectMetadata();
+		objectMeta.setUserMeta("abc", "abc");
+		objectMeta.setUserMeta("cdd", "1131445");
+		
+		request.setObjectMeta(objectMeta);
+		
+		client.putObject(request);
+		
+		GetObjectResult result = client.getObject(bucket, "putObjectTestUserMeta.txt");
+		System.out.print(result.getObject().getObjectMetadata());
+		
+		System.out.print(objectMeta);
+		
 	}
 	
 	/**
