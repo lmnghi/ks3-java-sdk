@@ -58,7 +58,7 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 			this.addHeader(HttpHeaders.IfUnmodifiedSince, this.unmodifiedSinceConstraint.toGMTString());
 		if(this.modifiedSinceConstraint !=null)
 			this.addHeader(HttpHeaders.IfModifiedSince, this.modifiedSinceConstraint.toGMTString());
-		this.getHeader().putAll(this.overrides.getOverrides());
+		this.getParams().putAll(this.overrides.getOverrides());
 	}
 
 	@Override
