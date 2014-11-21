@@ -7,10 +7,18 @@ import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
- * Created by 杨春建 on 2014/10/20.
+ * 修改bucket的acl
+ * @author LIJUNWEI
+ *
  */
 public class PutBucketACLRequest extends Ks3WebServiceRequest{
+	/**
+	 * bucket的acl
+	 */
     private AccessControlList accessControlList;
+    /**
+     * 一种快捷的配置方式
+     */
     private CannedAccessControlList cannedAcl;
     public CannedAccessControlList getCannedAcl() {
         return cannedAcl;

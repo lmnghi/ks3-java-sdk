@@ -47,6 +47,17 @@ public class ListMultipartUploadsResult {
 	private boolean isTruncated;
 	private String prefix;
 	private String delimiter;
+	/**
+	 * 表示列表中的文件夹下有分块上传
+	 * <p>由prefix和delimiter确定，以prefix开头的object key,在prefix之后第一次出现delimiter的位置之前（包含delimiter）的子字符串将存在于commonPrefixes中</p>
+	 * <p>比如有一下两个object key</p>
+	 * <p>aaaa/bbb/ddd.txt</p>
+	 * <p>aaaa/ccc/eee.txt</p>
+	 * <p>ssss/eee/fff.txt</p>
+	 * <p>prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/</p>
+	 * <p>prefix为aaaa/  delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/</p>
+	 * <p>prefix为ssss/  delimiter为/ 则commonPrefix 为 aaaa/eee/</p>
+	 */
 	private List<String> commonPrefixes = new ArrayList<String>();
 	private List<MultiPartUploadInfo> uploads = new ArrayList<MultiPartUploadInfo>();
 

@@ -11,10 +11,18 @@ import java.io.InputStream;
 import java.util.Set;
 
 /**
- * Created by 杨春建 on 2014/10/20.
+ * 修改bucket的acl
+ * @author LIJUNWEI
+ *
  */
 public class PutObjectACLRequest extends Ks3WebServiceRequest{
+	/**
+	 * bucket的acl
+	 */
     private AccessControlList accessControlList;
+    /**
+     * 对acl的一种快捷配置方式
+     */
     private CannedAccessControlList cannedAcl;
 
     public CannedAccessControlList getCannedAcl() {

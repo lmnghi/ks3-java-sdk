@@ -15,9 +15,12 @@ import com.ksyun.ks3.utils.XmlWriter;
  * 
  * @date 2014年11月10日 下午2:44:52
  * 
- * @description 
+ * @description 批量删除object的请求
  **/
 public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implements MD5CalculateAble{
+	/**
+	 * 要删除的object key
+	 */
 	private String[] keys = new String[]{};
 	public DeleteMultipleObjectsRequest(String bucketName,List<String> keys)
 	{
@@ -59,6 +62,10 @@ public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implement
 	public String[] getKeys() {
 		return keys;
 	}
+	/**
+	 * 设置要删除的object keys
+	 * @param keys
+	 */
 	public void setKeys(String[] keys) {
 		this.keys = keys;
 	}

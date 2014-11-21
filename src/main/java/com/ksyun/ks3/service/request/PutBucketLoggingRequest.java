@@ -20,6 +20,12 @@ import com.ksyun.ks3.utils.XmlWriter;
  * @description 配置bucket日志的请求
  **/
 public class PutBucketLoggingRequest extends Ks3WebServiceRequest {
+	/**
+	 * 
+	 * @param bucketName
+	 * @param enable 是否开启bucket的日志功能
+	 * @param targetBucket 日志存放地点
+	 */
 	public PutBucketLoggingRequest(String bucketName, boolean enable,
 			String targetBucket) {
 		this(bucketName);
@@ -27,6 +33,13 @@ public class PutBucketLoggingRequest extends Ks3WebServiceRequest {
 		this.bucketLoggingStatus.setTargetBucket(targetBucket);
 	}
 
+	/**
+	 * 
+	 * @param bucketName
+	 * @param enable 是否开启bucket的日志功能
+	 * @param targetBucket 日志存放地点
+	 * @param targetPrefix 日志文件前缀
+	 */
 	public PutBucketLoggingRequest(String bucketName, boolean enable,
 			String targetBucket, String targetPrefix) {
 		this(bucketName);
@@ -34,7 +47,11 @@ public class PutBucketLoggingRequest extends Ks3WebServiceRequest {
 		this.bucketLoggingStatus.setTargetBucket(targetBucket);
 		this.bucketLoggingStatus.setTargetPrefix(targetPrefix);
 	}
-
+	/**
+	 * 
+	 * @param bucketName
+	 * @param bucketLoggingStatus{@link bucketLoggingStatus}
+	 */
 	public PutBucketLoggingRequest(String bucketName,
 			BucketLoggingStatus bucketLoggingStatus) {
 		this(bucketName);

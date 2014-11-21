@@ -14,14 +14,29 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月22日 下午7:40:04
  * 
- * @description 
+ * @description Head请求一个object,可以用来判断一个object是否存在或者是用来获取object的元数据
  **/
 public class HeadObjectRequest extends Ks3WebServiceRequest {
 	private String range = null;
+	/**
+	 * object的etag能匹配到则返回，否则返回结果的ifPreconditionSuccess为false，metadata为空
+	 */
 	private List<String> matchingETagConstraints = new ArrayList<String>();
+	/**
+	 * object的etag不同于其中的任何一个，否则返回结果的ifModified为false,metadata为空
+	 */
 	private List<String> nonmatchingEtagConstraints = new ArrayList<String>();
+	/**
+	 * 在此时间之后没有被修改过，否则返回结果的ifPreconditionSuccess为false，metadata为空
+	 */
 	private Date unmodifiedSinceConstraint;
+	/**
+	 * 在此时间之后被修改过，否则返回结果的ifModified为false,metadata为空
+	 */
 	private Date modifiedSinceConstraint;
+	/**
+	 * 修改返回的response的headers
+	 */
 	private ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
 	public HeadObjectRequest(String bucketname,String objectkey)
 	{

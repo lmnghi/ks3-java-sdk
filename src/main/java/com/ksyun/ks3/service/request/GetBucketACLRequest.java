@@ -6,7 +6,9 @@ import com.ksyun.ks3.utils.StringUtils;
 import java.security.Permission;
 
 /**
- * Created by 杨春建 on 2014/10/20.
+ * 获取bucket acl的请求
+ * @author LIJUNWEI
+ *
  */
 public class GetBucketACLRequest extends Ks3WebServiceRequest{
 

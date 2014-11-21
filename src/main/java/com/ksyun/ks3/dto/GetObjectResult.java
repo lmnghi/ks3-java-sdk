@@ -7,18 +7,18 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年11月10日 下午6:09:15
  * 
- * @description 
+ * @description GetObject请求的返回结果
  **/
 public class GetObjectResult {
 	private Ks3Object object = new Ks3Object();
 	/**
-	 * false 
+	 * 当为false时 
 	 * object为null
-	 * false 即 http 304  一般用于缓存控制
+	 * false 即 http 304 （not modified） 一般用于缓存控制
 	 */
 	private boolean ifModified = true;
 	/**
-	 * false
+	 * 当为false时 
 	 * object为null
 	 * false 即http 412 一般用于缓存控制
 	 */

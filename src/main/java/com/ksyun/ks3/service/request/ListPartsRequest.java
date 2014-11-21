@@ -8,11 +8,20 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月23日 下午2:45:35
  * 
- * @description 
+ * @description 列出某个uploadid下已上传的块
  **/
 public class ListPartsRequest extends Ks3WebServiceRequest{
+	/**
+	 * 由init multipart upload 获取到的upload id
+	 */
 	private String uploadId;
+	/**
+	 * 列出的最大数，1-1000
+	 */
 	private Integer maxParts = 1000;
+	/**
+	 * 游标，将列出partNumber比该只大的part
+	 */
 	private Integer partNumberMarker = -1;
 	/**
 	 * 要求Ks3服务器对返回结果的objectkey进行编码

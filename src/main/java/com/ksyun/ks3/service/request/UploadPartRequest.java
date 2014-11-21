@@ -26,17 +26,44 @@ import com.ksyun.ks3.utils.StringUtils;
  * @date 2014年10月23日 上午11:17:36
  * 
  * @description 分块上传时，Upload Part的请求
+ *              <p>
+ *              支持提供文件对象进行分块上传，请使用UploadPartRequest(String bucketname, String
+ *              objectkey, String uploadId, int partNumber, File file, long
+ *              partsize, long fileoffset)
+ *              </p>
+ *              <p>
+ *              支持提供已经切分好的流进行分块上传，请提供流的长度，请使用 UploadPartRequest(String
+ *              bucketname, String objectkey, String uploadId, int partNumber,
+ *              InputStream content, long partSize, String contentMd5)
+ *              </p>
  **/
 public class UploadPartRequest extends Ks3WebServiceRequest implements
 		MD5CalculateAble {
 	private final Log log = LogFactory.getLog(UploadPartRequest.class);
 
+	/**
+	 * 由init multipart upload获取到的uploadId
+	 */
 	private String uploadId;
+	/**
+	 * 分块上传时对块的编号，1-10000，请保证partNumber是连续的
+	 */
 	private int partNumber;
+	/**
+	 * 要上传的文件
+	 */
 	private File file;
+	/**
+	 * 当前块的大小，文件的时候最后一块大小不一定要准确，但是流的时候需要准确
+	 */
 	private long partSize;
+	/**
+	 * 文件的时候，之前已经读取的数据量
+	 */
 	private long fileoffset;
-	private long contentLength = -1;
+	/**
+	 * 使用流的时候，要上传的内容
+	 */
 	private InputStream content;
 
 	/**
@@ -61,7 +88,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		this.setFile(file);
 		this.setPartSize(partsize);
 		this.setFileoffset(fileoffset);
-		this.contentLength = file.length() - fileoffset < partsize ? file
+		this.partSize = file.length() - fileoffset < partsize ? file
 				.length() - fileoffset : partsize;
 	}
 
@@ -76,7 +103,9 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * @param partSize
 	 *            content的长度
 	 * @param contentMd5
-	 *            <p>可以指定content-md5否则sdk将不在服务端进行MD5校验</p>
+	 *            <p>
+	 *            可以指定content-md5否则sdk将不在服务端进行MD5校验
+	 *            </p>
 	 */
 	public UploadPartRequest(String bucketname, String objectkey,
 			String uploadId, int partNumber, InputStream content,
@@ -85,7 +114,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		this.setObjectkey(objectkey);
 		this.setUploadId(uploadId);
 		this.setPartNumber(partNumber);
-		this.setContentLength(partSize);
+		this.setPartSize(partSize);
 		this.setContentMD5(contentMd5);
 		this.setContent(content);
 	}
@@ -102,13 +131,14 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 
 			} catch (FileNotFoundException e) {
 				throw new Ks3ClientException("read file " + file.getName()
-						+ " error",e);
+						+ " error", e);
 			}
-		}else{
-			this.content = new RepeatableInputStream(content,Constants.DEFAULT_STREAM_BUFFER_SIZE);
+		} else {
+			this.content = new RepeatableInputStream(content,
+					Constants.DEFAULT_STREAM_BUFFER_SIZE);
 		}
 		this.addHeader(HttpHeaders.ContentLength,
-				String.valueOf(this.contentLength));
+				String.valueOf(this.partSize));
 		this.setRequestBody(content);
 	}
 
@@ -185,15 +215,6 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	public void setFileoffset(long fileoffset) {
 		this.fileoffset = fileoffset;
 	}
-
-	public long getContentLength() {
-		return contentLength;
-	}
-
-	public void setContentLength(long contentLength) {
-		this.contentLength = contentLength;
-	}
-
 	public String getMd5() {
 		if (!StringUtils.isBlank(this.getContentMD5()))
 			return this.getContentMD5();
@@ -202,7 +223,6 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 					.encodeAsString(((MD5DigestCalculatingInputStream) super
 							.getRequestBody()).getMd5Digest());
 	}
-
 
 	public InputStream getContent() {
 		return content;

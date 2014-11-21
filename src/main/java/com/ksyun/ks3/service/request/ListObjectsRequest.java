@@ -14,7 +14,15 @@ import com.ksyun.ks3.utils.StringUtils;
 public class ListObjectsRequest extends Ks3WebServiceRequest {
 
 	/**
-	 * 前缀
+	 * prefix和delimiter决定结果中的commonPrefix
+	 * <p>由prefix和delimiter确定，以prefix开头的object key,在prefix之后第一次出现delimiter的位置之前（包含delimiter）的子字符串将存在于commonPrefixes中</p>
+	 * <p>比如有一下两个object key</p>
+	 * <p>aaaa/bbb/ddd.txt</p>
+	 * <p>aaaa/ccc/eee.txt</p>
+	 * <p>ssss/eee/fff.txt</p>
+	 * <p>prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/</p>
+	 * <p>prefix为aaaa/  delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/</p>
+	 * <p>prefix为ssss/  delimiter为/ 则commonPrefix 为 aaaa/eee/</p>
 	 */
 	private String prefix;
 
@@ -24,7 +32,15 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 	private String marker;
 
 	/**
-	 * 分隔符
+	 * prefix和delimiter决定结果中的commonPrefix
+	 * <p>由prefix和delimiter确定，以prefix开头的object key,在prefix之后第一次出现delimiter的位置之前（包含delimiter）的子字符串将存在于commonPrefixes中</p>
+	 * <p>比如有一下两个object key</p>
+	 * <p>aaaa/bbb/ddd.txt</p>
+	 * <p>aaaa/ccc/eee.txt</p>
+	 * <p>ssss/eee/fff.txt</p>
+	 * <p>prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/</p>
+	 * <p>prefix为aaaa/  delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/</p>
+	 * <p>prefix为ssss/  delimiter为/ 则commonPrefix 为 aaaa/eee/</p>
 	 */
 	private String delimiter;
 	/**

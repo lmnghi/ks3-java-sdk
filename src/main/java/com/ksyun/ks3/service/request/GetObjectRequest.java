@@ -15,7 +15,10 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月20日 下午7:55:25
  * 
- * @description 
+ * @description 获取object
+ * <p>支持分块下载，可通过setRange(long,long)实现</p>
+ * <p>支持缓存控制，通过matchingETagConstraints、nonmatchingEtagConstraints、unmodifiedSinceConstraint、modifiedSinceConstraint控制</p>
+ * <p>支持重写返回的http headers,通过修改overrides实现</p>
  **/
 public class GetObjectRequest extends Ks3WebServiceRequest {
 	private String range = null;

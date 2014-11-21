@@ -4,7 +4,9 @@ import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
- * Created by 杨春建 on 2014/10/20.
+ * 获取object的acl
+ * @author LIJUNWEI
+ *
  */
 public class GetObjectACLRequest extends Ks3WebServiceRequest{
 

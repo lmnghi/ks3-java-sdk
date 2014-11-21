@@ -20,11 +20,20 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月23日 上午10:37:41
  * 
- * @description 
+ * @description 初始化分块上传
  **/
 public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
+	/**
+	 * 设置object的元数据
+	 */
 	private ObjectMetadata objectMeta = new ObjectMetadata();
+	/**
+	 * 设置object的acl
+	 */
 	private AccessControlList acl = new AccessControlList();
+	/**
+	 * 使用一种快捷的方式设置acl
+	 */
 	private CannedAccessControlList cannedAcl;
 	private String redirectLocation;
 	public InitiateMultipartUploadRequest(String bucketname,String objectkey)

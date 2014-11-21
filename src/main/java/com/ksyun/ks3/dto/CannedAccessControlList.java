@@ -18,7 +18,7 @@ public enum CannedAccessControlList {
 	 */
 	PublicRead("public-read"), 
 	/**
-	 * 公开读写
+	 * 公开读写(对object而言，公开写是无意义的)
 	 */
 	PublicReadWrite("public-read-write");
 	private final String cannedAclHeader;

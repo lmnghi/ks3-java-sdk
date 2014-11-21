@@ -34,34 +34,65 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月22日 上午10:28:06
  * 
- * @description
+ * @description 上传文件的请求
+ *              <p>
+ *              提供通过文件来上传，请使用PutObjectRequest(String bucketname, String key,
+ *              File file)这个构造函数
+ *              </p>
+ *              <p>
+ *              提供通过流来上传，请使用PutObjectRequest(String bucketname, String
+ *              key,InputStream inputStream, ObjectMetadata
+ *              metadata)这个构造函数，使用时请尽量在metadata中提供content-length,否则有可能导致jvm内存溢出
+ *              </p>
  **/
 public class PutObjectRequest extends Ks3WebServiceRequest implements
 		MD5CalculateAble {
+	/**
+	 * 要上传的文件
+	 */
 	private File file;
+	/**
+	 * 将要上传的object的元数据
+	 */
 	private ObjectMetadata objectMeta = new ObjectMetadata();
+	/**
+	 * 设置新的object的acl
+	 */
 	private CannedAccessControlList cannedAcl;
+	/**
+	 * 设置新的object的acl
+	 */
 	private AccessControlList acl = new AccessControlList();
 	private String redirectLocation;
 
+	/**
+	 * 
+	 * @param bucketname
+	 * @param key
+	 * @param file
+	 *            要上传的文件
+	 */
 	public PutObjectRequest(String bucketname, String key, File file) {
 		this.setBucketname(bucketname);
 		this.setObjectkey(key);
 		this.setFile(file);
 	}
+
 	/**
 	 * 
 	 * @param bucketname
 	 * @param key
 	 * @param inputStream
-	 * @param metadata 请尽量提供content-length,否则可能会导致jvm内存溢出
+	 * @param metadata
+	 *            请尽量提供content-length,否则可能会导致jvm内存溢出
 	 */
 	public PutObjectRequest(String bucketname, String key,
 			InputStream inputStream, ObjectMetadata metadata) {
 		this.setBucketname(bucketname);
 		this.setObjectkey(key);
 		this.setObjectMeta(metadata);
-		this.setRequestBody(new RepeatableInputStream(inputStream,Constants.DEFAULT_STREAM_BUFFER_SIZE));
+		this.setRequestBody(new RepeatableInputStream(inputStream,
+				Constants.DEFAULT_STREAM_BUFFER_SIZE));
 	}
 
 	@SuppressWarnings("deprecation")

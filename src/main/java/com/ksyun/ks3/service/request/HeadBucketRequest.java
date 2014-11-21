@@ -8,7 +8,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2014年10月21日 下午2:15:06
  * 
- * @description 
+ * @description Head请求bucket,一般用于查看一个bucket是否在全局中已经存在
  **/
 public class HeadBucketRequest extends Ks3WebServiceRequest{
 	public HeadBucketRequest(String bucketname)
