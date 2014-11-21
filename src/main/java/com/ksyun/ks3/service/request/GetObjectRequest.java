@@ -58,7 +58,7 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 			this.addHeader(HttpHeaders.IfUnmodifiedSince, this.unmodifiedSinceConstraint.toGMTString());
 		if(this.modifiedSinceConstraint !=null)
 			this.addHeader(HttpHeaders.IfModifiedSince, this.modifiedSinceConstraint.toGMTString());
-		this.getParams().putAll(this.overrides.getOverrides());
+		this.getParams().putAll(this.getOverrides().getOverrides());
 	}
 
 	@Override
@@ -127,6 +127,15 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 	 */
 	public void setModifiedSinceConstraint(Date modifiedSinceConstraint) {
 		this.modifiedSinceConstraint = modifiedSinceConstraint;
+	}
+	public ResponseHeaderOverrides getOverrides() {
+		return overrides;
+	}
+	/**
+	 * 修改返回的response的headers
+	 */
+	public void setOverrides(ResponseHeaderOverrides overrides) {
+		this.overrides = overrides;
 	}
 	
 }

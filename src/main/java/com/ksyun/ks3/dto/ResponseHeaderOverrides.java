@@ -1,7 +1,11 @@
 package com.ksyun.ks3.dto;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -21,8 +25,11 @@ public class ResponseHeaderOverrides {
 	public void setContentLanguage(String value){
 		this.overrides.put("response-content-language", value);
 	}
-	public void setExpires(String value){
-		this.overrides.put("response-expires", value);
+	public void setExpires(Date value){
+		SimpleDateFormat sdf = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String date = sdf.format(value);
+		this.overrides.put("response-expires", date);
 	}
 	public void setCacheControl(String value){
 		this.overrides.put("response-cache-control", value);

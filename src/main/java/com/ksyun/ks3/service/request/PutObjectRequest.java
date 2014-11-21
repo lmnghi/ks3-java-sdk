@@ -78,8 +78,9 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				throw new Ks3ClientException("file :" + file.getName()
 						+ " not found");
 			}
-			objectMeta
-					.setContentType(Mimetypes.getInstance().getMimetype(file));
+			if(StringUtils.isBlank(objectMeta.getContentType()))
+				objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
+						file));
 			long length = file.length();
 			objectMeta.setContentLength(length);
 			try {
