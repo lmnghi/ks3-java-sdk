@@ -101,7 +101,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * @param content
 	 *            要上传的块的inputstream,(已经切分好的块)
 	 * @param partSize
-	 *            content的长度
+	 *            content的长度,必须提供
 	 * @param contentMd5
 	 *            <p>
 	 *            可以指定content-md5否则sdk将不在服务端进行MD5校验

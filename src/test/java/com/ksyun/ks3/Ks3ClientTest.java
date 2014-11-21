@@ -157,9 +157,9 @@ public class Ks3ClientTest {
 		 * ObjectListing o = client.listObjects("yyy"); Object od = o;
 		 * System.out.println(od);
 		 */
-		ListObjectsRequest request = new ListObjectsRequest("aw2", null, null,
+		ListObjectsRequest request = new ListObjectsRequest("ksc-scm", null, null,
 				null, null);
-		ObjectListing o = client1.listObjects(request);
+		ObjectListing o = client.listObjects(request);
 		Object od = o;
 		System.out.println(od);
 	}
