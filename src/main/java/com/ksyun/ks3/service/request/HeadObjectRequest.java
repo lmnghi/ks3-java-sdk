@@ -127,4 +127,14 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 	public void setModifiedSinceConstraint(Date modifiedSinceConstraint) {
 		this.modifiedSinceConstraint = modifiedSinceConstraint;
 	}
+	public ResponseHeaderOverrides getOverrides() {
+		return overrides;
+	}
+	public void setOverrides(ResponseHeaderOverrides overrides) {
+		this.overrides = overrides;
+	}
+	public void setRange(String range) {
+		this.range = range;
+	}
+	
 }
