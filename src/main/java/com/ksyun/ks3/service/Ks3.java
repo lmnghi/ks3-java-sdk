@@ -39,10 +39,11 @@ import com.ksyun.ks3.service.request.UploadPartRequest;
 public interface Ks3 {
 	/**
 	 * 设置accesskeyid accesskeysecret
+	 * 
 	 * @param auth
 	 */
 	public void setAuth(Authorization auth);
-	
+
 	/**
 	 * GET SERVICE
 	 * 
@@ -432,13 +433,17 @@ public interface Ks3 {
 	 */
 	public Bucket createBucket(CreateBucketRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * 清空bucket中的所有内容，请谨慎使用。
+	 * 
 	 * @param bucketName
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 */
-	public void clearBucket(String bucketName) throws Ks3ClientException,Ks3ServiceException;
+	public void clearBucket(String bucketName) throws Ks3ClientException,
+			Ks3ServiceException;
+
 	/**
 	 * 新建文件夹
 	 * 
@@ -447,17 +452,20 @@ public interface Ks3 {
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 */
-	public void makeDir(String bucketName,String dir) throws Ks3ClientException,Ks3ServiceException;
-	
+	public void makeDir(String bucketName, String dir)
+			throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * 删除文件夹及下面的所有内容
+	 * 
 	 * @param bucketName
 	 * @param dir
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 */
-	public void removeDir(String bucketName,String dir) throws Ks3ClientException,Ks3ServiceException;
-	
+	public void removeDir(String bucketName, String dir)
+			throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * DELETE BUCKET
 	 * 
@@ -562,6 +570,7 @@ public interface Ks3 {
 	 */
 	public void deleteObject(DeleteObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * DELETE Multiple Objects
 	 * 
@@ -639,15 +648,20 @@ public interface Ks3 {
 	 */
 	public GetObjectResult getObject(GetObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
+
 	/**
 	 * 生成object的外链地址
+	 * 
 	 * @param bucket
 	 * @param key
-	 * @param expiration 外链地址过期时间，单位秒
+	 * @param expiration
+	 *            外链地址过期时间，单位秒
 	 * @return
 	 * @throws Ks3ClientException
 	 */
-	public String generatePresignedUrl(String bucket,String key,int expiration) throws Ks3ClientException;
+	public String generatePresignedUrl(String bucket, String key, int expiration)
+			throws Ks3ClientException;
+
 	/**
 	 * PUT OBJECT
 	 * 
@@ -681,6 +695,10 @@ public interface Ks3 {
 	 * @return {@link PutObjectResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
+	 *             <p>
+	 *             使用时请尽量在metadata中提供content
+	 *             -length,否则有可能导致jvm内存溢出。可以在metadata中指定contentMD5
+	 *             </p>
 	 *             <p>
 	 *             上传object
 	 *             </p>
@@ -912,6 +930,21 @@ public interface Ks3 {
 	public CompleteMultipartUploadResult completeMultipartUpload(
 			String bucketname, String objectkey, String uploadId,
 			List<PartETag> partETags) throws Ks3ClientException,
+			Ks3ServiceException;
+
+	/**
+	 * Complete Multipart Upload
+	 * 
+	 * @param result {@link ListPartsResult}ListParts操作的返回值
+	 * @return{@link CompleteMultipartUploadResult}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 *             <p>
+	 *             完成分块上传，使ks3服务器将之前上传的小块合并成一个object
+	 *             </p>
+	 */
+	public CompleteMultipartUploadResult completeMultipartUpload(
+			ListPartsResult result) throws Ks3ClientException,
 			Ks3ServiceException;
 
 	/**

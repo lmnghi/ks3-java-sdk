@@ -27,6 +27,10 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @description 分块上传时，Upload Part的请求
  *              <p>
+ *              可以通过setContentMd5()指定MD5值，使其在服务端进行md5值校验，否则只会在客户端校验(区别:
+ *              前者校验失败不会上传成功)
+ *              </p>
+ *              <p>
  *              支持提供文件对象进行分块上传，请使用UploadPartRequest(String bucketname, String
  *              objectkey, String uploadId, int partNumber, File file, long
  *              partsize, long fileoffset)
@@ -34,8 +38,9 @@ import com.ksyun.ks3.utils.StringUtils;
  *              <p>
  *              支持提供已经切分好的流进行分块上传，请提供流的长度，请使用 UploadPartRequest(String
  *              bucketname, String objectkey, String uploadId, int partNumber,
- *              InputStream content, long partSize, String contentMd5)
+ *              InputStream content, long partSize)
  *              </p>
+ * 
  **/
 public class UploadPartRequest extends Ks3WebServiceRequest implements
 		MD5CalculateAble {
@@ -65,6 +70,10 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * 使用流的时候，要上传的内容
 	 */
 	private InputStream content;
+	/**
+	 * 可以指定内容的MD5值
+	 */
+	private String contentMd5;
 
 	/**
 	 * 
@@ -74,9 +83,9 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * @param partNumber
 	 * @param file
 	 * @param partsize
-	 *            注意类型为long
+	 *            注意类型为long,块的大小，除最后一块外需要给准确数字。必须提供,最大为5G,除最后一块最小为5M
 	 * @param fileoffset
-	 *            注意类型为long
+	 *            注意类型为long，文件中已被读取的量
 	 */
 	public UploadPartRequest(String bucketname, String objectkey,
 			String uploadId, int partNumber, File file, long partsize,
@@ -88,8 +97,6 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		this.setFile(file);
 		this.setPartSize(partsize);
 		this.setFileoffset(fileoffset);
-		this.partSize = file.length() - fileoffset < partsize ? file
-				.length() - fileoffset : partsize;
 	}
 
 	/**
@@ -101,30 +108,27 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * @param content
 	 *            要上传的块的inputstream,(已经切分好的块)
 	 * @param partSize
-	 *            content的长度,必须提供
-	 * @param contentMd5
-	 *            <p>
-	 *            可以指定content-md5否则sdk将不在服务端进行MD5校验
-	 *            </p>
+	 *            content的长度,必须提供,最大为5G,除最后一块最小为5M
 	 */
 	public UploadPartRequest(String bucketname, String objectkey,
-			String uploadId, int partNumber, InputStream content,
-			long partSize, String contentMd5) {
+			String uploadId, int partNumber, InputStream content, long partSize) {
 		this.setBucketname(bucketname);
 		this.setObjectkey(objectkey);
 		this.setUploadId(uploadId);
 		this.setPartNumber(partNumber);
 		this.setPartSize(partSize);
-		this.setContentMD5(contentMd5);
 		this.setContent(content);
 	}
 
 	@Override
 	protected void configHttpRequest() {
+		this.setContentType("binary/octet-stream");
 		this.setHttpMethod(HttpMethod.PUT);
 		this.addParams("uploadId", this.uploadId);
 		this.addParams("partNumber", String.valueOf(this.partNumber));
 		if (this.file != null) {
+			this.partSize = file.length() - fileoffset < partSize ? file.length()
+					- fileoffset : partSize;
 			try {
 				content = new InputSubStream(new RepeatableFileInputStream(
 						this.file), this.fileoffset, partSize, true);
@@ -137,8 +141,9 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 			this.content = new RepeatableInputStream(content,
 					Constants.DEFAULT_STREAM_BUFFER_SIZE);
 		}
-		this.addHeader(HttpHeaders.ContentLength,
-				String.valueOf(this.partSize));
+		if (!StringUtils.isBlank(this.contentMd5))
+			this.addHeader(HttpHeaders.ContentMD5, this.contentMd5);
+		this.addHeader(HttpHeaders.ContentLength, String.valueOf(this.partSize));
 		this.setRequestBody(content);
 	}
 
@@ -150,6 +155,9 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 			throw new IllegalArgumentException("object key can not be null");
 		if (StringUtils.isBlank(this.uploadId))
 			throw new IllegalArgumentException("uploadId can not be null");
+		if (this.partSize <= 0)
+			throw new IllegalArgumentException(
+					"part size can not should bigger than 0");
 		if (partNumber < Constants.minPartNumber
 				|| partNumber > Constants.maxPartNumber)
 			throw new IllegalArgumentException("partNumber shoud between "
@@ -163,16 +171,12 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 				if (this.fileoffset < 0)
 					throw new IllegalArgumentException("fileoffset("
 							+ this.fileoffset + ") should >= 0");
-				if (this.partSize < Constants.minPartSize
-						|| this.partSize > Constants.maxPartSize) {
-					throw new IllegalArgumentException("partsize("
-							+ this.partSize + ") should between "
-							+ Constants.minPartSize + " and "
-							+ Constants.maxPartSize);
-				}
-			} else {
-
 			}
+		}
+		if (this.partSize > Constants.maxPartSize) {
+			throw new IllegalArgumentException("partsize(" + this.partSize
+					+ ") should be small than"
+					+ Constants.maxPartSize);
 		}
 	}
 
@@ -215,6 +219,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	public void setFileoffset(long fileoffset) {
 		this.fileoffset = fileoffset;
 	}
+
 	public String getMd5() {
 		if (!StringUtils.isBlank(this.getContentMD5()))
 			return this.getContentMD5();
@@ -230,5 +235,13 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 
 	public void setContent(InputStream content) {
 		this.content = content;
+	}
+
+	public String getContentMd5() {
+		return contentMd5;
+	}
+
+	public void setContentMd5(String contentMd5) {
+		this.contentMd5 = contentMd5;
 	}
 }

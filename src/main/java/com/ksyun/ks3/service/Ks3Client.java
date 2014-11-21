@@ -462,6 +462,12 @@ public class Ks3Client implements Ks3 {
 	}
 
 	public CompleteMultipartUploadResult completeMultipartUpload(
+			ListPartsResult result) throws Ks3ClientException,
+			Ks3ServiceException {
+		return completeMultipartUpload(new CompleteMultipartUploadRequest(result));
+	}
+	
+	public CompleteMultipartUploadResult completeMultipartUpload(
 			CompleteMultipartUploadRequest request) throws Ks3ClientException,
 			Ks3ServiceException {
 		return client.execute(auth, request,
@@ -570,4 +576,5 @@ public class Ks3Client implements Ks3 {
 		return client
 				.execute(auth, request, ListMultipartUploadsResponse.class);
 	}
+
 }

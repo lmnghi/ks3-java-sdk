@@ -77,7 +77,8 @@ public class Ks3ClientTest {
 	/**
 	 * 测试环境
 	 */
-	private Ks3Client client2 = new Ks3Client("8oN7siZgTOSGuaC1i/er","ZoWO9uGe4p59aHDljcWRRecoCW+noJK11Dilz2r+");
+	private Ks3Client client2 = new Ks3Client("8oN7siZgTOSGuaC1i/er",
+			"ZoWO9uGe4p59aHDljcWRRecoCW+noJK11Dilz2r+");
 
 	public static void main(String[] args) {
 		String s = "<ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>aw2</Name><Prefix>../../../../../../../../../../../../../../../../etc/</Prefix><Marker></Marker><MaxKeys>30</MaxKeys><Delimiter>/</Delimiter><IsTruncated>false</IsTruncated><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd</Key><LastModified>2014-08-28T12:45:55.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php</Key><LastModified>2014-08-28T12:46:02.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>";
@@ -92,29 +93,29 @@ public class Ks3ClientTest {
 		ClientConfig config = ClientConfig.getConfig();
 	}
 
-	@Test
+	//@Test
 	public void ListBuckets() {
 		List<Bucket> buckets = client1.listBuckets();
 		System.out.println(buckets);
 	}
 
-	@Test
+	//@Test
 	public void getBucketLocation() {
 		System.out.println(client.getBucketLoaction("ksc-scm"));
 	}
 
-	@Test
+	//@Test
 	public void testGenerateUrl() {
 		System.out.println(client.generatePresignedUrl("lijunwei.test",
 				"IMG_16721.jpg", 60));
 	}
 
-	@Test
+	//@Test
 	public void getBucketLogging() {
 		System.out.println(client.getBucketLogging("ksc-scm"));
 	}
 
-	@Test
+	//@Test
 	public void putBucketLogging() {
 		BucketLoggingStatus status = new BucketLoggingStatus();
 		status.setEnable(true);
@@ -135,7 +136,7 @@ public class Ks3ClientTest {
 		client.putBucketLogging(request);
 	}
 
-	@Test
+	//@Test
 	public void listBucketParts() throws Exception {
 
 		for (int i = 0; i < 100; i++) {
@@ -150,21 +151,21 @@ public class Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void ListObjects() {
 
 		/*
 		 * ObjectListing o = client.listObjects("yyy"); Object od = o;
 		 * System.out.println(od);
 		 */
-		ListObjectsRequest request = new ListObjectsRequest("ksc-scm", null, null,
-				null, null);
+		ListObjectsRequest request = new ListObjectsRequest("ksc-scm", null,
+				null, null, null);
 		ObjectListing o = client.listObjects(request);
 		Object od = o;
 		System.out.println(od);
 	}
 
-	@Test
+	//@Test
 	public void createAndDeleteBucket() {
 		CreateBucketRequest request = new CreateBucketRequest("lijunwei",
 				REGION.BEIJING);
@@ -172,7 +173,7 @@ public class Ks3ClientTest {
 		client.deleteBucket("lijunwei");
 	}
 
-	@Test
+	//@Test
 	public void getObject() throws IOException {
 		GetObjectResult obj = client.getObject("ksc-scm", "123.txt");
 		System.out.println(obj);
@@ -193,29 +194,29 @@ public class Ks3ClientTest {
 
 	}
 
-	@Test
+	//@Test
 	public void deleteObject() {
 		client.deleteObject("ksc-scm", "vre");
 	}
 
-	@Test
+	//@Test
 	public void clearBucket() {
 		this.client.makeDir("ksc-scm", "cewf/fewgfew/vewrgfvw/cvew/");
 		this.client.makeDir("ksc-scm", "cewf/fewgfess/");
 		this.client.clearBucket("ksc-scm");
 	}
 
-	@Test
+	//@Test
 	public void removeDir() {
 		this.client1.removeDir("alert1", "tt/");
 	}
 
-	@Test
+	//@Test
 	public void makeDir() {
 
 	}
 
-	@Test
+	//@Test
 	public void putObject() {
 		if (!client.bucketExists("beijing.bucket")) {
 			CreateBucketRequest request1 = new CreateBucketRequest(
@@ -234,14 +235,14 @@ public class Ks3ClientTest {
 
 	}
 
-	@Test
+	//@Test
 	public void headObject() {
 		HeadObjectResult response = client.headObject("lijunwei.test",
 				"IMG_16721.jpg");
 		System.out.println("");
 	}
 
-	// //@Test
+	// ////@Test
 	public void initMultipart() {
 		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
 				"lijunwei.test", "eclipse.zip");
@@ -252,7 +253,7 @@ public class Ks3ClientTest {
 
 	}
 
-	@Test
+	//@Test
 	public void uploadPart() {
 		long part = 10 * 1024 * 1024;
 		String bucket = "ksc-scm";
@@ -293,7 +294,7 @@ public class Ks3ClientTest {
 		client.completeMultipartUpload(request);
 	}
 
-	@Test
+	//@Test
 	public void uploadPart_01() {
 		long part = 5 * 1024 * 1024;
 		String bucket = "ksc-scm";
@@ -334,7 +335,7 @@ public class Ks3ClientTest {
 		client.completeMultipartUpload(request);
 	}
 
-	@Test
+	//@Test
 	public void testETag() {
 		List<String> s = new ArrayList<String>();
 		for (int m = 0; m < 100; m++) {
@@ -373,7 +374,7 @@ public class Ks3ClientTest {
 		System.out.println(s);
 	}
 
-	@Test
+	//@Test
 	public void completeMulti() {
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 				"lijunwei.test", "eclipse.zip",
@@ -386,32 +387,33 @@ public class Ks3ClientTest {
 		System.out.println(response);
 	}
 
-	@Test
+	//@Test
 	public void listParts() {
 		ListPartsResult result = client.listParts("ksc-scm", "我的D盘压缩.rar",
 				"ec7f258585e04cf1998503d3db7c3826");
 		System.out.println(result);
 	}
 
-	// @Test
+	// //@Test
 	public void abortMulti() {
 		client.abortMultipartUpload("lijunwei.test", "bigFile.rar",
 				"44157d71c6e741699c8c5fb1f4f61aff");
 	}
 
-	// @Test
+	// //@Test
 	public void getBucketACL() {
 		AccessControlPolicy getBucketACL = client.getBucketACL("ksc-scm");
 		System.out.println(getBucketACL.getAccessControlList());
 	}
 
-	@Test
+	//@Test
 	public void putBucketACL() {
-/*		if (client2.bucketExists("lijunwei.test")) {
-			client2.clearBucket("lijunwei.test");
-			client2.deleteBucket("lijunwei.test");
-			client2.createBucket("lijunwei.test");
-		}*/
+		/*
+		 * if (client2.bucketExists("lijunwei.test")) {
+		 * client2.clearBucket("lijunwei.test");
+		 * client2.deleteBucket("lijunwei.test");
+		 * client2.createBucket("lijunwei.test"); }
+		 */
 		PutBucketACLRequest request = new PutBucketACLRequest("lijunwei.test");
 
 		AccessControlList acl = new AccessControlList();
@@ -434,13 +436,13 @@ public class Ks3ClientTest {
 		acl.addGrant(grant1);
 		acl.addGrant(grant2);
 		acl.addGrant(grant3);
-		//request.setAccessControlList(acl);
+		// request.setAccessControlList(acl);
 		request.setCannedAcl(CannedAccessControlList.PublicRead);
 		client2.putBucketACL(request);
 		System.out.println(client2.getBucketACL("lijunwei.test"));
 	}
 
-	// @Test
+	// //@Test
 	public void putObjectACL() {
 		PutObjectACLRequest request = new PutObjectACLRequest("ksc-scm",
 				"这个事测试.doc");
@@ -455,21 +457,21 @@ public class Ks3ClientTest {
 		client.putObjectACL(request);
 	}
 
-	// @Test
+	// //@Test
 	public void getObjectACL() {
 		AccessControlPolicy getObjectACL = client.getObjectACL("ksc-scm",
 				"这个事测试.doc");
 		System.out.println(getObjectACL.getAccessControlList());
 	}
 
-	// //@Test
+	// ////@Test
 	public void configBucketAcl() {
 		PutBucketACLRequest request = new PutBucketACLRequest("ksc-scm",
 				CannedAccessControlList.PublicReadWrite);
 		client.putBucketACL(request);
 	}
 
-	@Test
+	//@Test
 	public void deleteObjects() {
 		System.out.println(client.deleteObjects(new String[] {
 				"11112018rln5.pdf", "dfdfdsf.pdf", "sssss", "square/",
@@ -478,7 +480,7 @@ public class Ks3ClientTest {
 
 	static int i = 0;
 
-	@Test
+	//@Test
 	public void test() {
 
 		for (;; i++) {
@@ -486,7 +488,7 @@ public class Ks3ClientTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void partDownLoad() {
 		GetObjectRequest request = new GetObjectRequest("lijunwei.test",
 				"IMG_16721。exe");
@@ -514,5 +516,45 @@ public class Ks3ClientTest {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	//@Test
+	public void putFileByStream() throws Ks3ServiceException,
+			Ks3ClientException, FileNotFoundException {
+		ObjectMetadata meta = new ObjectMetadata();
+		meta.setContentType("txt");
+	//	meta.setContentLength(1);
+		client.PutObject("ksc-scm", "bystream.et", new FileInputStream(
+				new File("D://work//API//新建文本文档.txt")), meta);
+		System.out.println(client.getObject("ksc-scm", "bystream.et"));
+	}
+
+//	@Test
+	public void uploadPartByStream() throws FileNotFoundException {
+		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
+				"ksc-scm", "bystream.txt");
+		request1.setCannedAcl(CannedAccessControlList.PublicRead);
+		InitiateMultipartUploadResult result = client
+				.initiateMultipartUpload(request1);
+		System.out.println(result);
+		UploadPartRequest request = new UploadPartRequest(result.getBucket(),
+				result.getKey(), result.getUploadId(), 1, new FileInputStream(
+						new File("D://work//API//新建文本文档.txt")),1);
+	//	request.setContentMd5("122");
+		client.uploadPart(request);
+		UploadPartRequest request3 = new UploadPartRequest(result.getBucket(),
+				result.getKey(), result.getUploadId(), 2,new  InputSubStream(new FileInputStream(
+						new File("D://work//API//新建文本文档.txt")),1L,1L,true),1);
+	//	request.setContentMd5("122");
+		client.uploadPart(request3);
+		// list parts
+		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
+				result.getKey(), result.getUploadId());
+		ListPartsResult tags = client.listParts(requestList);
+		System.out.println(tags);
+		// complete
+		CompleteMultipartUploadRequest request2 = new CompleteMultipartUploadRequest(
+				tags);
+		client.completeMultipartUpload(request2);
 	}
 }

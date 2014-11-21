@@ -53,14 +53,18 @@ public class ObjectMetadata {
     public Date getLastModified() {
         return (Date)metadata.get(HttpHeaders.LastModified.toString());
     }
+    /**
+     * 仅供内部使用
+     * @param lastModified
+     */
     public void setLastModified(Date lastModified) {
         metadata.put(HttpHeaders.LastModified.toString(), lastModified);
     }
     public long getContentLength() {
-        Long contentLength = Long.parseLong(metadata.get(HttpHeaders.ContentLength.toString()).toString());
+        Long contentLength = (Long) metadata.get(HttpHeaders.ContentLength.toString());
 
         if (contentLength == null) return 0;
-        return contentLength.longValue();
+        return contentLength;
     }
     /**分块下载时获取文件的总大小*/
     public long getInstanceLength() {

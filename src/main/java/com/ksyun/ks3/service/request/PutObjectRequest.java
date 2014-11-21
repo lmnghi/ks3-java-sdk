@@ -42,7 +42,8 @@ import com.ksyun.ks3.utils.StringUtils;
  *              <p>
  *              提供通过流来上传，请使用PutObjectRequest(String bucketname, String
  *              key,InputStream inputStream, ObjectMetadata
- *              metadata)这个构造函数，使用时请尽量在metadata中提供content-length,否则有可能导致jvm内存溢出
+ *              metadata)这个构造函数，使用时请尽量在metadata中提供content
+ *              -length,否则有可能导致jvm内存溢出。可以再metadata中指定contentMD5
  *              </p>
  **/
 public class PutObjectRequest extends Ks3WebServiceRequest implements
@@ -109,7 +110,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				throw new Ks3ClientException("file :" + file.getName()
 						+ " not found");
 			}
-			if(StringUtils.isBlank(objectMeta.getContentType()))
+			if (StringUtils.isBlank(objectMeta.getContentType()))
 				objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
 						file));
 			long length = file.length();
