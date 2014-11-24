@@ -13,6 +13,7 @@ import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.service.request.*;
 import com.ksyun.ks3.service.response.GetBucketACLResponse;
+import com.ksyun.ks3.service.response.Ks3WebServiceResponse;
 import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
@@ -22,6 +23,7 @@ import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
+import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.service.request.ListBucketsRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
@@ -412,7 +414,7 @@ public interface Ks3 {
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 *             <p>
-	 *             创建bucket
+	 *             创建bucket，权限默认是私有的，存储地点为杭州
 	 *             </p>
 	 */
 	public Bucket createBucket(String bucketname) throws Ks3ClientException,
@@ -427,7 +429,7 @@ public interface Ks3 {
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 *             <p>
-	 *             创建bucket
+	 *             创建bucket，权限默认是私有的，存储地点为杭州
 	 *             </p>
 	 */
 	public Bucket createBucket(CreateBucketRequest request)
@@ -475,6 +477,7 @@ public interface Ks3 {
 	 *             <p>
 	 *             删除bucket，bucket中内容为空时可以删除成功
 	 *             </p>
+	 *             <p>注意这个操作是不能回退的</p>
 	 */
 	public void deleteBucket(String bucketname) throws Ks3ClientException,
 			Ks3ServiceException;
@@ -489,6 +492,7 @@ public interface Ks3 {
 	 *             <p>
 	 *             删除bucket，bucket中内容为空时可以删除成功
 	 *             </p>
+	 *             <p>注意这个操作是不能回退的</p>
 	 */
 	public void deleteBucket(DeleteBucketRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
@@ -504,6 +508,8 @@ public interface Ks3 {
 	 *             <p>
 	 *             列出bucket下满足条件的object
 	 *             </p>
+	 *             <p>delimiter使用默认的/</p>
+	 *             <p>返回的最大数(max-keys)使用默认的1000</p>
 	 */
 	public ObjectListing listObjects(String bucketname)
 			throws Ks3ClientException, Ks3ServiceException;
@@ -521,6 +527,8 @@ public interface Ks3 {
 	 *             <p>
 	 *             列出bucket下满足条件的object
 	 *             </p>
+	 *             <p>delimiter使用默认的/</p>
+	 *             <p>返回的最大数(max-keys)使用默认的1000</p>
 	 */
 	public ObjectListing listObjects(String bucketname, String prefix)
 			throws Ks3ClientException, Ks3ServiceException;
@@ -934,7 +942,8 @@ public interface Ks3 {
 	/**
 	 * Complete Multipart Upload
 	 * 
-	 * @param result {@link ListPartsResult}ListParts操作的返回值
+	 * @param result
+	 *            {@link ListPartsResult}ListParts操作的返回值
 	 * @return{@link CompleteMultipartUploadResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
@@ -1156,4 +1165,17 @@ public interface Ks3 {
 	public ListMultipartUploadsResult listMultipartUploads(
 			ListMultipartUploadsRequest request) throws Ks3ClientException,
 			Ks3ClientException;
+
+	/**
+	 * 
+	 * @param request {@code Class<? extends Ks3WebServiceRequest> }
+	 * @param clazz {@code Class<? extends Ks3WebServiceResponse> }
+	 * @return
+	 * @throws Ks3ClientException
+	 * @throws Ks3ClientException
+	 * <p>对于自定义的request和response可以通过这个方法执行</p>
+	 */
+	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
+			Ks3WebServiceRequest request, Class<X> clazz)
+			throws Ks3ClientException, Ks3ClientException;
 }

@@ -9,9 +9,16 @@ import com.ksyun.ks3.utils.XmlWriter;
  * 
  * @date 2014年11月10日 下午1:47:26
  * 
- * @description bucket存储地点配置，用于{@link com.ksyun.ks3.service.request.CreateBucketRequest}
+ * @description 
+ * <p>public CreateBucketConfiguration({@link REGION} region)</p>
+ * <P>bucket存储地点配置，用于{@link com.ksyun.ks3.service.request.CreateBucketRequest}</P>
  **/
 public class CreateBucketConfiguration {
+	/**
+	 * bucket存储地点
+	 * @author LIJUNWEI
+	 *
+	 */
 	public static enum REGION {
 		BEIJING, HANGZHOU, JIYANG;
 		public static REGION load(String s){

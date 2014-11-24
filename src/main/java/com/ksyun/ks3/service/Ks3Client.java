@@ -32,6 +32,7 @@ import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
+import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.service.request.ListBucketsRequest;
 import com.ksyun.ks3.service.request.ListMultipartUploadsRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
@@ -48,6 +49,7 @@ import com.ksyun.ks3.service.response.GetObjectResponse;
 import com.ksyun.ks3.service.response.HeadBucketResponse;
 import com.ksyun.ks3.service.response.HeadObjectResponse;
 import com.ksyun.ks3.service.response.InitiateMultipartUploadResponse;
+import com.ksyun.ks3.service.response.Ks3WebServiceResponse;
 import com.ksyun.ks3.service.response.ListBucketsResponse;
 import com.ksyun.ks3.service.response.ListObjectsResponse;
 import com.ksyun.ks3.service.response.ListPartsResponse;
@@ -577,4 +579,9 @@ public class Ks3Client implements Ks3 {
 				.execute(auth, request, ListMultipartUploadsResponse.class);
 	}
 
+	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
+			Ks3WebServiceRequest request, Class<X> clazz)
+			throws Ks3ClientException, Ks3ClientException {
+		return client.execute(auth, request, clazz);
+	}
 }

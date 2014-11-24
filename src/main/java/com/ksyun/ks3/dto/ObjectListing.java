@@ -15,6 +15,18 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class ObjectListing {
     private List<Ks3ObjectSummary> objectSummaries = new ArrayList<Ks3ObjectSummary>();
+	/**
+	 * 可以理解为文件夹
+	 * prefix和delimiter决定结果中的commonPrefix
+	 * <p>由prefix和delimiter确定，以prefix开头的object key,在prefix之后第一次出现delimiter的位置之前（包含delimiter）的子字符串将存在于commonPrefixes中</p>
+	 * <p>比如有一下两个object key</p>
+	 * <p>aaaa/bbb/ddd.txt</p>
+	 * <p>aaaa/ccc/eee.txt</p>
+	 * <p>ssss/eee/fff.txt</p>
+	 * <p>prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/</p>
+	 * <p>prefix为aaaa/  delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/</p>
+	 * <p>prefix为ssss/  delimiter为/ 则commonPrefix 为 aaaa/eee/</p>
+	 */
     private List<String> commonPrefixes = new ArrayList<String>();
     private String bucketName;
     /**
@@ -26,6 +38,9 @@ public class ObjectListing {
      */
     private boolean isTruncated;
     private String prefix;
+    /**
+     * 即游标，将列出排在游标之后的object
+     */
     private String marker;
     private int maxKeys;
     private String delimiter;
@@ -51,6 +66,9 @@ public class ObjectListing {
     public void setCommonPrefixes(List<String> commonPrefixes) {
         this.commonPrefixes = commonPrefixes;
     }
+    /**
+     * 即游标，将列出排在游标之后的object
+     */
     public String getNextMarker() {
         return nextMarker;
     }
@@ -87,6 +105,9 @@ public class ObjectListing {
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
     }
+    /**
+     * isTruncated为true时表示之后还有object
+     */
     public boolean isTruncated() {
         return isTruncated;
     }

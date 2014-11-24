@@ -20,7 +20,13 @@ import com.ksyun.ks3.utils.XmlWriter;
  * 
  * @date 2014年10月15日 下午4:43:12
  * 
- * @description 新建bucket时的请求信息
+ * @description 
+ * <p>构造函数</p>
+ * <p>public CreateBucketRequest(String bucketName)</p>
+ * <p>public CreateBucketRequest(String bucketName,{@link CannedAccessControlList} cannedAcl)</p>
+ * <p>public CreateBucketRequest(String bucketName,{@link AccessControlList} acl)</p>
+ * <p>public CreateBucketRequest(String bucketName,{@link CreateBucketConfiguration.REGION} region)</p>
+ * <p>新建bucket时的请求信息</p>
  *              <p>
  *              Bucket是存放Object的容器，所有的Object都必须存放在特定的Bucket中。
  *              ，每个Bucket中可以存放无限多个Object。Bucket不能嵌套，每个Bucket中只能存放Object，
@@ -117,7 +123,11 @@ public class CreateBucketRequest extends Ks3WebServiceRequest {
 	public CreateBucketConfiguration getConfig() {
 		return config;
 	}
-
+	/**
+	 * 
+	 * @param config {@link CreateBucketConfiguration}
+	 * 设置bucket存储地点
+	 */
 	public void setConfig(CreateBucketConfiguration config) {
 		this.config = config;
 	}
