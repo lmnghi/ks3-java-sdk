@@ -45,11 +45,11 @@ import com.ksyun.ks3.utils.StringUtils;
 public class ClientConfig {
 	private static final Log log = LogFactory.getLog(ClientConfig.class); 
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key,链接超时时间
 	 */
 	public static final String CONNECTION_TIMEOUT = "httpclient.connectionTimeout";
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key，socket超时时间
 	 */
 	public static final String SOCKET_TIMEOUT = "httpclient.socketTimeout";
 	/**
@@ -60,13 +60,16 @@ public class ClientConfig {
 	 * httpclient配置  值为配置的key
 	 */
 	public static final String SOCKET_RECEIVE_BUFFER_SIZE_HINT = "httpclient.socketReceiveBufferSzieHint";
+	/**
+	 * 最大重试次数
+	 */
 	public static final String MAX_RETRY = "httpclient.maxRetry";
 	/**
 	 * httpclient配置  值为配置的key
 	 */
 	public static final String CONNECTION_TTL = "httpclient.connnetionTTL";
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key,连接池最大连接数
 	 */
 	public static final String MAX_CONNECTIONS = "httpclient.maxConnections";
 	/**
@@ -74,23 +77,23 @@ public class ClientConfig {
 	 */
 	public static final String PROXY_HOST = "httpclient.proxyHost";
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key，代理
 	 */
 	public static final String PROXY_PORT = "httpclient.proxyPort";
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key，代理
 	 */
 	public static final String PROXY_USER_NAME = "httpclient.ProxyUserName";
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key，代理
 	 */
 	public static final String PROXY_PASSWORD = "httpclient.ProxyPassword";
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key，代理
 	 */
 	public static final String PROXY_DAMAIN = "httpclient.ProxyDomain";
 	/**
-	 * httpclient配置  值为配置的key
+	 * httpclient配置  值为配置的key，代理
 	 */
 	public static final String PROXY_WORKSTATION = "httpclient.ProxyWorkStation";
 	/**
