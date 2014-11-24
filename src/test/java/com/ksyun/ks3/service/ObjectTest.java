@@ -12,11 +12,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ksyun.ks3.AutoAbortInputStream;
 import com.ksyun.ks3.dto.AccessControlList;
@@ -59,7 +59,7 @@ public class ObjectTest {
 	private static String bucket;
 	private static Properties credential;
 	
-	private static Logger logger = LoggerFactory.getLogger(ObjectTest.class);
+	private static Log logger = LogFactory.getLog(ObjectTest.class);
 
 	
 	/**
