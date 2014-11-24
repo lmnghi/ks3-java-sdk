@@ -59,6 +59,11 @@ public class Ks3CoreController {
 			return result;
 		}
 		catch (RuntimeException e) {
+			if(e instanceof Ks3ClientException){
+				
+			}else{
+				e = new Ks3ClientException(e);
+			}
 			log.error(e);
 			e.printStackTrace();
 			throw e;
