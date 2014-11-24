@@ -395,7 +395,6 @@ public interface Ks3 {
 	 *            bucket名称
 	 *            <p>
 	 *            Bucket是存放Object的容器，所有的Object都必须存放在特定的Bucket中。
-	 *            每个用户最多可以创建20个Bucket
 	 *            ，每个Bucket中可以存放无限多个Object。Bucket不能嵌套，每个Bucket中只能存放Object，
 	 *            不能再存放Bucket ，Bucket下的Object是一个平级的结构。
 	 *            <p>
