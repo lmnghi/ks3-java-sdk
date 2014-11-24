@@ -106,6 +106,8 @@ public class BucketTest extends Ks3ClientTest {
 				this.client1.createBucket(bucketNames[i]);
 			} catch (Ks3ClientException e) {
 				isc = true;
+			} catch (IllegalArgumentException e) {
+				isc = true;
 			}
 			if (isc == false) {
 				skiped.add(bucketNames[i]);
