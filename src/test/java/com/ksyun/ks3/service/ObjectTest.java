@@ -51,12 +51,12 @@ import com.ksyun.ks3.service.request.PutObjectRequest;
  * @date 2014年11月17日  	20:30
  */
 public class ObjectTest {
-	private static Ks3 client;
+	protected static Ks3 client;
 	protected static Ks3 clientOther;
 	private static Ks3CoreController controller;
 	private static Authorization auth;
 	protected static Authorization authOther;
-	private static String bucket;
+	protected static String bucket;
 	private static Properties credential;
 	
 	private static Logger logger = LoggerFactory.getLogger(ObjectTest.class);
@@ -750,7 +750,7 @@ public class ObjectTest {
 		assertEquals(objectMeta.getContentMD5(), objectMetaGet.getContentMD5());
 		assertEquals(objectMeta.getContentType(), objectMetaGet.getContentType());
 		assertEquals(objectMeta.getContentDisposition(), objectMetaGet.getContentDisposition());
-//		System.out.println(objectMeta);
+		System.out.println(objectMeta);
 	}
 	
 	/**
