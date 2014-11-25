@@ -226,7 +226,7 @@ public class Ks3ClientTest {
 		}
 		try {
 			PutObjectRequest request = new PutObjectRequest("beijing.bucket",
-					"新建文件夹 (2).rar", new File("D://新建文件夹 (2).rar"));
+					"新建文件夹 (2).rar", new File("D://绯闻绯闻.txt"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
