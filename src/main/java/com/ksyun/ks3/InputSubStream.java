@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月23日 下午4:07:55
  * 

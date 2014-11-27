@@ -21,7 +21,7 @@ import com.ksyun.ks3.utils.Md5Utils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月23日 上午11:17:36
  * 

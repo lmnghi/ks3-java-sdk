@@ -7,7 +7,7 @@ import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年11月11日 下午1:49:48
  * 

@@ -63,7 +63,7 @@ import com.ksyun.ks3.service.response.HeadObjectResponse;
 import com.ksyun.ks3.utils.Timer;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月15日 上午10:28:53
  * 

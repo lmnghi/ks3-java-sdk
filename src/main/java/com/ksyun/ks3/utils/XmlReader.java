@@ -12,7 +12,7 @@ import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月15日 下午2:28:07
  * 

@@ -8,7 +8,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpRequestBase;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年11月13日 下午8:55:51
  * 

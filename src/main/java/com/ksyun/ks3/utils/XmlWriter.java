@@ -7,7 +7,7 @@ import com.ksyun.ks3.config.Constants;
 
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  *
  * @date 2014年10月15日 下午4:53:56
  *

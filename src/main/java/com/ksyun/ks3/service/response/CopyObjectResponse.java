@@ -7,7 +7,7 @@ import com.ksyun.ks3.dto.CopyResult;
 import com.ksyun.ks3.utils.DateUtils;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年11月17日 下午1:02:11
  * 

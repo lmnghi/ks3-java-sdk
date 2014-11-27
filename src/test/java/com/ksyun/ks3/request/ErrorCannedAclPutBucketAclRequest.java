@@ -6,7 +6,7 @@ import com.ksyun.ks3.service.request.PutBucketACLRequest;
 import com.ksyun.ks3.utils.HttpUtils;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年11月18日 下午1:54:04
  * 

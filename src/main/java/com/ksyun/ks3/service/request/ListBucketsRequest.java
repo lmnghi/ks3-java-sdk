@@ -3,7 +3,7 @@ package com.ksyun.ks3.service.request;
 import com.ksyun.ks3.http.HttpMethod;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月14日 下午6:26:58
  * 

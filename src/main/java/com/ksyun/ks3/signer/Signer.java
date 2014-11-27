@@ -4,7 +4,7 @@ import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年11月6日 上午10:44:23
  * 

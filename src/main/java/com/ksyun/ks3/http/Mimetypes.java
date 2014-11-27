@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月22日 下午2:45:20
  * 

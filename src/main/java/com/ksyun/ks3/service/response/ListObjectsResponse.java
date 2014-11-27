@@ -12,7 +12,7 @@ import com.ksyun.ks3.dto.Owner;
 import com.ksyun.ks3.utils.DateUtils;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月16日 下午3:39:35
  * 

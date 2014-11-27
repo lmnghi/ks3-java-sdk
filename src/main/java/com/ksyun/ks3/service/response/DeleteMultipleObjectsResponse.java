@@ -7,7 +7,7 @@ import com.ksyun.ks3.dto.DeleteMultipleObjectsError;
 import com.ksyun.ks3.dto.DeleteMultipleObjectsResult;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年11月10日 下午2:56:17
  * 

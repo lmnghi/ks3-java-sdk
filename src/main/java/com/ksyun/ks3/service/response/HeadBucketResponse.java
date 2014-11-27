@@ -3,7 +3,7 @@ import org.apache.http.Header;
 import com.ksyun.ks3.dto.HeadBucketResult;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月21日 下午2:17:06
  * 

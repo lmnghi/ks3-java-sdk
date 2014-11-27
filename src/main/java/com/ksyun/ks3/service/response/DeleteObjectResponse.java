@@ -4,7 +4,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月16日 下午3:47:35
  * 

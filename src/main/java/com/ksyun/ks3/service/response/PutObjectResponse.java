@@ -6,7 +6,7 @@ import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.service.response.support.Md5CheckAble;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月22日 下午2:00:58
  * 

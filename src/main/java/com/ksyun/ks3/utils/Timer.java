@@ -3,7 +3,7 @@ package com.ksyun.ks3.utils;
 import java.util.Date;
 
 /**
- * @author lijunwei[13810414122@163.com]  
+ * @author lijunwei[lijunwei@kingsoft.com]  
  * 
  * @date 2014年10月20日 下午6:24:02
  * 
