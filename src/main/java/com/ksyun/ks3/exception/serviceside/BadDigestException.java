@@ -1,19 +1,10 @@
 package com.ksyun.ks3.exception.serviceside;
-
 import com.ksyun.ks3.exception.Ks3ServiceException;
-
 /**
- * @author lijunwei[lijunwei@kingsoft.com]  
- * 
- * @date 2014年11月7日 上午10:44:01
- * 
- * @description 错误的摘要
+ * @author lijunwei[lijunwei@kingsoft.com] 
+ * @date 2014年11月7日 上午10:39:47
+ * @description The Content-MD5 you specified did not match what we received.
  **/
-public class BadDigestException extends Ks3ServiceException {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7182428311480000852L;
-
+public class BadDigestException extends Ks3ServiceException{
+private static final long serialVersionUID = 2177914202944479049L;
 }

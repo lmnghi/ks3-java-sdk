@@ -1,14 +1,10 @@
 package com.ksyun.ks3.exception.serviceside;
-
 import com.ksyun.ks3.exception.Ks3ServiceException;
-
 /**
- * @author lijunwei[lijunwei@kingsoft.com]  
- * 
- * @date 2014年11月18日 下午3:39:20
- * 
- * @description 非法请求
+ * @author lijunwei[lijunwei@kingsoft.com] 
+ * @date 2014年11月7日 上午10:39:47
+ * @description SOAP requests must be made over an HTTPS connection.
  **/
-public class InvalidRequestException extends Ks3ServiceException {
-
+public class InvalidRequestException extends Ks3ServiceException{
+private static final long serialVersionUID = 2177914202944479049L;
 }

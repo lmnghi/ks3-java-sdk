@@ -1,19 +1,10 @@
 package com.ksyun.ks3.exception.serviceside;
-
 import com.ksyun.ks3.exception.Ks3ServiceException;
-
 /**
- * @author lijunwei[lijunwei@kingsoft.com]  
- * 
- * @date 2014年11月7日 下午1:01:51
- * 
- * @description 无效的range
+ * @author lijunwei[lijunwei@kingsoft.com] 
+ * @date 2014年11月7日 上午10:39:47
+ * @description The requested range cannot be satisfied.
  **/
-public class InvalidRangeException extends Ks3ServiceException {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5874293298568277762L;
-
+public class InvalidRangeException extends Ks3ServiceException{
+private static final long serialVersionUID = 2177914202944479049L;
 }

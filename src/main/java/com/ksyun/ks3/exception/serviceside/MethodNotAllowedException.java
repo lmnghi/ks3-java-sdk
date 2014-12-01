@@ -1,19 +1,10 @@
 package com.ksyun.ks3.exception.serviceside;
-
 import com.ksyun.ks3.exception.Ks3ServiceException;
-
 /**
- * @author lijunwei[lijunwei@kingsoft.com]  
- * 
- * @date 2014年11月7日 下午1:03:13
- * 
- * @description 不支持的方法
+ * @author lijunwei[lijunwei@kingsoft.com] 
+ * @date 2014年11月7日 上午10:39:47
+ * @description The specified method is not allowed against this resource.
  **/
-public class MethodNotAllowedException extends Ks3ServiceException {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6331576489706558L;
-
+public class MethodNotAllowedException extends Ks3ServiceException{
+private static final long serialVersionUID = 2177914202944479049L;
 }

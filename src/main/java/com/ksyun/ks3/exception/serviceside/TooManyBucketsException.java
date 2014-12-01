@@ -1,19 +1,10 @@
 package com.ksyun.ks3.exception.serviceside;
-
 import com.ksyun.ks3.exception.Ks3ServiceException;
-
 /**
- * @author lijunwei[lijunwei@kingsoft.com]  
- * 
- * @date 2014年11月7日 下午1:06:09
- * 
- * @description 用户的Bucket数目超过限制
+ * @author lijunwei[lijunwei@kingsoft.com] 
+ * @date 2014年11月7日 上午10:39:47
+ * @description You have attempted to create more buckets than allowed.
  **/
-public class TooManyBucketsException extends Ks3ServiceException {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6227148002535992996L;
-
+public class TooManyBucketsException extends Ks3ServiceException{
+private static final long serialVersionUID = 2177914202944479049L;
 }
