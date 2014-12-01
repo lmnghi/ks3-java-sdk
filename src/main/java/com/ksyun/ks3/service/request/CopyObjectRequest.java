@@ -13,6 +13,8 @@ import com.ksyun.ks3.utils.StringUtils;
  * @date 2014年11月17日 上午11:19:28
  * 
  * @description Copy Object
+ * <p>将指定的object复制到目标地点，将复制源object的元数据、acl等信息</p>
+ * <p>public CopyObjectRequest(String destinationBucket,String destinationObject,String sourceBucket,String sourceKey)</p>
  **/
 public class CopyObjectRequest extends Ks3WebServiceRequest{
 	/**

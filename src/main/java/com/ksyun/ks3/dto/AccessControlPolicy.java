@@ -6,8 +6,10 @@ import java.util.Set;
 
 import com.ksyun.ks3.utils.StringUtils;
 
-/**
- * Created by 杨春建 on 2014/10/20.
+/** 
+ * 包含{@link Owner}和{@link AccessControlList}
+ * @author LIJUNWEI
+ *
  */
 public class AccessControlPolicy {
 

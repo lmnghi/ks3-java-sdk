@@ -809,9 +809,7 @@ public interface Ks3 {
 	 * @return {@link CopyResult}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
-	 *             <p>
-	 *             将指定的object复制到目标地点
-	 *             </p>
+	 *             <p>将指定的object复制到目标地点，将复制源object的元数据、acl等信息</p>
 	 */
 	public CopyResult copyObject(CopyObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
