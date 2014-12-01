@@ -42,4 +42,7 @@ public class Converter {
 		log.info("etag we calculated is :"+eTag+",convert to md5 is :"+md5);
 		return md5;
 	}
+	public static void main(String[] args){
+		System.out.println(Converter.ETag2MD5("81dc9bdb52d04dc20036dbd8313ed055"));
+	}
 }

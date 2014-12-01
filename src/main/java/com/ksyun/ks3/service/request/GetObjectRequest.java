@@ -42,6 +42,11 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 	 * 修改返回的response的headers
 	 */
 	private ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
+	/**
+	 * 
+	 * @param bucketname
+	 * @param key
+	 */
 	public GetObjectRequest(String bucketname,String key)
 	{
 		this.setBucketname(bucketname);
