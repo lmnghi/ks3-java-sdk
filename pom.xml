@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ksyun.ks3</groupId>
 	<artifactId>ks3-kss-java-sdk</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>ks3-kss-java-sdk</name>
 	<url>http://maven.apache.org</url>
 	<build>
