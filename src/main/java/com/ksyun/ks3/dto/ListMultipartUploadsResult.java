@@ -57,6 +57,7 @@ public class ListMultipartUploadsResult {
 	 * <p>prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/</p>
 	 * <p>prefix为aaaa/  delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/</p>
 	 * <p>prefix为ssss/  delimiter为/ 则commonPrefix 为 aaaa/eee/</p>
+	 * <p>delimiter为空时commonPrefixes一定为空</p>
 	 */
 	private List<String> commonPrefixes = new ArrayList<String>();
 	private List<MultiPartUploadInfo> uploads = new ArrayList<MultiPartUploadInfo>();

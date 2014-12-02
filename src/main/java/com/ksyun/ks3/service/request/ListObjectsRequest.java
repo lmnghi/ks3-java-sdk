@@ -29,13 +29,13 @@ import com.ksyun.ks3.utils.StringUtils;
 public class ListObjectsRequest extends Ks3WebServiceRequest {
 
 	/**
-	 * prefix和delimiter决定结果中的commonPrefix
+	 * prefix和delimiter详解
 	 * <p>
-	 * 由prefix和delimiter确定，以prefix开头的object
+	 * commonPrefix由prefix和delimiter确定，以prefix开头的object
 	 * key,在prefix之后第一次出现delimiter的位置之前（包含delimiter）的子字符串将存在于commonPrefixes中
 	 * </p>
 	 * <p>
-	 * 比如有一下两个object key
+	 * 比如有一下几个个object key
 	 * </p>
 	 * <p>
 	 * aaaa/bbb/ddd.txt
@@ -47,30 +47,46 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 	 * ssss/eee/fff.txt
 	 * </p>
 	 * <p>
-	 * prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/
+	 * prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/ 返回的object为空
 	 * </p>
 	 * <p>
-	 * prefix为aaaa/ delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/
+	 * prefix为aaaa/ delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/ 返回的object为空
 	 * </p>
 	 * <p>
-	 * prefix为ssss/ delimiter为/ 则commonPrefix 为 aaaa/eee/
+	 * prefix为ssss/ delimiter为/ 则commonPrefix 为 aaaa/eee/ 返回的object为空
+	 * </p>
+	 * <p>
+	 * prefix为空 delimiter为空 则commonPrefix 为空 返回的object
+	 * keys为aaaa/bbb/ddd.txt、aaaa/ccc/eee.txt、ssss/eee/fff.txt
+	 * </p>
+	 * <p>
+	 * prefix为aaaa/ delimiter为空 则commonPrefix 为空 返回的object
+	 * keys为aaaa/bbb/ddd.txt、aaaa/ccc/eee.txt
+	 * </p>
+	 * <p>
+	 * prefix为ssss/ delimiter为空 则commonPrefix 为空 返回的object keys为ssss/eee/fff.txt
+	 * </p>
+	 * 
+	 * <p>
+	 * 由于分布式文件存储系统中没有文件夹结构，所以用delimiter和prefix模拟文件夹结构,可以把prefix看成当前在哪个文件夹下，
+	 * delimiter为文件夹分隔符，commonprefix为当前文件夹下的子文件夹
 	 * </p>
 	 */
 	private String prefix;
 
 	/**
-	 * 游标
+	 * 游标，所有object排序后从第一个以marker开头的object key开始。
 	 */
 	private String marker;
 
 	/**
-	 * prefix和delimiter决定结果中的commonPrefix
+	 * prefix和delimiter详解
 	 * <p>
-	 * 由prefix和delimiter确定，以prefix开头的object
+	 * commonPrefix由prefix和delimiter确定，以prefix开头的object
 	 * key,在prefix之后第一次出现delimiter的位置之前（包含delimiter）的子字符串将存在于commonPrefixes中
 	 * </p>
 	 * <p>
-	 * 比如有一下两个object key
+	 * 比如有一下几个个object key
 	 * </p>
 	 * <p>
 	 * aaaa/bbb/ddd.txt
@@ -82,13 +98,29 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 	 * ssss/eee/fff.txt
 	 * </p>
 	 * <p>
-	 * prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/
+	 * prefix为空 delimiter为/ 则commonPrefix 为 aaaa/和ssss/ 返回的object为空
 	 * </p>
 	 * <p>
-	 * prefix为aaaa/ delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/
+	 * prefix为aaaa/ delimiter为/ 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/ 返回的object为空
 	 * </p>
 	 * <p>
-	 * prefix为ssss/ delimiter为/ 则commonPrefix 为 aaaa/eee/
+	 * prefix为ssss/ delimiter为/ 则commonPrefix 为 aaaa/eee/ 返回的object为空
+	 * </p>
+	 * <p>
+	 * prefix为空 delimiter为空 则commonPrefix 为空 返回的object
+	 * keys为aaaa/bbb/ddd.txt、aaaa/ccc/eee.txt、ssss/eee/fff.txt
+	 * </p>
+	 * <p>
+	 * prefix为aaaa/ delimiter为空 则commonPrefix 为空 返回的object
+	 * keys为aaaa/bbb/ddd.txt、aaaa/ccc/eee.txt
+	 * </p>
+	 * <p>
+	 * prefix为ssss/ delimiter为空 则commonPrefix 为空 返回的object keys为ssss/eee/fff.txt
+	 * </p>
+	 * 
+	 * <p>
+	 * 由于分布式文件存储系统中没有文件夹结构，所以用delimiter和prefix模拟文件夹结构,可以把prefix看成当前在哪个文件夹下，
+	 * delimiter为文件夹分隔符，commonprefix为当前文件夹下的子文件夹
 	 * </p>
 	 */
 	private String delimiter;

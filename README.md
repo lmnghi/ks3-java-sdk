@@ -300,6 +300,62 @@ HEAD Bucket可以用来判断一个bucket是否存在
 #####5.2.7.1 使用示例
 列出当前正在执行的分块上传
 
+	public ListMultipartUploadsResult listMultipartUploads() {
+		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest("test.bucket");
+		/**
+		 * keyMarker为空，uploadIdMarker不为空
+		 * 无意义
+		 * 
+		 * keyMarker不为空，uploadIdMarker不为空
+		 * 列出分块上传object key为keyMarker，且upload id 大于uploadIdMarker的结果
+		 * 
+		 * keyMarker不为空，uploadIdMarker为空
+		 * 列出分块上传object key大于keyMarker的结果
+		 */
+		 request.setKeyMarker("keyMarker");
+		 request.setUploadIdMarker("uploadIdMarker");
+
+		 /**
+		 * prefix和delimiter详解
+		 * 
+		 * commonPrefix由prefix和delimiter确定，以prefix开头的object
+		 * key,在prefix之后第一次出现delimiter的位置之前（包含delimiter）的子字符串将存在于commonPrefixes中
+		 * 比如有一下几个个分块上传
+		 * 
+		 * aaaa/bbb/ddd.txt
+		 * aaaa/ccc/eee.txt
+		 * ssss/eee/fff.txt
+		 * 
+		 * prefix为空 delimiter为/ 
+		 * 则commonPrefix 为 aaaa/和ssss/ 返回的uploads为空
+		 * 
+		 * prefix为aaaa/ delimiter为/ 
+		 * 则commonPrefix 为 aaaa/bbb/和aaaa/ccc/ 返回的uploads为空
+		 * 
+		 * prefix为ssss/ delimiter为/ 
+		 * 则commonPrefix 为 aaaa/eee/ 返回的uploads为空
+		 * 
+		 * prefix为空 delimiter为空 
+		 * 则commonPrefix 为空 返回的uploads为aaaa/bbb/ddd.txt、aaaa/ccc/eee.txt、ssss/eee/fff.txt
+		 * 
+		 * prefix为aaaa/ delimiter为空 
+		 * 则commonPrefix 为空 返回的uploads为aaaa/bbb/ddd.txt、aaaa/ccc/eee.txt
+		 * 
+		 * prefix为ssss/ delimiter为空 
+		 * 则commonPrefix 为空 返回的uploads为ssss/eee/fff.txt
+		 * 
+		 * 由于分布式文件存储系统中没有文件夹结构，所以用delimiter和prefix模拟文件夹结构,可以把prefix看成当前在哪个文件夹下，
+		 * delimiter为文件夹分隔符，commonprefix为当前文件夹下的子文件夹
+		 * </p>
+		 */
+		request.setDelimiter("/");
+		request.setPrefix("prefix");
+		request.setMaxUploads(100);// 最多返回100条记录
+
+		ListMultipartUploadsResult result = client
+				.listMultipartUploads(request);
+		return result;
+	}
 #####5.2.7.2 特殊异常
 该方法不会抛出特殊异常
 ####5.2.8 PUT Bucket
