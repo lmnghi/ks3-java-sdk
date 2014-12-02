@@ -1,13 +1,4 @@
-<div class="BlogAnchor"><p><b id="AnchorContentToggle" title="收起" style="cursor:pointer;">目录[-]</b></p><div class="AnchorContent" id="AnchorContent"> </div> </div>
-<script>
-$(".post-content").find("h2,h3,h4,h5,h6").each(function(i,item){     var tag = $(item).get(0).localName;     $(item).attr("id","wow"+i);     $("#AnchorContent").append('<li><a class="anchor-link" href="#wow'+i+'">'+$(this).text()+'</a></li>');     $(".newh2").css("margin-left",0);     $(".newh3").css("margin-left",20);     $(".newh4").css("margin-left",40);     $(".newh5").css("margin-left",60);     $(".newh6").css("margin-left",80); }); 
-</script>
-<style>
-.BlogAnchor {     background: #f4f7f9;     padding: 10px;     line-height: 180%; } .BlogAnchor p {     font-size: 18px;     color: #15a230;     margin-bottom: 0.3em; } .BlogAnchor .AnchorContent {     padding: 5px 0px; } .BlogAnchor li{     text-indent: 20px;     font-size: 14px; } #AnchorContentToggle {     font-size: 13px;     font-weight: normal;     color: #FFF;     display: inline-block;     line-height: 20px;     background: #5cc26f;     font-style: normal;     padding: 1px 8px;     margin-right: 10px; } .BlogAnchor a:hover {     color: #5cc26f; } .BlogAnchor a {     text-decoration: none; } 
-</style>
 # KS3 SDK For Java使用指南
-版权所有 （C）金山云科技有限公司  
-Copyright (C) Kingsoft Cloud All rights reserved.
 ## 1 简介
 ### 1.1 金山标志存储服务
 金山标准存储服务（Kingsoft Standard Storage Service），简称KS3，是金山云为开发者提供无限制、多备份、分布式的低成本存储空间解决方案。目前提供多种语言SDK，替开发者解决存储扩容、数据可靠安全以及分布式访问等相关复杂问题，开发者可以快速的开发出涉及存储业务的程序或服务。  
@@ -843,4 +834,6 @@ Complete Multipart Upload
 |InvalidPartException|用户提供的某个块不存在或是ETag不匹配|
 |EntityTooSmallException|除最后一块外的块大小 小于KS3要求的最小值|
 
-#### 如果您有任何疑问,请联系lijunwei@kingsoft.com
+####  版权所有 （C）金山云科技有限公司  
+####  Copyright (C) Kingsoft Cloud All rights reserved.
+####  如果您有任何疑问,请联系lijunwei@kingsoft.com
