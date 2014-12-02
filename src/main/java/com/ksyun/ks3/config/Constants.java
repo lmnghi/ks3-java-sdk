@@ -30,6 +30,7 @@ public class Constants {
 	public static final int maxPartNumber = 10000;
 	public static final int minPartSize = 5*1024*1024;
 	public static final int maxPartSize = 5*1024*1024*1024;
+	public static final long maxSingleUpload = 5*1024*1024*1024;
 	/**
 	 * object meta 要忽略的headers
 	 */

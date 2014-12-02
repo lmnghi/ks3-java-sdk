@@ -110,6 +110,10 @@ public class ClientConfig {
 	 */
 	public static final String CLIENT_SIGNER = "ks3client.signer";
 	/**
+	 * 用户默认的文件组织分隔符号
+	 */
+	//public static final String CLIENT_DEFAULT_DELIMITER = "ks3client.delimiter";
+	/**
 	 * 配置加载器列表
 	 */
 	private static List<ConfigLoader> configLoaders = new ArrayList<ConfigLoader>();

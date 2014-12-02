@@ -112,7 +112,7 @@ public class Ks3ClientTest {
 
 	//@Test
 	public void getBucketLogging() {
-		System.out.println(client.getBucketLogging("ksc-scm"));
+		System.out.println(client.getBucketLogging(""));
 	}
 
 	//@Test

@@ -96,13 +96,14 @@ com.ksyun.ks3.utils:工具包
 该SDK使用log4j，请用户自行配置log4j.properties
 ###3.3 获取秘钥
 1、开通KS3服务，[http://www.ksyun.com/user/register](http://www.ksyun.com/user/register) 注册账号  
-2、进入控制台,[http://ks3.ksyun.com/console.html#/setting]http://ks3.ksyun.com/console.html#/setting获取AccessKeyID 、AccessKeySecret
+2、进入控制台, [http://ks3.ksyun.com/console.html#/setting](http://ks3.ksyun.com/console.html#/setting) 获取AccessKeyID 、AccessKeySecret
 ###3.4 初始化客户端
 当以上全部完成之后用户便可初始化客户端进行操作了  
 
 	Ks3 client = new Ks3Client("<您的AccessKeyID>","<您的AccessKeySecret>");
 ##4 公共异常说明
-注意:以下异常全部继承自Ks3ServiceException(Ks3ServiceException继承自RuntimeException)
+###4.1 Ks3ServiceException
+当抛出Ks3ServiceException时表示KS3服务端返回异常信息。Ks3ServiceException继承自RuntimeException
 <table>
 <tr>
 <th>异常</th>
@@ -149,6 +150,18 @@ com.ksyun.ks3.utils:工具包
 <td>服务器内部错误，稍后再试或联系我们</td>
 </tr>
 </table>
+###4.2 Ks3ClientException
+当抛出Ks3ClientException时表示客户端发送了异常。
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>ClientIllegalArgumentException</td>
+<td>客户端参数校验失败,这个异常会代替许多继承自Ks3ServiceException且抛出原因是服务端参数校验失败的异常抛出，</td>
+</tr>
+</table>
 ##5 使用示例
 ###5.1 Service接口
 ####5.1.1 GET Service(List Buckets)
@@ -162,14 +175,14 @@ com.ksyun.ks3.utils:工具包
 #####5.1.1.2 特殊异常
 该方法不会抛出特殊异常
 ###5.2 Bucket接口
-####5.1.2 DELETE Bucket
-#####5.1.2.1 使用示例
+####5.2.1 DELETE Bucket
+#####5.2.1.1 使用示例
 删除一个Bucket
 
 	public void deleteBucket(){
 		client.deleteBucket("<您的bucket名称>");
 	}
-#####5.1.2.2 特殊异常
+#####5.2.1.2 特殊异常
 <table>
 <tr>
 <th>异常</th>
@@ -180,4 +193,749 @@ com.ksyun.ks3.utils:工具包
 <td>这个bucket不为空，无法删除，需要用户先调用client.clearBucket(bucket)方法清空bucket</td>
 </tr>
 </table>
+####5.2.2 GET Bucket(List Objects)
+#####5.2.2.1 使用示例
+
+	/**
+	 * 列出一个bucket下的object，返回的最大数为1000条
+	 */
+	public ObjectListing listObjectsSimple(){
+		ObjectListing list = client.listObjects("<您的bucket名称>");
+		return list;
+	}
+	/**
+	 * 将列出bucket下满足object key前缀为指定字符串的object，返回的最大数为1000条
+	 */
+	public ObjectListing listObjectsWithPrefix(){
+		ObjectListing list = client.listObjects("<您的bucket名称>","<object key前缀>");
+		return list;
+	}
+	/**
+	 * 自己调节列出object的参数，
+	 */
+	public ObjectListing listObjectsUseRequest(){
+		ObjectListing list = null;
+		//新建一个ListObjectsRequest
+		ListObjectsRequest request = new ListObjectsRequest("<您的bucket名称>");
+		//设置参数
+		request.setMaxKeys("<max keys>");//指定返回条数最大值
+		request.setPrefix("<object key前缀>");//返回以指定前缀开头的object
+		//执行操作
+		client.listObjects(request);
+		return list;
+	}
+	/**
+	 * 使用循环列出所有object
+	 */
+	public void listAllObjects(){
+		ObjectListing list = null;
+		//初始化一个请求
+		ListObjectsRequest request = new ListObjectsRequest("<您的bucket名称>");
+		do{
+			//isTruncated为true时表示之后还有object，所以应该继续循环
+			if(list!=null&&list.isTruncated())
+				//在ObjectListing中将返回下次请求的marker
+		    	request.setMarker(list.getNextMarker());
+			list = client.listObjects(request);
+		}while(list.isTruncated());
+	}
+#####5.2.2.2 特殊异常
+该方法不会抛出特殊异常
+####5.2.3 GET Bucket acl
+#####5.2.3.1 使用示例
+
+	public AccessControlPolicy getBucketAcl(){
+		AccessControlPolicy acl = null;
+		//只需要传入这个bucket的名称即可
+		acl = client.getBucketACL("<您的bucket名称>");
+		return acl;
+	}
+#####5.2.3.2 特殊异常
+该方法不会抛出特殊异常
+####5.2.4 GET Bucket location
+#####5.2.4.1 使用示例
+获取bucket的存储地点
+
+	public REGION getBucketLocation(){
+		//只需要传入bucket的名称
+		REGION region = client.getBucketLoaction("<您的bucket名称>");
+		return region;
+	}
+#####5.2.4.2 特殊异常
+该方法不会抛出特殊异常
+####5.2.5 GET Bucket logging
+#####5.2.5.1 使用示例
+获取bucket的日志配置
+
+	public BucketLoggingStatus getBucketLogging(){
+		//只需要传入bucket的名称，由于ks3暂时对日志权限不支持，所以返回的BucketLoggingStatus中targetGrants始终为空集合
+		BucketLoggingStatus logging = client.getBucketLogging("<您的bucket名称>");
+		return logging;
+	}
+#####5.2.5.2 特殊异常
+该方法不会返回特殊异常
+####5.2.6 HEAD Bucket
+#####5.2.6.1 使用示例
+HEAD Bucket可以用来判断一个bucket是否存在
+
+	/**
+	 * Head请求一个bucket
+	 */
+	public HeadBucketResult headBucket() {
+		HeadBucketResult result = client.headBucket("<您的bucket名称>");
+		/**
+		 * 通过result.getStatueCode()状态码 404则这个bucket不存在，403当前用户没有权限访问这个bucket
+		 */
+		return result;
+	}
+	/**
+	 * 检测一个bucket是否存在,bucketExists内部使用的便是headBucket方法
+	 */
+	public boolean bucketExists(){
+		return client.bucketExists("<您的bucket名称>");
+	}
+#####5.2.6.2 特殊异常
+该方法不会抛出特殊异常
+####5.2.7 List Multipart Uploads
+#####5.2.7.1 使用示例
+列出当前正在执行的分块上传
+
+#####5.2.7.2 特殊异常
+该方法不会抛出特殊异常
+####5.2.8 PUT Bucket
+#####5.2.8.1 使用示例
+
+	/**
+	 * <p>使用最简单的方式创建一个bucket</p>
+	 * <p>将使用默认的配置，权限为私有，存储地点为杭州</p>
+	 */
+	public void createBucketSimple(){
+		client.createBucket("<您的bucket名称>");
+	}
+	/**
+	 * <p>新建bucket的时候配置bucket的存储地点和访问权限</p>
+	 */
+	public void createBucketWithConfig(){
+		CreateBucketRequest request = new CreateBucketRequest("<您的bucket名称>");
+		//配置bucket的存储地点
+		CreateBucketConfiguration config = new CreateBucketConfiguration(REGION.BEIJING);
+		request.setConfig(config);
+		//配置bucket的访问权限
+		request.setCannedAcl(CannedAccessControlList.PublicRead);
+		//执行操作
+		client.createBucket(request);
+	}
+#####5.2.8.2 特殊异常
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>InvalidBucketNameException</td>
+<td>bucket名称不符合KS3 Bucket命名规范</td>
+</tr>
+<tr>
+<td>InvalidLocationConstraintException</td>
+<td>bucket存储地点不支持。正常使用SDK时不应该抛出</td>
+</tr>
+<tr>
+<td>BucketAlreadyExistsException</td>
+<td>该bucket名称已经存在。bucket名称是全局唯一的</td>
+</tr>
+</table>
+####5.2.9 PUT Bucket acl
+#####5.2.9.1 使用示例
+设置bucket的访问权限
+
+	public void putBucketAclWithCannedAcl(){
+		PutBucketACLRequest request = new PutBucketACLRequest("<您的bucket名称>");
+		//设为私有
+		request.setCannedAcl(CannedAccessControlList.Private);
+		//设为公开读 
+		//request.setCannedAcl(CannedAccessControlList.PublicRead);
+		//设为公开读写
+		//request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+		client.putBucketACL(request);
+	}
+	
+	public void putBucketAclWithAcl(){
+		PutBucketACLRequest request = new PutBucketACLRequest("<您的bucket名称>");
+
+		AccessControlList acl = new AccessControlList();
+		//设置用户id为12345678的用户对bucket的读权限
+		Grant grant1 = new Grant();
+		grant1.setGrantee(new GranteeId("12345678"));
+		grant1.setPermission(Permission.Read);
+		acl.addGrant(grant1);
+		//设置用户id为123456789的用户对bucket完全控制
+		Grant grant2 = new Grant();
+		grant2.setGrantee(new GranteeId("123456789"));
+		grant2.setPermission(Permission.FullControl);
+		acl.addGrant(grant2);
+		//设置用户id为12345678910的用户对bucket的写权限
+		Grant grant3 = new Grant();
+		grant3.setGrantee(new GranteeId("12345678910"));
+		grant3.setPermission(Permission.Write);
+		acl.addGrant(grant3);
+		request.setAccessControlList(acl);
+		
+		client.putBucketACL(request);
+	}
+#####5.2.9.2 特殊异常
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>InvalidArgumentException</td>
+<td>用户没有设置CannedAccessControlList和AccessControlList</td>
+</tr>
+</table>
+####5.2.10 PUT Bucket logging
+#####5.2.10.1 使用示例
+设置bucket的日志配置
+
+	/**
+	 * 将存储空间的操作日志存储在 <存放日志文件的bucket名称> 里面，日志文件的前缀是"logging-"
+	 */
+	public void putBucketLogging(){
+		PutBucketLoggingRequest request = new PutBucketLoggingRequest("<您的bucket名称>");
+		//开启日志
+		request.setEnable(true);
+		request.setTargetBucket("<存放日志文件的bucket名称>");
+		//设置日志文件的前缀为logging-
+		request.setTargetPrefix("logging-");
+		client.putBucketLogging(request);
+	}
+#####5.2.10.2 特殊异常
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>InvalidTargetBucketForLoggingException</td>
+<td>用户不能把日志存储在指定的bucket中，可能是bucket不存在、或者没有权限存储日志</td>
+</tr>
+<tr>
+<td>CrossLocationLoggingProhibitedException</td>
+<td>配置日志的bucket和存储日志的bucket不在一个地方。即bucket location不同</td>
+</tr>
+</table>
+
 ###5.3 Object接口
+####5.3.1 DELETE Object
+#####5.3.1.1 使用示例
+删除一个object
+
+	/**
+	 * 将<bucket名称>这个存储空间下的<object key>删除
+	 */
+	public void deleteObject(){
+		client.deleteObject("<bucket名称>","<object key>");
+	}
+#####5.3.1.2 特殊异常
+该方法不会返回特殊异常
+####5.3.2 DELETE Multiple Objects
+#####5.3.2.1使用示例
+批量删除object。返回结果将显示各个object的删除情况（是否成功，失败原因）
+
+	public DeleteMultipleObjectsResult deleteObjects(){
+		DeleteMultipleObjectsResult result = client.deleteObjects(new String[]{"objectKey1","objectKey2","objectKey2"},"<bucket名称>");
+		return result;
+	}
+#####5.3.2.2特殊异常
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>MissingContentMD5</td>
+<td>没有提供requestbody的MD5值，正常使用SDK时不应该抛出 </td>
+</tr>
+<tr>
+<td>MissingContentLength</td>
+<td>没有提供Content-Length,正常使用SDK时不应该抛出</td>
+</tr>
+<tr>
+<td>MissingRequestBodyError</td>
+<td>没有提供request body,正常使用SDK时不应该抛出</td>
+</tr>
+</table>
+注:request body中为一段xml，注明要删除哪些object
+####5.3.3 GET Object
+#####5.3.3.1 使用示例
+GET Object为用户提供了object的下载，用户可以通过控制Range实现分块多线程下载，可以调节ResponseHeaderOverrides控制返回的header
+
+	public GetObjectResult getObject(){
+		GetObjectRequest request = new GetObjectRequest("<bucket名称>","<object key>");
+		
+		//重写返回的header
+		ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
+		overrides.setContentType("text/html");
+		//.......
+		overrides.setContentEncoding("UTF-8");
+		request.setOverrides(overrides);
+		//只接受数据的0-10字节。通过控制该项可以实现分块下载
+		request.setRange(0,10);
+		GetObjectResult result = client.getObject(request);
+		
+		Ks3Object object = result.getObject();
+		//获取object的元数据
+		ObjectMetadata meta = object.getObjectMetadata();
+		//当分块下载时获取文件的实际大小，而非当前小块的大小
+		Long length = meta.getInstanceLength();
+		//获取object的输入流
+		object.getObjectContent();
+		
+		return result;
+	}
+#####5.3.3.2 特殊异常
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>InvalidRangeException</td>
+<td>Range设置格式错误，Range正确格式：bytes=x-y,x、y为long型，且y>=x </td>
+</tr>
+</table>
+####5.3.4 GET Object acl
+#####5.3.4.1 使用示例
+
+	public AccessControlPolicy getObjectAcl(){
+		/**
+		 * 获取 <bucket名称>这个bucket下<object key>的权限控制信息
+		 */
+		AccessControlPolicy policy = client.getObjectACL("<bucket名称>","<object key>");
+		return policy;
+	}
+#####5.3.4.2 特殊异常
+这个方法不会抛出特殊异常
+####5.3.5 HEAD Object
+#####5.3.5.1 使用示例
+	public HeadObjectResult headObject() {
+		HeadObjectRequest request = new HeadObjectRequest("<bucket名称>",
+				"<object名称>");
+		/**
+		 * <p>
+		 * 如果抛出{@link NoSuchKeyException} 表示这个object不存在
+		 * </p>
+		 * <p>
+		 * 如果抛出{@link AccessDinedException} 表示当前用户没有权限访问
+		 * </p>
+		 */
+		HeadObjectResult result = client.headObject(request);
+		// head请求可以用于获取object的元数据
+		result.getObjectMetadata();
+		return result;
+	}
+	/**
+	 * 判断一个object是否存在
+	 */
+	public boolean objectExists() {
+		try {
+			HeadObjectRequest request = new HeadObjectRequest("<bucket名称>",
+					"<object名称>");
+			client.headObject(request);
+			return true;
+		} catch (NoSuchKeyException e) {
+			return false;
+		}
+	}
+#####5.3.5.2 特殊异常
+这个方法不会抛出特殊异常
+####5.3.6 PUT Object
+#####5.3.6.1 使用示例
+	/**
+	 * 将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
+	 */
+	public void putObjectWithFile() {
+		PutObjectRequest request = new PutObjectRequest("<bucket名称>",
+				"<object key>", new File("<filePath>"));
+		// 设置将要上传的object为公开读的
+		request.setCannedAcl(CannedAccessControlList.PublicRead);
+
+		ObjectMetadata meta = new ObjectMetadata();
+		// 设置将要上传的object的用户元数据
+		meta.setUserMeta("x-kss-meta-example", "example");
+		// 设置将要上传的object的元数据
+		meta.setContentType("text/html");
+		meta.setContentEncoding("UTF-8");
+		meta.setCacheControl("no-cache");
+		meta.setHttpExpiresDate(new Date());
+		meta.setContentDisposition("attachment; filename=fname.ext");
+
+		request.setObjectMeta(meta);
+
+		client.putObject(request);
+	}
+
+	public void putObjectWithInputStream() {
+		ObjectMetadata meta = new ObjectMetadata();
+		// 设置将要上传的object的用户元数据
+		meta.setUserMeta("x-kss-meta-example", "example");
+		// 设置将要上传的object的元数据
+		meta.setContentType("text/html");
+		meta.setContentEncoding("UTF-8");
+		meta.setCacheControl("no-cache");
+		meta.setHttpExpiresDate(new Date());
+		meta.setContentDisposition("attachment; filename=fname.ext");
+
+		PutObjectRequest request = new PutObjectRequest("<bucket名称>",
+				"<object key>", new ByteArrayInputStream("1234".getBytes()),
+				meta);
+
+		// 可以指定内容的长度，否则程序会把整个输入流缓存起来，可能导致jvm内存溢出
+		meta.setContentLength(4);
+		// 可以指定内容的md5摘要，程序将在ks3服务端进行md5值校验，否则程序只会在客户端进行md5值校验
+		meta.setContentMD5("gdyb21LQTcIANtvYMT7QVQ==");
+
+		AccessControlList acl = new AccessControlList();
+		// 设置用户id为12345678的用户对object的读权限
+		Grant grant1 = new Grant();
+		grant1.setGrantee(new GranteeId("12345678"));
+		grant1.setPermission(Permission.Read);
+		acl.addGrant(grant1);
+		// 设置用户id为123456789的用户对object完全控制
+		Grant grant2 = new Grant();
+		grant2.setGrantee(new GranteeId("123456789"));
+		grant2.setPermission(Permission.FullControl);
+		acl.addGrant(grant2);
+
+		// 设置acl
+		request.setAcl(acl);
+
+		client.putObject(request);
+	}
+#####5.3.6.2 特殊异常
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>MissingContentLengthException</td>
+<td>用户没有提供Content-Length，正常使用SDK时不应该抛出</td>
+</tr>
+<tr>
+<td>InvalidKeyException</td>
+<td>Object Key命名不符合KS3 object key命名规范</td>
+</tr>
+<tr>
+<td>EntityTooLargeException</td>
+<td>当次上传的大小超过了最大限制,正常使用SDK时不应该抛出</td>
+</tr>
+<tr>
+<td>MetadataTooLargeException</td>
+<td>用户元数据过大</td>
+</tr>
+<tr>
+<td>InvalidDigestException</td>
+<td>服务端MD5校验失败，文件上传失败</td>
+</tr>
+<tr>
+<td>ClientInvalidDigestException</td>
+<td>客户端MD5校验失败，文件虽然上传成功但是可能有缺失或损坏</td>
+</tr>
+</table>
+####5.3.7 PUT Object acl
+#####5.3.7.1 使用示例
+修改object的权限控制
+
+	public void putBucketAclWithCannedAcl(){
+		PutBucketACLRequest request = new PutBucketACLRequest("<bucket名称>");
+		//设为私有
+		request.setCannedAcl(CannedAccessControlList.Private);
+		//设为公开读 
+		//request.setCannedAcl(CannedAccessControlList.PublicRead);
+		//设为公开读写
+		//request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+		client.putBucketACL(request);
+	}
+	
+	public void putBucketAclWithAcl(){
+		PutBucketACLRequest request = new PutBucketACLRequest("<bucket名称>");
+
+		AccessControlList acl = new AccessControlList();
+		//设置用户id为12345678的用户对bucket的读权限
+		Grant grant1 = new Grant();
+		grant1.setGrantee(new GranteeId("12345678"));
+		grant1.setPermission(Permission.Read);
+		acl.addGrant(grant1);
+		//设置用户id为123456789的用户对bucket完全控制
+		Grant grant2 = new Grant();
+		grant2.setGrantee(new GranteeId("123456789"));
+		grant2.setPermission(Permission.FullControl);
+		acl.addGrant(grant2);
+		//设置用户id为12345678910的用户对bucket的写权限
+		Grant grant3 = new Grant();
+		grant3.setGrantee(new GranteeId("12345678910"));
+		grant3.setPermission(Permission.Write);
+		acl.addGrant(grant3);
+		request.setAccessControlList(acl);
+		
+		client.putBucketACL(request);
+	}
+#####5.3.7.2 特殊异常
+这个方法不会抛出特殊异常
+
+####5.3.8 PUT Object - Copy
+#####5.3.8.1 使用示例
+
+	public void copyObject(){
+		/**将sourceBucket这个存储空间下的sourceKey这个object复制到destinationBucket这个存储空间下，并命名为destinationObject
+		 */
+		CopyObjectRequest request = new CopyObjectRequest("destinationBucket","destinationObject","sourceBucket","sourceKey");
+		client.copyObject(request);
+	}
+	/**
+	 * 重命名object
+	 */
+	public void renameObject(){
+		/**将sourceBucket这个存储空间下的sourceKey这个object重命名为destinationObject
+		 */
+		CopyObjectRequest request = new CopyObjectRequest("sourceBucket","destinationObject","sourceBucket","sourceKey");
+		client.copyObject(request);
+	}
+#####5.3.8.2 特殊错误
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>MissingContentLengthException</td>
+<td>用户没有提供Content-Length，正常使用SDK时不应该抛出</td>
+</tr>
+<tr>
+<td>InvalidKeyException</td>
+<td>Object Key命名不符合KS3 object key命名规范</td>
+</tr>
+<tr>
+<td>InvalidArgumentException</td>
+<td>没有提供sourceBucket或sourceKey,正常使用SDK时不应该抛出</td>
+</tr>
+<tr>
+<td>InvalidKeyException</td>
+<td>目标object已经存在，无法copy</td>
+</tr>
+</table>
+####5.3.9 Multipart Upload
+#####5.3.9.1 使用示例
+注：中途想停止分块上传的话请调用client.abortMultipartUpload(bucketname, objectkey, uploadId);
+
+
+	public void multipartUploadWithFile(){
+		//定义每次上传的块的大小为10M
+		long part = 10 * 1024 * 1024;
+		//将文件存放在test.bucket这个存储空间里
+		String bucket = "test.bucket";
+		//将要上传的文件的object key
+		String key = "object.rar";
+		//将要上传的文件路径
+		String filename = "filePath";
+
+		
+		//***********************初始化分块上传*****************************************
+		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
+				bucket, key);
+		//设置为公开读
+		request1.setCannedAcl(CannedAccessControlList.PublicRead);
+		ObjectMetadata meta = new ObjectMetadata();
+		//设置将要上传的object的用户元数据
+		meta.setUserMeta("x-kss-meta-example", "example");
+		//设置将要上传的object的元数据
+		meta.setContentType("text/html");
+		meta.setContentEncoding("UTF-8");
+		meta.setCacheControl("no-cache");
+		meta.setHttpExpiresDate(new Date());
+		meta.setContentDisposition("attachment; filename=fname.ext");
+		//设置元数据
+		request1.setObjectMeta(meta);
+		
+		InitiateMultipartUploadResult result = client
+				.initiateMultipartUpload(request1);
+		//***********************执行分块上传*****************************************
+		File file = new File(filename);
+		//计算一共有多少块
+		long n = file.length() / part;
+		//依次进行上传
+		for (int i = 0; i <= n; i++) {
+			//初始化一个分块上传的请求
+			//参数分别为：
+			//bucket名称，  
+            //object key，
+      		//uploadId(由initMultipartUpload获得),
+			//partnumber()当前上传的是第几块,  
+            //要上传的完整文件,单块大小(long),
+			//文件偏移量(即从文件偏移量开始截取，一共截取单块大小的字节）
+			UploadPartRequest request = new UploadPartRequest(
+					result.getBucket(), result.getKey(), result.getUploadId(),
+					i + 1, file, part, (long) i * part);
+			//可以指定内容的MD5值，否则程序只会在客户端进行MD5校验。如果指定的话会在服务端进行MD5校验
+			request.setContentMd5("52D04DC20036DBD8");
+			client.uploadPart(request);
+		}
+		//***********************列出分块上传以上传的块*****************************************
+		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
+				result.getKey(), result.getUploadId());
+		ListPartsResult tags = client.listParts(requestList);
+		//***********************完成分块上传，使服务端将块合并成一个文件*****************************************
+		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
+				tags);
+		client.completeMultipartUpload(request);
+	}
+	public void multipartUploadWithInputStream(){
+		//将文件存放在test.bucket这个存储空间里
+		String bucket = "ksc-scm";
+		//将要上传的文件的object key
+		String key = "object.txt";
+
+		
+		//***********************初始化分块上传*****************************************
+		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
+				bucket, key);
+		//设置为公开读
+		request1.setCannedAcl(CannedAccessControlList.PublicRead);
+		ObjectMetadata meta = new ObjectMetadata();
+		//设置将要上传的object的用户元数据
+		meta.setUserMeta("x-kss-meta-example", "example");
+		//设置将要上传的object的元数据
+		meta.setContentType("text/html");
+		meta.setContentEncoding("UTF-8");
+		meta.setCacheControl("no-cache");
+		meta.setHttpExpiresDate(new Date());
+		meta.setContentDisposition("attachment; filename=fname.ext");
+		//设置元数据
+		request1.setObjectMeta(meta);
+		
+		InitiateMultipartUploadResult result = client
+				.initiateMultipartUpload(request1);
+		//***********************执行分块上传*****************************************
+		//假设一共要上传5块
+		long n = 50;
+		//依次进行上传
+		for (int i = 0; i < n; i++) {
+			//生成一个大小为5M的输入流
+			StringBuffer buffer = new StringBuffer();
+			for(int j = 0;j < 1024*1024;j++){
+				buffer.append("12345");
+			}
+			InputStream content = new ByteArrayInputStream(buffer.toString().getBytes());
+			//初始化一个分块上传的请求
+			//参数分别为：
+			//bucket名称，  
+            //object key，
+      		//uploadId(由initMultipartUpload获得),
+			//partnumber()当前上传的是第几块,  
+            //要上传的输入流，
+			//流大小，需要准确提供
+			UploadPartRequest request = new UploadPartRequest(
+					result.getBucket(), result.getKey(), result.getUploadId(),
+					i + 1,content,5*1024*1024);
+			//可以指定内容的MD5值，否则程序只会在客户端进行MD5校验。如果指定的话会在服务端进行MD5校验
+			//request.setContentMd5("52D04DC20036DBD8");
+			client.uploadPart(request);
+		}
+		//***********************列出分块上传以上传的块*****************************************
+		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
+				result.getKey(), result.getUploadId());
+		ListPartsResult tags = client.listParts(requestList);
+		//***********************完成分块上传，使服务端将块合并成一个文件*****************************************
+		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
+				tags);
+		client.completeMultipartUpload(request);
+	}
+#####5.3.9.2 特殊异常
+Init Multipart Upload
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>InvalidKeyException</td>
+<td>Object Key命名不符合KS3 object key命名规范</td>
+</tr>
+</table>
+Upload Part
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>MissingContentLengthException</td>
+<td>用户没有提供Content-Length,正常使用SDK不应该抛出</td>
+</tr>
+<tr>
+<td>NoSuchUploadException</td>
+<td>用户提供的UploadId不存在</td>
+</tr>
+<tr>
+<td>EntityTooLargeException</td>
+<td>单块上传内容过大，正常使用SDK不应该抛出该异常</td>
+</tr>
+<tr>
+<td>InvalidPartNumException</td>
+<td>partnumber不在正确范围内，正常使用SDK不应该抛出该异常</td>
+</tr>
+<tr>
+<td>InvalidDigestException</td>
+<td>服务端MD5校验失败，数据上传失败</td>
+</tr>
+<tr>
+<td>ClientInvalidDigestException</td>
+<td>客户端MD5校验失败，数据虽然上传成功但是可能有缺失或损坏</td>
+</tr>  
+</table>
+List Parts
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>NoSuchUploadException</td>
+<td>用户提供的UploadId不存在</td>
+</tr>
+</table>
+Abort Multipart Upload
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>NoSuchUploadException</td>
+<td>用户提供的UploadId不存在</td>
+</tr>
+</table>
+Complete Multipart Upload
+<table>
+<tr>
+<th>异常</th>
+<th>说明</th>
+</tr>
+<tr>
+<td>InvalidPartOrderException</td>
+<td>partnumber需要是升序且连续的</td>
+</tr>
+<tr>
+<td>NoSuchUploadException</td>
+<td>用户提供的UploadId不存在</td>
+</tr>
+<tr>
+<td>InvalidPartException</td>
+<td>用户提供的某个块不存在或是ETag不匹配</td>
+</tr>
+<tr>
+<td>EntityTooSmallException</td>
+<td>除最后一块外的块大小 小于KS3要求的最小值</td>
+</tr>
+</table>

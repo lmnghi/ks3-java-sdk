@@ -5,13 +5,13 @@ import com.ksyun.ks3.exception.Ks3ClientException;
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
  * 
- * @date 2014年11月19日 下午3:00:15
+ * @date 2014年12月2日 下午2:09:01
  * 
- * @description 客户端MD5校验出错
+ * @description 
  **/
-public class InvalidDigestException extends Ks3ClientException{
+public class ClientIllegalArgumentException extends Ks3ClientException{
 
-	public InvalidDigestException(String message) {
+	public ClientIllegalArgumentException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}

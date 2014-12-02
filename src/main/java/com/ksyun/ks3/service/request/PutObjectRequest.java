@@ -187,6 +187,13 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				throw new IllegalArgumentException(
 						"redirectLocation should start with / http:// or https://");
 		}
+		if(file!=null){
+			if(file.length()>Constants.maxSingleUpload)
+				throw new IllegalArgumentException("upload file too large,max bytes:"+Constants.maxSingleUpload);
+		}else{
+			if(this.objectMeta!=null&&this.objectMeta.getContentLength()>Constants.maxSingleUpload)
+				throw new IllegalArgumentException("Content-length you provided is too large,max:"+Constants.maxSingleUpload);
+		}
 	}
 
 	public File getFile() {

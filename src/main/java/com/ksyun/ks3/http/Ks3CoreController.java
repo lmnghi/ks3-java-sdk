@@ -19,7 +19,8 @@ import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
-import com.ksyun.ks3.exception.client.InvalidDigestException;
+import com.ksyun.ks3.exception.client.ClientIllegalArgumentException;
+import com.ksyun.ks3.exception.client.ClientInvalidDigestException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.request.support.MD5CalculateAble;
@@ -62,16 +63,16 @@ public class Ks3CoreController {
 			if(e instanceof Ks3ClientException){
 				
 			}else{
-				e = new Ks3ClientException(e);
+				if(e instanceof IllegalArgumentException){
+					ClientIllegalArgumentException ce = new ClientIllegalArgumentException(e.getMessage());
+					ce.setStackTrace(e.getStackTrace());
+					e = ce;
+				}else
+			    	e = new Ks3ClientException(e);
 			}
 			log.error(e);
 			e.printStackTrace();
 			throw e;
-		} catch (Exception e){
-			Ks3ClientException exception = new Ks3ClientException(e);
-			log.error(exception);
-			exception.printStackTrace();
-			throw exception;
 		} 
 		finally {
 			System.out.println();
@@ -134,7 +135,7 @@ public class Ks3CoreController {
 			String MD5 = ((MD5CalculateAble) request).getMd5();
 			log.info("returned etag is:"+ETag);
 			if (!ETag.equals(Converter.MD52ETag(MD5))) {
-				throw new InvalidDigestException(
+				throw new ClientInvalidDigestException(
 						"success,but the MD5 value we calculated dose not match the MD5 value Ks3 Service returned,the part of data may has been lost");
 			}
 		}
