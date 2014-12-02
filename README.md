@@ -76,7 +76,7 @@ com.ksyun.ks3.utils:工具包
 	httpclient.ProxyPassword=null//代理密码
 	httpclient.ProxyDomain=null//Windows domain name for configuration an NTLM proxy
 	httpclient.ProxyWorkStation=null//Windows workstation name for configuring NTLM proxy
-	httpclient.isPreemptiveBasicProxyAuth=false//Whether to authenticate 
+	httpclient.isPreemptiveBasicProxyAuth=false//Whether to authenticate preemptively against proxy server. 
 	ks3client.endpoint=kss.ksyun.com//KS3服务器域名
 	ks3client.signer=com.ksyun.ks3.signer.DefaultSigner//配置签名算法生成器，一般情况下请勿修改。
 
