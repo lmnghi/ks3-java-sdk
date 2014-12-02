@@ -67,13 +67,13 @@ public class ListMultipartUploadsRequest extends Ks3WebServiceRequest {
 	 * keyMarker不为空，uploadIdMarker不为空
 	 * <P>
 	 * <p>
-	 * 列出分块上传object key为keyMarker，且upload id 大于uploadIdMarker的结果
+	 * 列出分块上传object key为keyMarker，且upload id 字典排序大于uploadIdMarker的结果
 	 * </p>
 	 * <p>
 	 * keyMarker不为空，uploadIdMarker为空
 	 * <P>
 	 * <p>
-	 * 列出分块上传object key大于keyMarker的结果
+	 * 列出分块上传object key字典排序大于keyMarker的结果
 	 * </p>
 	 */
 	private String keyMarker;

@@ -75,7 +75,7 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 	private String prefix;
 
 	/**
-	 * 游标，所有object排序后从第一个以marker开头的object key开始。
+	 * 游标，列出object key 字典排序大于marker的object
 	 */
 	private String marker;
 

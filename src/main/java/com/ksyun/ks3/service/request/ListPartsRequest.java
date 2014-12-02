@@ -20,7 +20,7 @@ public class ListPartsRequest extends Ks3WebServiceRequest{
 	 */
 	private Integer maxParts = 1000;
 	/**
-	 * 游标，将列出partNumber比该只大的part
+	 * 游标，将列出partNumber比该值大的part
 	 */
 	private Integer partNumberMarker = -1;
 	/**
