@@ -125,6 +125,7 @@ com.ksyun.ks3.utils:工具包
 |ClientIllegalArgumentException|客户端参数校验失败,这个异常会代替许多继承自Ks3ServiceException且抛出原因是服务端参数校验失败的异常抛出|
 ## 5 使用示例
 ### 5.1 Service接口
+
 #### 5.1.1 GET Service(List Buckets)
 ##### 5.1.1.1 使用示例
 列出当前用户的所有bucket,可以查看每个bucket的名称、创建时间以及所有者
