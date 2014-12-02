@@ -1,8 +1,8 @@
-#KS3 SDK For Java使用指南
-##1 简介
-###1.1 金山标志存储服务
+# KS3 SDK For Java使用指南
+## 1 简介
+### 1.1 金山标志存储服务
 金山标准存储服务（Kingsoft Standard Storage Service），简称KS3，是金山云为开发者提供无限制、多备份、分布式的低成本存储空间解决方案。目前提供多种语言SDK，替开发者解决存储扩容、数据可靠安全以及分布式访问等相关复杂问题，开发者可以快速的开发出涉及存储业务的程序或服务。  
-###1.2 概念和术语
+### 1.2 概念和术语
 AccessKeyID、AccessKeySecret  
 使用KS3，您需要KS3颁发给您的AccessKeyID（长度为20个字符的ASCII字符串）和AccessKeySecret（长度为40个字符的ASCII字符串）。AccessKeyID用于标识客户的身份，AccessKeySecret作为私钥形式存放于客户服务器不在网络中传递。AccessKeySecret通常用作计算请求签名的密钥，用以保证该请求是来自指定的客户。使用AccessKeyID进行身份识别，加上AccessKeySecret进行数字签名，即可完成应用接入与认证授权。  
 Object  
@@ -15,7 +15,7 @@ ACL
 对Bucket和Object相关访问的控制策略，例如允许匿名用户公开访问等。 目前ACL支持{READ, WRITE, FULLCONTROL}三种权限。 目前，对于bucket的拥有者，总是FULLCONTROL。可以设置匿名用户为READ， WRITE, 或者FULLCONTROL权限。 对于BUCKET来说，READ是指罗列bucket中文件的功能。WRITE是指可以上传，删除BUCKET中文件的功能。FULLCONTROL则包含所有操作。 对于OBJECT来说，READ是指查看或者下载文件的功能。WRITE无意义。FULLCONTROL则包含所有操作。  
 Logging  
 对Bucket和Object的日志配置。  
-###1.3 KS3 SDK For Java
+### 1.3 KS3 SDK For Java
 此SDK适用于Java 5及以上版本。基于KS3 API 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到金山云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过KS3存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。  
 com.ksyun.ks3:几个在上传时用到的特殊的流  
 com.ksyun.ks3.config:sdk客户端配置  
@@ -28,7 +28,7 @@ com.ksyun.ks3.service.request:对API请求时参数的封装，用户进行使�
 com.ksyun.ks3.service.response:对请求API返回的结果的解析器  
 com.ksyun.ks3.signer:签名生成器，具体使用哪个签名生成器可以在ClientConfig中配置(一般情况下请勿修改)  
 com.ksyun.ks3.utils:工具包  
-##2 环境准备
+## 2 环境准备
 配置Java 5 以上开发环境  
 下载KS3 SDK For Java  
 添加Maven依赖
@@ -39,9 +39,9 @@ com.ksyun.ks3.utils:工具包
         <version>0.0.1</version>
     </dependency>
     
-##3 初始化
-###3.1 配置参数
-####3.1.1 配置方法一
+## 3 初始化
+### 3.1 配置参数
+#### 3.1.1 配置方法一
 
 	ClientConfig config = ClientConfig.getConfig();
 	config.set(ClientConfig.CONNECTION_TIMEOUT, "50000");//连接超时时间
@@ -60,7 +60,7 @@ com.ksyun.ks3.utils:工具包
 	config.set(ClientConfig.IS_PREEMPTIVE_BASIC_PROXY_AUTH,"false");//Whether to authenticate preemptively against proxy server.
 	config.set(ClientConfig.END_POINT,"kss.ksyun.com");//KS3服务器域名
 	config.set(ClientConfig.CLIENT_SIGNER,"com.ksyun.ks3.signer.DefaultSigner");//配置签名算法生成器，一般情况下请勿修改。
-####3.1.2配置方法二
+#### 3.1.2配置方法二
 新建配置文件config.properties
 
 	httpclient.connectionTimeout=50000//连接超时时间
@@ -92,17 +92,17 @@ com.ksyun.ks3.utils:工具包
 在代码初始化时
 
 	ClientConfig.addConfigLoader(new DemoConfigLoader());
-###3.2 配置日志
+### 3.2 配置日志
 该SDK使用log4j，请用户自行配置log4j.properties
-###3.3 获取秘钥
+### 3.3 获取秘钥
 1、开通KS3服务，[http://www.ksyun.com/user/register](http://www.ksyun.com/user/register) 注册账号  
 2、进入控制台, [http://ks3.ksyun.com/console.html#/setting](http://ks3.ksyun.com/console.html#/setting) 获取AccessKeyID 、AccessKeySecret
-###3.4 初始化客户端
+### 3.4 初始化客户端
 当以上全部完成之后用户便可初始化客户端进行操作了  
 
 	Ks3 client = new Ks3Client("<您的AccessKeyID>","<您的AccessKeySecret>");
-##4 公共异常说明
-###4.1 Ks3ServiceException
+## 4 公共异常说明
+### 4.1 Ks3ServiceException
 当抛出Ks3ServiceException时表示KS3服务端返回异常信息。Ks3ServiceException继承自RuntimeException
 
 | 异常      |    说明 |
@@ -117,39 +117,39 @@ com.ksyun.ks3.utils:工具包
 |NotFoundApiException|不存在这个API，正常使用SDK时不应该抛出|
 |URLExpiredException|这个URL已经过期|
 |InternalErrorException|服务器内部错误，稍后再试或联系我们|
-###4.2 Ks3ClientException
+### 4.2 Ks3ClientException
 当抛出Ks3ClientException时表示客户端发送了异常。
 
 | 异常      |    说明 |
 | :-------- | :--------|
 |ClientIllegalArgumentException|客户端参数校验失败,这个异常会代替许多继承自Ks3ServiceException且抛出原因是服务端参数校验失败的异常抛出|
-##5 使用示例
-###5.1 Service接口
-####5.1.1 GET Service(List Buckets)
-#####5.1.1.1 使用示例
+## 5 使用示例
+### 5.1 Service接口
+#### 5.1.1 GET Service(List Buckets)
+##### 5.1.1.1 使用示例
 列出当前用户的所有bucket,可以查看每个bucket的名称、创建时间以及所有者
 
 	public List<Bucket> listBuckets(){
 		List<Bucket> buckets = client.listBuckets();
 		return buckets;
 	}
-#####5.1.1.2 特殊异常
+##### 5.1.1.2 特殊异常
 该方法不会抛出特殊异常
-###5.2 Bucket接口
-####5.2.1 DELETE Bucket
-#####5.2.1.1 使用示例
+### 5.2 Bucket接口
+#### 5.2.1 DELETE Bucket
+##### 5.2.1.1 使用示例
 删除一个Bucket
 
 	public void deleteBucket(){
 		client.deleteBucket("<您的bucket名称>");
 	}
-#####5.2.1.2 特殊异常
+##### 5.2.1.2 特殊异常
 
 | 异常      |    说明 |
 | :-------- | :--------|
 |BucketNotEmptyException|这个bucket不为空，无法删除，需要用户先调用client.clearBucket(bucket)方法清空bucket|
-####5.2.2 GET Bucket(List Objects)
-#####5.2.2.1 使用示例
+#### 5.2.2 GET Bucket(List Objects)
+##### 5.2.2.1 使用示例
 
 	/**
 	 * 列出一个bucket下的object，返回的最大数为1000条
@@ -196,11 +196,11 @@ com.ksyun.ks3.utils:工具包
 		}while(list.isTruncated());
 	}
 
-#####5.2.2.2 特殊异常
+##### 5.2.2.2 特殊异常
 该方法不会抛出特殊异常
 
-####5.2.3 GET Bucket acl
-#####5.2.3.1 使用示例
+#### 5.2.3 GET Bucket acl
+##### 5.2.3.1 使用示例
 
 	public AccessControlPolicy getBucketAcl(){
 		AccessControlPolicy acl = null;
@@ -208,10 +208,10 @@ com.ksyun.ks3.utils:工具包
 		acl = client.getBucketACL("<您的bucket名称>");
 		return acl;
 	}
-#####5.2.3.2 特殊异常
+##### 5.2.3.2 特殊异常
 该方法不会抛出特殊异常
-####5.2.4 GET Bucket location
-#####5.2.4.1 使用示例
+#### 5.2.4 GET Bucket location
+##### 5.2.4.1 使用示例
 获取bucket的存储地点
 
 	public REGION getBucketLocation(){
@@ -219,10 +219,10 @@ com.ksyun.ks3.utils:工具包
 		REGION region = client.getBucketLoaction("<您的bucket名称>");
 		return region;
 	}
-#####5.2.4.2 特殊异常
+##### 5.2.4.2 特殊异常
 该方法不会抛出特殊异常
-####5.2.5 GET Bucket logging
-#####5.2.5.1 使用示例
+#### 5.2.5 GET Bucket logging
+##### 5.2.5.1 使用示例
 获取bucket的日志配置
 
 	public BucketLoggingStatus getBucketLogging(){
@@ -230,10 +230,10 @@ com.ksyun.ks3.utils:工具包
 		BucketLoggingStatus logging = client.getBucketLogging("<您的bucket名称>");
 		return logging;
 	}
-#####5.2.5.2 特殊异常
+##### 5.2.5.2 特殊异常
 该方法不会返回特殊异常
-####5.2.6 HEAD Bucket
-#####5.2.6.1 使用示例
+#### 5.2.6 HEAD Bucket
+##### 5.2.6.1 使用示例
 HEAD Bucket可以用来判断一个bucket是否存在
 
 	/**
@@ -253,11 +253,11 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		return client.bucketExists("<您的bucket名称>");
 	}
 
-#####5.2.6.2 特殊异常
+##### 5.2.6.2 特殊异常
 该方法不会抛出特殊异常
 
-####5.2.7 List Multipart Uploads
-#####5.2.7.1 使用示例
+#### 5.2.7 List Multipart Uploads
+##### 5.2.7.1 使用示例
 列出当前正在执行的分块上传
 
 	public ListMultipartUploadsResult listMultipartUploads() {
@@ -315,10 +315,10 @@ HEAD Bucket可以用来判断一个bucket是否存在
 				.listMultipartUploads(request);
 		return result;
 	}
-#####5.2.7.2 特殊异常
+##### 5.2.7.2 特殊异常
 该方法不会抛出特殊异常
-####5.2.8 PUT Bucket
-#####5.2.8.1 使用示例
+#### 5.2.8 PUT Bucket
+##### 5.2.8.1 使用示例
 
 	/**
 	 * <p>使用最简单的方式创建一个bucket</p>
@@ -340,15 +340,15 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		//执行操作
 		client.createBucket(request);
 	}
-#####5.2.8.2 特殊异常
+##### 5.2.8.2 特殊异常
 |异常|说明|
-|:---|:---|
+| :-------- | :--------|
 |InvalidBucketNameException|bucket名称不符合KS3 Bucket命名规范|
 |InvalidLocationConstraintException|bucket存储地点不支持。正常使用SDK时不应该抛出|
 |BucketAlreadyExistsException|该bucket名称已经存在。bucket名称是全局唯一的|
 
-####5.2.9 PUT Bucket acl
-#####5.2.9.1 使用示例
+#### 5.2.9 PUT Bucket acl
+##### 5.2.9.1 使用示例
 设置bucket的访问权限
 
 	public void putBucketAclWithCannedAcl(){
@@ -385,13 +385,13 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		
 		client.putBucketACL(request);
 	}
-#####5.2.9.2 特殊异常
+##### 5.2.9.2 特殊异常
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |InvalidArgumentException|用户没有设置CannedAccessControlList和AccessControlList|
 
-####5.2.10 PUT Bucket logging
-#####5.2.10.1 使用示例
+#### 5.2.10 PUT Bucket logging
+##### 5.2.10.1 使用示例
 设置bucket的日志配置
 
 	/**
@@ -407,16 +407,16 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		client.putBucketLogging(request);
 	}
 
-#####5.2.10.2 特殊异常
+##### 5.2.10.2 特殊异常
 
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |InvalidTargetBucketForLoggingException|用户不能把日志存储在指定的bucket中，可能是bucket不存在、或者没有权限存储日志|
 |CrossLocationLoggingProhibitedException|配置日志的bucket和存储日志的bucket不在一个地方。即bucket location不同|
 
-###5.3 Object接口
-####5.3.1 DELETE Object
-#####5.3.1.1 使用示例
+### 5.3 Object接口
+#### 5.3.1 DELETE Object
+##### 5.3.1.1 使用示例
 删除一个object
 
 	/**
@@ -426,26 +426,26 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		client.deleteObject("<bucket名称>","<object key>");
 	}
 
-#####5.3.1.2 特殊异常
+##### 5.3.1.2 特殊异常
 该方法不会返回特殊异常
-####5.3.2 DELETE Multiple Objects
-#####5.3.2.1使用示例
+#### 5.3.2 DELETE Multiple Objects
+##### 5.3.2.1使用示例
 批量删除object。返回结果将显示各个object的删除情况（是否成功，失败原因）
 
 	public DeleteMultipleObjectsResult deleteObjects(){
 		DeleteMultipleObjectsResult result = client.deleteObjects(new String[]{"objectKey1","objectKey2","objectKey2"},"<bucket名称>");
 		return result;
 	}
-#####5.3.2.2特殊异常
+##### 5.3.2.2特殊异常
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |MissingContentMD5Exception|没有提供requestbody的MD5值，正常使用SDK时不应该抛出|
 |MissingContentLengthException|没有提供Content-Length,正常使用SDK时不应该抛出|
 |MissingRequestBodyErrorException|没有提供request body,正常使用SDK时不应该抛出|
 
 注:request body中为一段xml，注明要删除哪些object
-####5.3.3 GET Object
-#####5.3.3.1 使用示例
+#### 5.3.3 GET Object
+##### 5.3.3.1 使用示例
 GET Object为用户提供了object的下载，用户可以通过控制Range实现分块多线程下载，可以调节ResponseHeaderOverrides控制返回的header
 
 	public GetObjectResult getObject(){
@@ -471,13 +471,13 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		
 		return result;
 	}
-#####5.3.3.2 特殊异常
+##### 5.3.3.2 特殊异常
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |InvalidRangeException|Range设置格式错误，Range正确格式：bytes=x-y,x、y为long型，且y>=x|
 
-####5.3.4 GET Object acl
-#####5.3.4.1 使用示例
+#### 5.3.4 GET Object acl
+##### 5.3.4.1 使用示例
 
 	public AccessControlPolicy getObjectAcl(){
 		/**
@@ -487,10 +487,10 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		return policy;
 	}
 
-#####5.3.4.2 特殊异常
+##### 5.3.4.2 特殊异常
 这个方法不会抛出特殊异常
-####5.3.5 HEAD Object
-#####5.3.5.1 使用示例
+#### 5.3.5 HEAD Object
+##### 5.3.5.1 使用示例
 	public HeadObjectResult headObject() {
 		HeadObjectRequest request = new HeadObjectRequest("<bucket名称>",
 				"<object名称>");
@@ -521,12 +521,12 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		}
 	}
 
-#####5.3.5.2 特殊异常
+##### 5.3.5.2 特殊异常
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |NotFoudException|请求的资源不存在，由于Head请求不能返回body，所以客户端不知道具体的错误信息|
-####5.3.6 PUT Object
-#####5.3.6.1 使用示例
+#### 5.3.6 PUT Object
+##### 5.3.6.1 使用示例
 	/**
 	 * 将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
 	 */
@@ -588,9 +588,9 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 
 		client.putObject(request);
 	}
-#####5.3.6.2 特殊异常
+##### 5.3.6.2 特殊异常
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |MissingContentLengthException|用户没有提供Content-Length，正常使用SDK时不应该抛出|
 |InvalidKeyException|Object Key命名不符合KS3 object key命名规范|
 |EntityTooLargeException|当次上传的大小超过了最大限制,正常使用SDK时不应该抛出|
@@ -598,8 +598,8 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 |InvalidDigestException|服务端MD5校验失败，文件上传失败|
 |ClientInvalidDigestException|客户端MD5校验失败，文件虽然上传成功但是可能有缺失或损坏,建议重新上传|
 
-####5.3.7 PUT Object acl
-#####5.3.7.1 使用示例
+#### 5.3.7 PUT Object acl
+##### 5.3.7.1 使用示例
 修改object的权限控制
 
 	public void putBucketAclWithCannedAcl(){
@@ -636,11 +636,11 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		
 		client.putBucketACL(request);
 	}
-#####5.3.7.2 特殊异常
+##### 5.3.7.2 特殊异常
 这个方法不会抛出特殊异常
 
-####5.3.8 PUT Object - Copy
-#####5.3.8.1 使用示例
+#### 5.3.8 PUT Object - Copy
+##### 5.3.8.1 使用示例
 
 	public void copyObject(){
 		/**将sourceBucket这个存储空间下的sourceKey这个object复制到destinationBucket这个存储空间下，并命名为destinationObject
@@ -658,16 +658,16 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		client.copyObject(request);
 	}
 
-#####5.3.8.2 特殊错误
+##### 5.3.8.2 特殊错误
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |MissingContentLengthException|用户没有提供Content-Length，正常使用SDK时不应该抛出|
 |InvalidKeyException|Object Key命名不符合KS3 object key命名规范|
 |InvalidArgumentException|没有提供sourceBucket或sourceKey,正常使用SDK时不应该抛出|
 |InvalidKeyException|目标object已经存在，无法copy|
 
-####5.3.9 Multipart Upload
-#####5.3.9.1 使用示例
+#### 5.3.9 Multipart Upload
+##### 5.3.9.1 使用示例
 注：中途想停止分块上传的话请调用client.abortMultipartUpload(bucketname, objectkey, uploadId);
 
 
@@ -795,17 +795,17 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 				tags);
 		client.completeMultipartUpload(request);
 	}
-#####5.3.9.2 特殊异常
+##### 5.3.9.2 特殊异常
 Init Multipart Upload
 
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |InvalidKeyException|Object Key命名不符合KS3 object key命名规范|
 
 Upload Part
 
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |MissingContentLengthException|用户没有提供Content-Length,正常使用SDK不应该抛出|
 |NoSuchUploadException|用户提供的UploadId不存在|
 |EntityTooLargeException|单块上传内容过大，正常使用SDK不应该抛出该异常|
@@ -816,19 +816,19 @@ Upload Part
 List Parts
 
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |NoSuchUploadException|用户提供的UploadId不存在|
 
 Abort Multipart Upload
 
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |NoSuchUploadException|用户提供的UploadId不存在|
 
 Complete Multipart Upload
 
 |异常|说明|
-|:-|:-|
+| :-------- | :--------|
 |InvalidPartOrderException|partnumber需要是升序且连续的|
 |NoSuchUploadException|用户提供的UploadId不存在|
 |InvalidPartException|用户提供的某个块不存在或是ETag不匹配|
