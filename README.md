@@ -1,9 +1,10 @@
 <div class="BlogAnchor"><p><b id="AnchorContentToggle" title="收起" style="cursor:pointer;">目录[-]</b></p><div class="AnchorContent" id="AnchorContent"> </div> </div>
-<javascript>
+<script>
 $(".post-content").find("h2,h3,h4,h5,h6").each(function(i,item){     var tag = $(item).get(0).localName;     $(item).attr("id","wow"+i);     $("#AnchorContent").append('<li><a class="anchor-link" href="#wow'+i+'">'+$(this).text()+'</a></li>');     $(".newh2").css("margin-left",0);     $(".newh3").css("margin-left",20);     $(".newh4").css("margin-left",40);     $(".newh5").css("margin-left",60);     $(".newh6").css("margin-left",80); }); 
-</javascript>
-<css>
-</css>
+</script>
+<style>
+.BlogAnchor {     background: #f4f7f9;     padding: 10px;     line-height: 180%; } .BlogAnchor p {     font-size: 18px;     color: #15a230;     margin-bottom: 0.3em; } .BlogAnchor .AnchorContent {     padding: 5px 0px; } .BlogAnchor li{     text-indent: 20px;     font-size: 14px; } #AnchorContentToggle {     font-size: 13px;     font-weight: normal;     color: #FFF;     display: inline-block;     line-height: 20px;     background: #5cc26f;     font-style: normal;     padding: 1px 8px;     margin-right: 10px; } .BlogAnchor a:hover {     color: #5cc26f; } .BlogAnchor a {     text-decoration: none; } 
+</style>
 # KS3 SDK For Java使用指南
 版权所有 （C）金山云科技有限公司  
 Copyright (C) Kingsoft Cloud All rights reserved.
