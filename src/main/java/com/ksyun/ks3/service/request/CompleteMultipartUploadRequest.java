@@ -4,20 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-
-
-
-
-
-
-
 import java.util.List;
-
-
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.Part;
 import com.ksyun.ks3.dto.PartETag;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.StringUtils;
@@ -108,13 +100,13 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("bucket name can not be null");
+			throw notNull("bucketname");
 		if(StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("object key can not be null");
+			throw notNull("objectKey");
 		if(StringUtils.isBlank(this.uploadId))
-			throw new IllegalArgumentException("uploadId can not be null");
+			throw notNull("uploadId");
 		if(this.partETags == null)
-			throw new IllegalArgumentException("partETags can not be null");
+			throw notNull("partETags");
 	}
 	/**
 	 * 通过Init Multipart Upload 初始化得到的uploadId

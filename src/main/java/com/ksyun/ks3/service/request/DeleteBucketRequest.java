@@ -1,6 +1,7 @@
 package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.http.HttpMethod;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -23,6 +24,6 @@ public class DeleteBucketRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("bucket name is not correct");
+			throw notNull("bucketname");
 	}
 }

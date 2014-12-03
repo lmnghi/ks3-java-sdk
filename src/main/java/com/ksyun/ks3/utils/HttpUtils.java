@@ -23,6 +23,7 @@ import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.AccessControlPolicy;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Permission;
+import com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator;
 import com.ksyun.ks3.http.HttpHeaders;
 
 /**
@@ -69,7 +70,7 @@ public class HttpUtils {
 		{
 			String id = grant.getGrantee().getIdentifier();
 			if(StringUtils.isBlank(id)){
-				throw new IllegalArgumentException("Grantee Identifier can not be null or blank");
+				throw ClientIllegalArgumentExceptionGenerator.notNull("Grantee Identifier");
 			}
 			if(grant.getPermission().equals(Permission.FullControl))
 			{

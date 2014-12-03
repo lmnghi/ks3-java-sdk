@@ -1,6 +1,8 @@
 package com.ksyun.ks3.service.request;
 
 import java.io.ByteArrayInputStream;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +57,9 @@ public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implement
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(super.getBucketname()))
-			throw new IllegalArgumentException("bucket name can not be null");
-		if(this.keys == null)
-			throw new IllegalArgumentException("the keys to delete can not be null");
+			throw notNull("bucketname");
+		if(this.keys == null||this.keys.length==0)
+			throw notNull("keys");
 	}
 	public String[] getKeys() {
 		return keys;

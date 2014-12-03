@@ -32,7 +32,7 @@ public class XmlReader {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			document = db.parse(is);
 		} catch (Exception e) {
-			throw new Ks3ClientException("failed to prase xml document(" + e
+			throw new Ks3ClientException("解析xml文档出错(" + e
 					+ ")", e);
 		}
 	}

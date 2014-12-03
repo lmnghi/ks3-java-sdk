@@ -2,6 +2,7 @@ package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.StringUtils;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -24,9 +25,9 @@ public class DeleteObjectRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("bucket name can not be null");
+			throw notNull("bucketname");
 		if(StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("object key can not be null");
+			throw notNull("objectkey");
 	}
 
 }

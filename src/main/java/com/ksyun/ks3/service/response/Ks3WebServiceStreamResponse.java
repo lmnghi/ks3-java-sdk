@@ -51,7 +51,7 @@ public abstract class Ks3WebServiceStreamResponse<T> implements Ks3WebServiceRes
 			return response.getEntity().getContent();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Ks3ClientException("faild to get the response content("+e+")",e);
+			throw new Ks3ClientException("无法读取http response的body("+e+")",e);
 		}
 	}
 	public String getRequestId()

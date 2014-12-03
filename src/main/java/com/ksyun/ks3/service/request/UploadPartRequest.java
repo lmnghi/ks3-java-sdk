@@ -1,6 +1,12 @@
 package com.ksyun.ks3.service.request;
 
 import java.io.File;
+
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNullInCondition;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +20,7 @@ import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.client.ClientFileNotFoundException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.service.request.support.MD5CalculateAble;
@@ -134,8 +141,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 						this.file), this.fileoffset, partSize, true);
 
 			} catch (FileNotFoundException e) {
-				throw new Ks3ClientException("read file " + file.getName()
-						+ " error", e);
+				throw new ClientFileNotFoundException(e);
 			}
 		} else {
 			this.content = new RepeatableInputStream(content,
@@ -150,33 +156,27 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if (StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("bucket name can not be null");
+			throw notNull("bucketname");
 		if (StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("object key can not be null");
+			throw notNull("objectkey");
 		if (StringUtils.isBlank(this.uploadId))
-			throw new IllegalArgumentException("uploadId can not be null");
-		if (this.partSize <= 0)
-			throw new IllegalArgumentException(
-					"part size can not should bigger than 0");
+			throw notNull("uploadId");
 		if (partNumber < Constants.minPartNumber
 				|| partNumber > Constants.maxPartNumber)
-			throw new IllegalArgumentException("partNumber shoud between "
-					+ Constants.minPartNumber + " and "
-					+ Constants.maxPartNumber);
+			throw between("partNumber",String.valueOf(this.partNumber),String.valueOf(Constants.minPartNumber),String.valueOf(Constants.maxPartNumber));
 		if (file == null && content == null) {
-			throw new IllegalArgumentException(
-					"file and content can not both be null");
+			throw notNull(
+					"file(要上传的文件)","content(要上传的流)");
 		} else {
 			if (file != null) {
-				if (this.fileoffset < 0)
-					throw new IllegalArgumentException("fileoffset("
-							+ this.fileoffset + ") should >= 0");
+				if (this.fileoffset < 0||this.fileoffset>file.length())
+					throw between("fileoffset",String.valueOf(this.fileoffset),"0",
+							String.valueOf(file.length()));
 			}
 		}
 		if (this.partSize > Constants.maxPartSize) {
-			throw new IllegalArgumentException("partsize(" + this.partSize
-					+ ") should be small than"
-					+ Constants.maxPartSize);
+			throw between("partsize",String.valueOf(this.partSize),"0",
+					String.valueOf(Constants.maxPartSize));
 		}
 	}
 

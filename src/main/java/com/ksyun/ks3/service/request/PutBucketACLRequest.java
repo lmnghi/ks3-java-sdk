@@ -1,6 +1,7 @@
 package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.dto.*;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.HttpUtils;
@@ -55,10 +56,10 @@ public class PutBucketACLRequest extends Ks3WebServiceRequest{
     @Override
     protected void validateParams() throws IllegalArgumentException {
     	if(StringUtils.isBlank(this.getBucketname())){
-    		throw new IllegalArgumentException("bucketname can not be null");
+    		throw notNull("bucketname");
     	}
     	if(this.accessControlList==null&&this.cannedAcl==null)
-    		throw new IllegalArgumentException("acl and cannedAcl can not both null");
+    		throw notNull("accessControlList","cannedAcl");
     }
     public PutBucketACLRequest(String bucketName)
     {

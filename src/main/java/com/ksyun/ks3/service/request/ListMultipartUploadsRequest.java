@@ -1,6 +1,9 @@
 package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.http.HttpMethod;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
+
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -124,12 +127,11 @@ public class ListMultipartUploadsRequest extends Ks3WebServiceRequest {
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if (StringUtils.isBlank(super.getBucketname()))
-			throw new IllegalArgumentException(
-					"param bucketName can not be blank");
+			throw notNull("bucketName");
 		if (this.maxUploads != null
 				&& (this.maxUploads > 1000 || this.maxUploads < 1))
-			throw new IllegalArgumentException(
-					"maxUploads should between 1 and 1000");
+			throw between(
+					"maxUploads",String.valueOf(this.maxUploads),"1","1000");
 	}
 
 	public String getDelimiter() {

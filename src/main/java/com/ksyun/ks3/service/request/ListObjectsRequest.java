@@ -1,6 +1,9 @@
 package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.http.HttpHeaders;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
+
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -244,11 +247,11 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if (StringUtils.isBlank(super.getBucketname()))
-			throw new IllegalArgumentException(
-					"param bucketName can not be blank");
+			throw notNull(
+					"bucketName");
 		if (this.maxKeys != null && (this.maxKeys > 1000 || this.maxKeys < 1))
-			throw new IllegalArgumentException(
-					"maxKeys should between 1 and 1000");
+			throw between(
+					"maxKeys",String.valueOf(maxKeys),"1","1000");
 	}
 
 	public String getEncodingType() {

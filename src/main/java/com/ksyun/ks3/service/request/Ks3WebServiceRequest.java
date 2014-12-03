@@ -144,7 +144,7 @@ public abstract class Ks3WebServiceRequest {
 					postMethod.setEntity(new StringEntity(encodedParams));
 				} catch (UnsupportedEncodingException e) {
 					throw new Ks3ClientException(
-							"Unable to create HTTP entity:" + e, e);
+							"无法创建 HTTP entity:" + e, e);
 				}
 			} else {
 				String length = this.getHeader().get(
@@ -165,7 +165,7 @@ public abstract class Ks3WebServiceRequest {
 												.getMd5Digest()));
 				} catch (IOException e) {
 					e.printStackTrace();
-					throw new Ks3ClientException("init http request error(" + e
+					throw new Ks3ClientException("初始化Http Request出错(" + e
 							+ ")", e);
 				}
 				postMethod.setEntity(entity);
@@ -199,7 +199,7 @@ public abstract class Ks3WebServiceRequest {
 													.getMd5Digest()));
 					} catch (IOException e) {
 						e.printStackTrace();
-						throw new Ks3ClientException("init http request error("
+						throw new Ks3ClientException("初始化Http Request出错("
 								+ e + ")", e);
 					}
 				} else {
@@ -215,6 +215,7 @@ public abstract class Ks3WebServiceRequest {
 			HttpHead headMethod = new HttpHead(url);
 			httpRequest = headMethod;
 		} else {
+			//永远不会到这儿
 			throw new Ks3ClientException("Unknow http method : "
 					+ this.getHttpMethod());
 		}

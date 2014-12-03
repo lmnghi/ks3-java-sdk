@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -215,7 +216,7 @@ public class ClientConfig {
 
 	public void set(String key, String value) {
 		if (StringUtils.isBlank(key))
-			throw new Ks3ClientException("config key cann't be null");
+			throw ClientIllegalArgumentExceptionGenerator.notNull("key");
 		if ("null".equals(value))
 			value = null;
 		config.put(key.toLowerCase(), value);

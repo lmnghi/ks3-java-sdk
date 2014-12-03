@@ -88,7 +88,7 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 			parser.parse(in, this);
 			return result;
 		} catch (Exception e) {
-			throw new Ks3ClientException("failed to handle the response", e);
+			throw new Ks3ClientException("处理http response时出错", e);
 		} finally{
 			try {
 				if(in!=null)

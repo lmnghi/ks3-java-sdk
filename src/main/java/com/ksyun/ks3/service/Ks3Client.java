@@ -327,7 +327,7 @@ public class Ks3Client implements Ks3 {
 						"/" + bucket + "/" + key, "GET");
 			} catch (SignatureException e) {
 				e.printStackTrace();
-				throw new Ks3ClientException("calc signature error", e);
+				throw new Ks3ClientException("计算用户签名时出错", e);
 			}
 			int expires = (int) ((System.currentTimeMillis() / 1000) + expiration);
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"

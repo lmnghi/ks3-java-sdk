@@ -1,6 +1,7 @@
 package com.ksyun.ks3.dto;
 
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -41,6 +42,6 @@ public enum Permission {
         {
             return Permission.Write;
         }
-        throw new Ks3ClientException("unknow permission:"+value);
+        throw ClientIllegalArgumentExceptionGenerator.notCorrect("permission",value,"FULL_CONTROL,READ,WRITE");
     }
 }

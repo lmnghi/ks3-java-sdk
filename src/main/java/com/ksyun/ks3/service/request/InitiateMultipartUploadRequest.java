@@ -1,6 +1,8 @@
 package com.ksyun.ks3.service.request;
 
 import java.util.ArrayList;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -86,12 +88,12 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.validateBucketName(this.getBucketname())==null)
-			throw new IllegalArgumentException("bucket name is not correct");
+			throw notCorrect("bucketname",this.getBucketname(),"详见API文档");
 		if(StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("object key can not be null");
+			throw notNull("objectkey");
 		if(this.redirectLocation!=null){
 			if(!this.redirectLocation.startsWith("/")&&!this.redirectLocation.startsWith("http://")&&!this.redirectLocation.startsWith("https://"))
-				throw new IllegalArgumentException("redirectLocation should start with / http:// or https://");
+				throw notCorrect("redirectLocation",this.redirectLocation,"以 / http:// 或 https://开头");
 		}
 	}
 	

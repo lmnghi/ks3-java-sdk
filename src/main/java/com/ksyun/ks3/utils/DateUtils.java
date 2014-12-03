@@ -50,7 +50,7 @@ public class DateUtils {
 			return sdf.parse(datetimeText);
 		} catch (ParseException e) {
 			throw new Ks3ClientException(
-					"The server did not return the expected value,it is "
+					"无法转化该时间： "
 							+ datetimeText, e);
 		}
 	}
@@ -72,7 +72,7 @@ public class DateUtils {
 			return sdf.parse(datetimeText);
 		} catch (ParseException e) {
 			throw new Ks3ClientException(
-						"The server did not return the expected value,it is "
+						"无法转化该时间： "
 								+ datetimeText, e);
 		}
 

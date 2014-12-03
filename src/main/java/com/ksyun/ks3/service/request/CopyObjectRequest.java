@@ -6,6 +6,8 @@ import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -89,13 +91,13 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(sourceBucket))
-			throw new IllegalArgumentException("sourceBucket can not be null");
+			throw notNull("sourceBucket");
 		if(StringUtils.isBlank(sourceKey))
-			throw new IllegalArgumentException("sourceKey can not be null");
+			throw notNull("sourceKey");
 		if(StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("destinationBucket can not be null");
+			throw notNull("destinationBucket");
 		if(StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("destinationObject can not be null");
+			throw notNull("destinationObject");
 	}
 
 	public String getSourceBucket() {

@@ -1,6 +1,7 @@
 package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.http.HttpMethod;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -19,8 +20,8 @@ public class GetObjectACLRequest extends Ks3WebServiceRequest{
 
     @Override
     protected void validateParams() throws IllegalArgumentException {
-        if(StringUtils.validateBucketName(this.getBucketname())==null)
-            throw new IllegalArgumentException("bucket name is not correct");
+        if(StringUtils.isBlank(this.getBucketname()))
+            throw notNull("bucketname");
     }
 
     public GetObjectACLRequest(String bucketName,String objectName) {

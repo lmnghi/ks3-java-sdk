@@ -19,6 +19,7 @@ import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.exception.client.ClientHttpException;
 import com.ksyun.ks3.exception.client.ClientIllegalArgumentException;
 import com.ksyun.ks3.exception.client.ClientInvalidDigestException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
@@ -53,7 +54,7 @@ public class Ks3CoreController {
 			if (auth == null || StringUtils.isBlank(auth.getAccessKeyId())
 					|| StringUtils.isBlank(auth.getAccessKeySecret()))
 				throw new Ks3ClientException(
-						"client not login!AccessKeyId or AccessKeySecret is blank");
+						"请先设置AccessKeyId和AccessKeySecret");
 			if (request == null || clazz == null)
 				throw new IllegalArgumentException();
 			result = doExecute(auth, request, clazz);
@@ -94,7 +95,7 @@ public class Ks3CoreController {
 					signer.calculate(auth, request));
 		} catch (Exception e) {
 			throw new Ks3ClientException(
-					"calculate user authorization has occured an exception ("
+					"计算签名时发生了一个异常 ("
 							+ e + ")", e);
 		}
 		log.info("finished calculate authorization: " + Timer.end());
@@ -107,16 +108,17 @@ public class Ks3CoreController {
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
-			throw new Ks3ClientException(
-					"Request to Ks3 has occured an exception:(" + e + ")", e);
+			throw new ClientHttpException(e);
 		}
 		Ks3WebServiceResponse<Y> ksResponse = null;
 		try {
 			ksResponse = clazz.newInstance();
 		} catch (InstantiationException e) {
+			//正常情况不会抛出
 			throw new Ks3ClientException("to instantiate " + clazz
 					+ " has occured an exception:(" + e + ")", e);
 		} catch (IllegalAccessException e) {
+			//正常情况不会抛出
 			throw new Ks3ClientException("to instantiate " + clazz
 					+ " has occured an exception:(" + e + ")", e);
 		}
@@ -136,7 +138,7 @@ public class Ks3CoreController {
 			log.info("returned etag is:"+ETag);
 			if (!ETag.equals(Converter.MD52ETag(MD5))) {
 				throw new ClientInvalidDigestException(
-						"success,but the MD5 value we calculated dose not match the MD5 value Ks3 Service returned,the part of data may has been lost");
+						"客户端MD5校验失败，数据在传输过程可能有所丢失，建议重新上传");
 			}
 		}
 		log.info("finished handle response : " + Timer.end());

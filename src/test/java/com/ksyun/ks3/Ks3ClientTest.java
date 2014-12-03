@@ -216,7 +216,7 @@ public class Ks3ClientTest {
 
 	}
 
-	//@Test
+	@Test
 	public void putObject() {
 		if (!client.bucketExists("beijing.bucket")) {
 			CreateBucketRequest request1 = new CreateBucketRequest(
@@ -226,7 +226,7 @@ public class Ks3ClientTest {
 		}
 		try {
 			PutObjectRequest request = new PutObjectRequest("beijing.bucket",
-					"新建文件夹 (2).rar", new File("D://绯闻绯闻.txt"));
+					"新建文件夹 (2).rar", new File("D://绯闻闻.txt"));
 			client.putObject(request);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -294,7 +294,7 @@ public class Ks3ClientTest {
 		client.completeMultipartUpload(request);
 	}
 
-	//@Test
+	@Test
 	public void uploadPart_01() {
 		long part = 5 * 1024 * 1024;
 		String bucket = "ksc-scm";
@@ -310,9 +310,9 @@ public class Ks3ClientTest {
 		System.out.println(result);
 		// upload
 		File file = new File(filename);
-		long n = file.length() / part;
+		long n = file.length() / part+1000000;
 		System.out.println(n);
-		for (int i = 0; i <= n; i++) {
+		for (int i = 1000000; i <= n; i++) {
 			UploadPartRequest request = new UploadPartRequest(
 					result.getBucket(), result.getKey(), result.getUploadId(),
 					i + 1, file, part, (long) i * part);
@@ -394,9 +394,9 @@ public class Ks3ClientTest {
 		System.out.println(result);
 	}
 
-	// //@Test
+	//@Test
 	public void abortMulti() {
-		client.abortMultipartUpload("lijunwei.test", "bigFile.rar",
+		client.abortMultipartUpload("", "bigFile.rar",
 				"44157d71c6e741699c8c5fb1f4f61aff");
 	}
 

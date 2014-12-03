@@ -1,6 +1,9 @@
 package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.http.HttpMethod;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
+
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -49,13 +52,13 @@ public class ListPartsRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("bucket name can not be null");
+			throw notNull("bucketname");
 		if(StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("object key can not be null");
+			throw notNull("objectkey");
 		if(StringUtils.isBlank(this.uploadId))
-			throw new IllegalArgumentException("uploadId can not be null");
+			throw notNull("uploadId");
 		if(this.maxParts!=null&&(this.maxParts>1000||this.maxParts<1))
-			throw new IllegalArgumentException("maxParts should between 1 and 1000");
+			throw between("maxParts",String.valueOf(this.maxParts),"1","1000");
 	}
 	public String getUploadId() {
 		return uploadId;

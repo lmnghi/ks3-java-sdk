@@ -1,6 +1,8 @@
 package com.ksyun.ks3.service.request;
 
 import java.util.ArrayList;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
 import java.util.Date;
 import java.util.List;
 
@@ -63,13 +65,13 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("bucket name can not be null");
+			throw notNull("bucketname");
 		if(StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("object key can not be null");
+			throw notNull("objectkey");
 		if(!StringUtils.isBlank(range))
 		{
 			if(!range.startsWith("bytes="))
-				throw new IllegalArgumentException("Range should be start with 'bytes='");
+				throw notCorrect("Range",range," bytes=x-y,y>=x");
 		}
 	}
 	public String getRange() {

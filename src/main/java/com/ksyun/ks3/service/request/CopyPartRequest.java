@@ -1,6 +1,8 @@
 package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.config.Constants;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.StringUtils;
@@ -56,19 +58,19 @@ public class CopyPartRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if(StringUtils.isBlank(sourceBucket))
-			throw new IllegalArgumentException("sourceBucket can not be null");
+			throw notNull("sourceBucket");
 		if(StringUtils.isBlank(sourceObject))
-			throw new IllegalArgumentException("sourceObject can not be null");
+			throw notNull("sourceObject");
 		if(StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("destinationBucket can not be null");
+			throw notNull("destinationBucket");
 		if(StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("destinationObject can not be null");
+			throw notNull("destinationObject");
 		if(beginRange<0||endRange-beginRange<Constants.minPartSize||endRange-beginRange>Constants.maxPartSize)
-	    	throw new IllegalArgumentException("partsize("+(endRange-beginRange)+") should between "+Constants.minPartSize+" and "+Constants.maxPartSize);
+	    	throw between("partsize",String.valueOf(endRange-beginRange),String.valueOf(Constants.minPartSize),String.valueOf(Constants.maxPartSize));
 		if(partNumber<Constants.minPartNumber||partNumber>Constants.maxPartNumber)
-			throw new IllegalArgumentException("partNumber shoud between "+Constants.minPartNumber+" and "+Constants.maxPartNumber);
+			throw between("partNumber",String.valueOf(partNumber),String.valueOf(Constants.minPartNumber),String.valueOf(Constants.maxPartNumber));
 		if(StringUtils.isBlank(uploadId))
-			throw new IllegalArgumentException("uploadId can not be null");
+			throw notNull("uploadId");
 
 	}
 

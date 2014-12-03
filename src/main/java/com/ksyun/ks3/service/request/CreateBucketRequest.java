@@ -1,14 +1,10 @@
 package com.ksyun.ks3.service.request;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
-
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.CreateBucketConfiguration;
-import com.ksyun.ks3.dto.Grant;
-import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.HttpUtils;
@@ -117,7 +113,7 @@ public class CreateBucketRequest extends Ks3WebServiceRequest {
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if (StringUtils.validateBucketName(this.getBucketname()) == null)
-			throw new IllegalArgumentException("bucket name is not correct");
+			throw notNull("bucketname");
 	}
 
 	public CreateBucketConfiguration getConfig() {

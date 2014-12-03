@@ -1,6 +1,12 @@
 package com.ksyun.ks3.service.request;
 
 import java.io.File;
+
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNullInCondition;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,6 +27,7 @@ import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.client.ClientFileNotFoundException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.Mimetypes;
@@ -107,8 +114,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			try {
 				this.setRequestBody(new RepeatableFileInputStream(file));
 			} catch (FileNotFoundException e) {
-				throw new Ks3ClientException("file :" + file.getName()
-						+ " not found");
+				throw new ClientFileNotFoundException(e);
 			}
 			if (StringUtils.isBlank(objectMeta.getContentType()))
 				objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
@@ -120,11 +126,10 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				this.objectMeta.setContentMD5(contentMd5_b64);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				throw new Ks3ClientException("file :" + file.getName()
-						+ " not found");
+				throw new ClientFileNotFoundException(e);
 			} catch (IOException e) {
 				e.printStackTrace();
-				throw new Ks3ClientException("calculate file md5 error (" + e
+				throw new Ks3ClientException("计算文件的MD5值出错 (" + e
 						+ ")", e);
 			}
 		}
@@ -175,24 +180,30 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if (StringUtils.isBlank(this.getBucketname()))
-			throw new IllegalArgumentException("bucket name can not be null");
+			throw notNull("bucketname");
 		if (StringUtils.isBlank(this.getObjectkey()))
-			throw new IllegalArgumentException("object key can not be null");
+			throw notNull("objectkey");
 		if (file == null && this.getRequestBody() == null)
-			throw new IllegalArgumentException("upload object can not be null");
+			throw notNull("file", "inputStream");
 		if (this.redirectLocation != null) {
 			if (!this.redirectLocation.startsWith("/")
 					&& !this.redirectLocation.startsWith("http://")
 					&& !this.redirectLocation.startsWith("https://"))
-				throw new IllegalArgumentException(
-						"redirectLocation should start with / http:// or https://");
+				throw notCorrect("redirectLocation", this.redirectLocation,
+						"以/ http:// 或 https://开头");
 		}
-		if(file!=null){
-			if(file.length()>Constants.maxSingleUpload)
-				throw new IllegalArgumentException("upload file too large,max bytes:"+Constants.maxSingleUpload);
-		}else{
-			if(this.objectMeta!=null&&this.objectMeta.getContentLength()>Constants.maxSingleUpload)
-				throw new IllegalArgumentException("Content-length you provided is too large,max:"+Constants.maxSingleUpload);
+		if (file != null) {
+			if (file.length() > Constants.maxSingleUpload)
+				throw between("上传文件的大小", String.valueOf(file.length()),
+						String.valueOf(0),
+						String.valueOf(Constants.maxSingleUpload));
+		} else {
+			if (this.objectMeta != null
+					&& this.objectMeta.getContentLength() > Constants.maxSingleUpload)
+				throw between("Content-Length",
+						String.valueOf(objectMeta.getContentLength()),
+						String.valueOf(0),
+						String.valueOf(Constants.maxSingleUpload));
 		}
 	}
 

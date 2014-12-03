@@ -1,6 +1,7 @@
 package com.ksyun.ks3.dto;
 
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator;
 import com.ksyun.ks3.utils.StringUtils;
 import com.ksyun.ks3.utils.XmlWriter;
 
@@ -26,7 +27,7 @@ public class CreateBucketConfiguration {
 				if(region.toString().equals(s))
 					return region;
 			}
-			throw new Ks3ClientException("unknow region :"+s);
+			throw ClientIllegalArgumentExceptionGenerator.notCorrect("region",s,"BEIJING,HANGZHOU,JIYANG");
 		}
 	}
 	public CreateBucketConfiguration(REGION region){

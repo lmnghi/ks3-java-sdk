@@ -19,7 +19,7 @@ public class DefaultSigner implements Signer {
 			return AuthUtils.calcAuthorization(auth, request);
 		} catch (Exception e) {
 			throw new Ks3ClientException(
-					"calculate user authorization has occured an exception ("
+					"计算用户签名时出错("
 							+ e + ")", e);
 		}
 	}
