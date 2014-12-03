@@ -66,11 +66,20 @@ public class HttpUtils {
 		List<String> grants_fullcontrol= new ArrayList<String>();
 		List<String> grants_read= new ArrayList<String>();
 		List<String> grants_write= new ArrayList<String>();
+		if(acl.getGrants()==null)
+			throw ClientIllegalArgumentExceptionGenerator.notNull("AccessControlList.Grants");
 		for(Grant grant:acl.getGrants())
 		{
+			if(grant==null)
+				throw ClientIllegalArgumentExceptionGenerator.notNull("grant");
+			if(grant.getPermission()==null)
+				throw ClientIllegalArgumentExceptionGenerator.notNull("grant.permission");
+			if(grant.getGrantee()==null)
+				throw ClientIllegalArgumentExceptionGenerator.notNull("grant.grantee");
+
 			String id = grant.getGrantee().getIdentifier();
 			if(StringUtils.isBlank(id)){
-				throw ClientIllegalArgumentExceptionGenerator.notNull("Grantee Identifier");
+				throw ClientIllegalArgumentExceptionGenerator.notNull("grant.grantee.identifier");
 			}
 			if(grant.getPermission().equals(Permission.FullControl))
 			{
