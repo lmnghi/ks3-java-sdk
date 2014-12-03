@@ -123,6 +123,7 @@ com.ksyun.ks3.utils:工具包
 | 异常      |    说明 |
 | :-------- | :--------|
 |ClientIllegalArgumentException|客户端参数校验失败,这个异常会代替许多继承自Ks3ServiceException且抛出原因是服务端参数校验失败的异常抛出|
+|ClientHttpException|客户端网络连接出现异常，请检查网络连接或稍后再试|
 ## 5 使用示例
 ### 5.1 Service接口
 
@@ -597,6 +598,7 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 |InvalidKeyException|Object Key命名不符合KS3 object key命名规范|
 |EntityTooLargeException|当次上传的大小超过了最大限制,正常使用SDK时不应该抛出|
 |MetadataTooLargeException|用户元数据过大|
+|ClientFileNotFoundException|用户指定的文件不存在，读取时抛出java.lang.FileNotFoundException,被客户端处理为ClientFileNotFoundException|
 |InvalidDigestException|服务端MD5校验失败，文件上传失败|
 |ClientInvalidDigestException|客户端MD5校验失败，文件虽然上传成功但是可能有缺失或损坏,建议重新上传|
 
@@ -811,6 +813,7 @@ Upload Part
 |MissingContentLengthException|用户没有提供Content-Length,正常使用SDK不应该抛出|
 |NoSuchUploadException|用户提供的UploadId不存在|
 |EntityTooLargeException|单块上传内容过大，正常使用SDK不应该抛出该异常|
+|ClientFileNotFoundException|用户指定的文件不存在，读取时抛出java.lang.FileNotFoundException,被客户端处理为ClientFileNotFoundException|
 |InvalidPartNumException|partnumber不在正确范围内，正常使用SDK不应该抛出该异常|
 |InvalidDigestException|服务端MD5校验失败，数据上传失败|
 |ClientInvalidDigestException|客户端MD5校验失败，数据虽然上传成功但是可能有缺失或损坏|
