@@ -347,6 +347,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 |InvalidBucketNameException|bucket名称不符合KS3 Bucket命名规范|
 |InvalidLocationConstraintException|bucket存储地点不支持。正常使用SDK时不应该抛出|
 |BucketAlreadyExistsException|该bucket名称已经存在。bucket名称是全局唯一的|
+|TooManyBucketsException|用户的bucket数超过了最大限制|
 
 #### 5.2.9 PUT Bucket acl
 ##### 5.2.9.1 使用示例
