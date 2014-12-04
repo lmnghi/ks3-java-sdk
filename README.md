@@ -119,7 +119,7 @@ com.ksyun.ks3.utils:工具包
 |URLExpiredException|这个URL已经过期|
 |InternalErrorException|服务器内部错误，稍后再试或联系我们|
 ### 4.2 Ks3ClientException
-当抛出Ks3ClientException时表示客户端发送了异常。
+当抛出Ks3ClientException时表示客户端发送了异常。Ks3ClientException继承自RuntimeException
 
 | 异常      |    说明 |
 | :-------- | :--------|
