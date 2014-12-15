@@ -807,6 +807,8 @@ public class ObjectTest {
 	@Test()
 	public void putObjectACLTest6001(){
 		PutObjectACLRequest request = new PutObjectACLRequest(bucket, "putObjectTest.txt");
+		AccessControlList acl = client.getObjectACL(bucket, "putObjectTestP.txt").getAccessControlList();
+		request.setAccessControlList(acl);
 		client.putObjectACL(request);
 	}
 	
@@ -818,6 +820,8 @@ public class ObjectTest {
 	@Test(expected=NoSuchKeyException.class)
 	public void putObjectACLTest6002(){
 		PutObjectACLRequest request = new PutObjectACLRequest(bucket, "notExist");
+		AccessControlList acl = client.getObjectACL(bucket, "putObjectTestP.txt").getAccessControlList();
+		request.setAccessControlList(acl);
 		client.putObjectACL(request);
 	}
 	
@@ -830,6 +834,8 @@ public class ObjectTest {
 	public void putObjectACLTest6003(){
 		String tempBucket = "notExist";
 		PutObjectACLRequest request = new PutObjectACLRequest(tempBucket, "putObjectTest.txt");
+		AccessControlList acl = client.getObjectACL(bucket, "putObjectTestP.txt").getAccessControlList();
+		request.setAccessControlList(acl);
 		client.putObjectACL(request);
 	}
 	
