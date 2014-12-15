@@ -804,7 +804,7 @@ public class ObjectTest {
 	 * @Test 正确的bucket, 正确的objectkey
 	 * @Then 
 	 */
-	@Test(expected=InternalErrorException.class)
+	@Test()
 	public void putObjectACLTest6001(){
 		PutObjectACLRequest request = new PutObjectACLRequest(bucket, "putObjectTest.txt");
 		client.putObjectACL(request);
@@ -919,9 +919,9 @@ public class ObjectTest {
 	 * @tag 功能测试	 PUT Object COPY
 	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中
 	 * @expected 
-	 * @Then {@value 因数据假删除，所造成无法上传同文件名的文件}
+	 * @Then 
 	 */
-	@Test(expected=Ks3ServiceException.class)
+	@Test
 	public void copyObjectTest7001(){
 		String desBucket = "test2-zzy";
 		String desObject = "abc.txt";
@@ -1020,9 +1020,9 @@ public class ObjectTest {
 	 * @tag 功能测试	 PUT Object COPY
 	 * @Test 从sourceBucket 拷贝 object 到 destinationBucket中，设定Canned为公开
 	 * @expected 权限为公开
-	 * @Then {@value 因数据假删除，所造成无法上传同文件名的文件}
+	 * @Then 
 	 */
-	@Test(expected=Ks3ServiceException.class,timeout=2000)
+	@Test()
 	public void copyObjectTest7006(){
 		String desBucket = "test2-zzy";
 		String desObject = "abc12.txt";
