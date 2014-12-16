@@ -198,7 +198,6 @@ public class Ks3ClientTest {
 	public void deleteObject() {
 		client.deleteObject("ksc-scm", "vre");
 	}
-
 	// @Test
 	public void clearBucket() {
 		this.client.makeDir("ksc-scm", "cewf/fewgfew/vewrgfvw/cvew/");
@@ -466,11 +465,10 @@ public class Ks3ClientTest {
 		client.putBucketACL(request);
 	}
 
-	// @Test
+	 @Test
 	public void deleteObjects() {
 		System.out.println(client.deleteObjects(new String[] {
-				"11112018rln5.pdf", "dfdfdsf.pdf", "sssss", "square/",
-				"prop.txt" }, "ksc-scm"));
+				"cgroups.txt" }, "ksc-scm"));
 	}
 
 	static int i = 0;
