@@ -28,9 +28,9 @@ public class Constants {
 	public static final int DEFAULT_STREAM_BUFFER_SIZE = 128 * 1024;
 	public static final int minPartNumber = 1;
 	public static final int maxPartNumber = 10000;
-	public static final int minPartSize = 5*1024*1024;
-	public static final int maxPartSize = 5*1024*1024*1024;
-	public static final long maxSingleUpload = 5*1024*1024*1024;
+	public static final long minPartSize = 5L*1024*1024;
+	public static final long maxPartSize = 5L*1024*1024*1024;
+	public static final long maxSingleUpload = 5L*1024*1024*1024;
 	/**
 	 * object meta 要忽略的headers
 	 */

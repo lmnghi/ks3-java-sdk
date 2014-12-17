@@ -224,7 +224,7 @@ public class Ks3ClientTest {
 			client.createBucket(request1);
 		}
 		PutObjectRequest request = new PutObjectRequest("beijing.bucket",
-				"新建文件夹 (2).rar", new File("D://绯闻闻.txt"));
+				"新建文件夹 (2).rar", new File("D://新建文件夹.rar"));
 		client.putObject(request);
 
 	}
