@@ -215,7 +215,7 @@ public class Ks3ClientTest {
 
 	}
 
-	//@Test
+	@Test
 	public void putObject() {
 		if (!client.bucketExists("beijing.bucket")) {
 			CreateBucketRequest request1 = new CreateBucketRequest(

@@ -37,7 +37,7 @@ com.ksyun.ks3.utils:工具包
     <dependency>
         <groupId>com.ksyun.ks3</groupId>
         <artifactId>ks3-kss-java-sdk</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.1-SNAPSHOT</version>
     </dependency>
     
 ## 3 初始化
