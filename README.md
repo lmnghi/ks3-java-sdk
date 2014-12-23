@@ -1,22 +1,6 @@
-# KS3 SDK For Java使用指南
-## 1 简介
-### 1.1 金山标志存储服务
-金山标准存储服务（Kingsoft Standard Storage Service），简称KS3，是金山云为开发者提供无限制、多备份、分布式的低成本存储空间解决方案。目前提供多种语言SDK，替开发者解决存储扩容、数据可靠安全以及分布式访问等相关复杂问题，开发者可以快速的开发出涉及存储业务的程序或服务。  
-查看API文档了解更多[http://ks3.ksyun.com/doc/index.html](http://ks3.ksyun.com/doc/index.html)
-### 1.2 概念和术语
-AccessKeyID、AccessKeySecret  
-使用KS3，您需要KS3颁发给您的AccessKeyID（长度为20个字符的ASCII字符串）和AccessKeySecret（长度为40个字符的ASCII字符串）。AccessKeyID用于标识客户的身份，AccessKeySecret作为私钥形式存放于客户服务器不在网络中传递。AccessKeySecret通常用作计算请求签名的密钥，用以保证该请求是来自指定的客户。使用AccessKeyID进行身份识别，加上AccessKeySecret进行数字签名，即可完成应用接入与认证授权。  
-Object  
-在KS3中，用户操作的基本数据单元是Object。  
-Bucket  
-Bucket是存放Object的容器，所有的Object都必须存放在特定的Bucket中。  
-Service  
-KS3提供给用户的虚拟存储空间，在这个虚拟空间中，每个用户可拥有一个到多个Bucket。  
-ACL  
-对Bucket和Object相关访问的控制策略，例如允许匿名用户公开访问等。 目前ACL支持{READ, WRITE, FULLCONTROL}三种权限。 目前，对于bucket的拥有者，总是FULLCONTROL。可以设置匿名用户为READ， WRITE, 或者FULLCONTROL权限。 对于BUCKET来说，READ是指罗列bucket中文件的功能。WRITE是指可以上传，删除BUCKET中文件的功能。FULLCONTROL则包含所有操作。 对于OBJECT来说，READ是指查看或者下载文件的功能。WRITE无意义。FULLCONTROL则包含所有操作。  
-Logging  
-对Bucket和Object的日志配置。  
-### 1.3 KS3 SDK For Java
+# KS3 SDK For Java使用指南 
+---
+## 1 概述
 此SDK适用于Java 5及以上版本。基于KS3 API 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到金山云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过KS3存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。  
 com.ksyun.ks3:几个在上传时用到的特殊的流  
 com.ksyun.ks3.config:sdk客户端配置  
@@ -839,7 +823,3 @@ Complete Multipart Upload
 |NoSuchUploadException|用户提供的UploadId不存在|
 |InvalidPartException|用户提供的某个块不存在或是ETag不匹配|
 |EntityTooSmallException|除最后一块外的块大小 小于KS3要求的最小值|
-
-####  版权所有 （C）金山云科技有限公司  
-####  Copyright (C) Kingsoft Cloud All rights reserved.
-####  如果您有任何疑问,请联系lijunwei@kingsoft.com
