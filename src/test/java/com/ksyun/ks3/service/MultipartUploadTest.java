@@ -6,7 +6,6 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import com.ksyun.ks3.UploadPartTime;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.ListPartsResult;
@@ -188,12 +187,6 @@ public class MultipartUploadTest extends Ks3ClientTest {
 								* part);
 				PartETag tag = client1.uploadPart(request);
 				System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
-				try {
-					UploadPartTime.print(i + 1, Timer.end());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 			// list parts
 			ListPartsRequest requestList = new ListPartsRequest(

@@ -70,10 +70,10 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
-	private Ks3Client client1 = new Ks3Client("GENJ6O5PQFVE37MEEMZA",
-			"9Z6VbeYUJ0BiKcuwYe5x/j76TZvYe9VRh2OdH15m");
-	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ",
-			"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
+	private Ks3Client client1 = new Ks3Client("IYh4GQWndtkDiGfqhjfK",
+			"Ppn8FvP1lKu6jHb7u+MJ7Qe9C85svsJkK0lPkmYC");
+	private Ks3Client client = new Ks3Client("IYh4GQWndtkDiGfqhjfK",
+			"Ppn8FvP1lKu6jHb7u+MJ7Qe9C85svsJkK0lPkmYC");
 	/**
 	 * 测试环境
 	 */
@@ -271,12 +271,6 @@ public class Ks3ClientTest {
 					i + 1, file, part, (long) i * part);
 			PartETag tag = client.uploadPart(request);
 			System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
-			try {
-				UploadPartTime.print(i + 1, Timer.end());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 		// list parts
 		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
@@ -312,12 +306,6 @@ public class Ks3ClientTest {
 					i + 1, file, part, (long) i * part);
 			PartETag tag = client.uploadPart(request);
 			System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
-			try {
-				UploadPartTime.print(i + 1, Timer.end());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 		// list parts
 		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
