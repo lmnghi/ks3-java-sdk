@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,13 +34,14 @@ public class AuthUtils {
 		String value = "KSS "+auth.getAccessKeyId()+":"+signature;
 		return value;
 	}
-	public static String calcSignature(String accessKeySecret,String resource,String requestMethod) throws SignatureException
+	public static String calcSignature(String accessKeySecret,String resource,String requestMethod,long _signDate) throws SignatureException
 	{
 		 List<String> signList = new ArrayList<String>();
 	        signList.addAll(Arrays.asList(new String[] {
-	                requestMethod,resource
+	                requestMethod,"","",String.valueOf(_signDate),resource
 	        }));
 	    String signStr = StringUtils.join(signList.toArray(), "\n");
+	    log.info("StringToSign:"+signStr);
 		return calculateRFC2104HMAC(signStr, accessKeySecret);
 	}
 	public static String calcSignature (String accessKeySecret,Ks3WebServiceRequest request) throws SignatureException

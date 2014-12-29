@@ -18,6 +18,7 @@ import com.ksyun.ks3.dto.*;
 import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
@@ -323,17 +324,18 @@ public class Ks3Client implements Ks3 {
 		}
 		if (isPrivate) {
 			String signature = "";
+			long expires =  ((System.currentTimeMillis() / 1000) + expiration);
 			try {
 				signature = AuthUtils.calcSignature(auth.getAccessKeySecret(),
-						"/" + bucket + "/" + key, "GET");
+						"/" + bucket + "/" + key,HttpMethod.GET.toString(),expires);
 			} catch (SignatureException e) {
 				e.printStackTrace();
 				throw new Ks3ClientException("计算用户签名时出错", e);
 			}
-			int expires = (int) ((System.currentTimeMillis() / 1000) + expiration);
+			
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
 					+ key + "?AccessKeyId=" + URLEncoder.encode(auth.getAccessKeyId())
-					+ "&Expires=" + expires + "&Signature=" + signature;
+					+ "&Expires=" + expires + "&Signature=" + URLEncoder.encode(signature);
 		} else {
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
 					+ key;

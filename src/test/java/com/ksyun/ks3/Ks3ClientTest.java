@@ -70,8 +70,8 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
-	private Ks3Client client1 = new Ks3Client("8oN7siZgTOSylCZeBL+x",
-			"+tzvWyObN7NjmUUmSJkvOFQalMGG9ettIp/xYfZj");
+	private Ks3Client client1 = new Ks3Client("vaP5lsEBk1OK5k9b+vSv",
+			"pvrmgWMUSnWDU/uUVstxvAiL7AW3P7XC3/K0o5+s");
 	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ",
 			"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
 	/**
@@ -81,7 +81,7 @@ public class Ks3ClientTest {
 			"ZoWO9uGe4p59aHDljcWRRecoCW+noJK11Dilz2r+");
 	@Test
 	public void url(){
-		System.out.println(client1.generatePresignedUrl("ksc-scm","IMG.jpg",60));
+		System.out.println(client1.generatePresignedUrl("preload","52F26F99B71326F45B7B8331A9619A073A88E548",60));
 	}
 	
 	public static void main(String[] args) {
