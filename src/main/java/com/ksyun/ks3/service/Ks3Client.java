@@ -3,6 +3,7 @@ package com.ksyun.ks3.service;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -331,7 +332,7 @@ public class Ks3Client implements Ks3 {
 			}
 			int expires = (int) ((System.currentTimeMillis() / 1000) + expiration);
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
-					+ key + "?AccessKeyId=" + auth.getAccessKeyId()
+					+ key + "?AccessKeyId=" + URLEncoder.encode(auth.getAccessKeyId())
 					+ "&Expires=" + expires + "&Signature=" + signature;
 		} else {
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"

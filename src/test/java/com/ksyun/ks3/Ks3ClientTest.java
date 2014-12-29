@@ -70,8 +70,8 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
-	private Ks3Client client1 = new Ks3Client("IYh4GQWndtkDiGfqhjfK",
-			"Ppn8FvP1lKu6jHb7u+MJ7Qe9C85svsJkK0lPkmYC");
+	private Ks3Client client1 = new Ks3Client("8oN7siZgTOSylCZeBL+x",
+			"+tzvWyObN7NjmUUmSJkvOFQalMGG9ettIp/xYfZj");
 	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ",
 			"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
 	/**
@@ -79,7 +79,11 @@ public class Ks3ClientTest {
 	 */
 	private Ks3Client client2 = new Ks3Client("8oN7siZgTOSGuaC1i/er",
 			"ZoWO9uGe4p59aHDljcWRRecoCW+noJK11Dilz2r+");
-
+	@Test
+	public void url(){
+		System.out.println(client1.generatePresignedUrl("ksc-scm","IMG.jpg",60));
+	}
+	
 	public static void main(String[] args) {
 		String s = "<ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>aw2</Name><Prefix>../../../../../../../../../../../../../../../../etc/</Prefix><Marker></Marker><MaxKeys>30</MaxKeys><Delimiter>/</Delimiter><IsTruncated>false</IsTruncated><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd</Key><LastModified>2014-08-28T12:45:55.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php</Key><LastModified>2014-08-28T12:46:02.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>";
 
