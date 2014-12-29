@@ -443,7 +443,7 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
 		overrides.setContentType("text/html");
 		//.......
-		overrides.setContentEncoding("UTF-8");
+		overrides.setContentEncoding("gzip");
 		request.setOverrides(overrides);
 		//只接受数据的0-10字节。通过控制该项可以实现分块下载
 		request.setRange(0,10);

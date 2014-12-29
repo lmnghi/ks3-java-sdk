@@ -30,7 +30,7 @@ public class AutoAbortInputStream extends FilterInputStream{
 	}
 	@Override
 	public int read(byte b[], int off, int len) throws IOException{
-		int i = super.read();
+		int i = super.read(b,off,len);
 		if(i == -1)
 			this.abort();
 		return i;

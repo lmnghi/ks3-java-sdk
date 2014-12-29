@@ -72,8 +72,8 @@ import com.ksyun.ks3.utils.Timer;
 public class Ks3ClientTest {
 	private Ks3Client client1 = new Ks3Client("IYh4GQWndtkDiGfqhjfK",
 			"Ppn8FvP1lKu6jHb7u+MJ7Qe9C85svsJkK0lPkmYC");
-	private Ks3Client client = new Ks3Client("IYh4GQWndtkDiGfqhjfK",
-			"Ppn8FvP1lKu6jHb7u+MJ7Qe9C85svsJkK0lPkmYC");
+	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ",
+			"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
 	/**
 	 * 测试环境
 	 */
@@ -173,31 +173,32 @@ public class Ks3ClientTest {
 		client.deleteBucket("lijunwei");
 	}
 
-	// @Test
+	@Test
 	public void getObject() throws IOException {
-		GetObjectResult obj = client.getObject("ksc-scm", "123.txt");
-		System.out.println(obj);
-		try {
-			OutputStream os = new FileOutputStream(new File("D://"
-					+ obj.getObject().getKey()));
-			int bytesRead = 0;
-			byte[] buffer = new byte[1024 * 10];
-			InputStream in = obj.getObject().getObjectContent();
-			while ((bytesRead = in.read(buffer)) != -1) {
-				os.write(buffer, 0, bytesRead);
-			}
-			os.close();
-			obj.getObject().close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		GetObjectResult obj = client.getObject("ksc-scm", "IMG.jpg");
+		OutputStream os = new FileOutputStream(new File("D://"
+				+ obj.getObject().getKey()));
+		
+		int bytesRead = 0;
+		byte[] buffer = new byte[8192];
+	    try {  
+	        while((bytesRead = obj.getObject().getObjectContent()
+					.read(buffer, 0, 8192)) != -1){  
+	        	os.write(buffer, 0, bytesRead);  
+	        }  
+	    } catch (IOException e1) {  
+	        e1.printStackTrace();  
+	    } finally{  
+	    	os.close();
+			obj.getObject().close(); 
+	    }  
 	}
 
 	// @Test
 	public void deleteObject() {
 		client.deleteObject("ksc-scm", "vre");
 	}
+
 	// @Test
 	public void clearBucket() {
 		this.client.makeDir("ksc-scm", "cewf/fewgfew/vewrgfvw/cvew/");
@@ -282,7 +283,7 @@ public class Ks3ClientTest {
 		client.completeMultipartUpload(request);
 	}
 
-	//@Test
+	// @Test
 	public void uploadPart_01() {
 		long part = 5 * 1024 * 1024;
 		String bucket = "ksc-scm";
@@ -453,10 +454,10 @@ public class Ks3ClientTest {
 		client.putBucketACL(request);
 	}
 
-	 @Test
+	@Test
 	public void deleteObjects() {
-		System.out.println(client.deleteObjects(new String[] {
-				"cgroups.txt" }, "ksc-scm"));
+		System.out.println(client.deleteObjects(new String[] { "cgroups.txt" },
+				"ksc-scm"));
 	}
 
 	static int i = 0;
@@ -469,10 +470,10 @@ public class Ks3ClientTest {
 		}
 	}
 
-	// @Test
+    @Test
 	public void partDownLoad() {
-		GetObjectRequest request = new GetObjectRequest("lijunwei.test",
-				"IMG_16721。exe");
+		GetObjectRequest request = new GetObjectRequest("ksc-scm",
+				"IMG.jpg");
 		long max = 1024 * 1024;
 		long index = 0;
 		long step = 1024 * 1024 * 1024;
@@ -482,7 +483,7 @@ public class Ks3ClientTest {
 			max = result.getObject().getObjectMetadata().getInstanceLength();
 
 			try {
-				OutputStream os = new FileOutputStream(new File("D://ggg/" + i
+				OutputStream os = new FileOutputStream(new File("D://" + i
 						+ "--" + result.getObject().getKey()), true);
 
 				int bytesRead = 0;
