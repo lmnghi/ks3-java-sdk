@@ -72,13 +72,11 @@ import com.ksyun.ks3.utils.Timer;
 public class Ks3ClientTest {
 	private Ks3Client client1 = new Ks3Client("vaP5lsEBk1OK5k9b+vSv",
 			"pvrmgWMUSnWDU/uUVstxvAiL7AW3P7XC3/K0o5+s");
-	private Ks3Client client = new Ks3Client("2HITWMQXL2VBB3XMAEHQ",
-			"ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr");
+	private Ks3Client client = new Ks3Client("","");
 	/**
 	 * 测试环境
 	 */
-	private Ks3Client client2 = new Ks3Client("8oN7siZgTOSGuaC1i/er",
-			"ZoWO9uGe4p59aHDljcWRRecoCW+noJK11Dilz2r+");
+	private Ks3Client client2 = new Ks3Client("","");
 	@Test
 	public void url(){
 		System.out.println(client1.generatePresignedUrl("preload","52F26F99B71326F45B7B8331A9619A073A88E548",60));
