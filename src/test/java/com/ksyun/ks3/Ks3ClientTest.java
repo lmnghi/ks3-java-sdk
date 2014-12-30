@@ -70,8 +70,7 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest {
-	private Ks3Client client1 = new Ks3Client("vaP5lsEBk1OK5k9b+vSv",
-			"pvrmgWMUSnWDU/uUVstxvAiL7AW3P7XC3/K0o5+s");
+	private Ks3Client client1 = new Ks3Client("","");
 	private Ks3Client client = new Ks3Client("","");
 	/**
 	 * 测试环境
