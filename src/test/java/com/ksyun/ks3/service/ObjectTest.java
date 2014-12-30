@@ -82,10 +82,10 @@ public class ObjectTest {
 			
 		} catch (Exception e) {
 			logger.warn("Error massage : " + e.toString());
-			accesskeyId1 = "2HITWMQXL2VBB3XMAEHQ";
-			accesskeySecret1 = "ilZQ9p/NHAK1dOYA/dTKKeIqT/t67rO6V2PrXUNr";
-			accesskeyId2 = "GENJ6O5PQFVE37MEEMZA";
-			accesskeySecret2 = "9Z6VbeYUJ0BiKcuwYe5x/j76TZvYe9VRh2OdH15m";
+			accesskeyId1 = "";
+			accesskeySecret1 = "";
+			accesskeyId2 = "";
+			accesskeySecret2 = "";
 			
 		}
 
