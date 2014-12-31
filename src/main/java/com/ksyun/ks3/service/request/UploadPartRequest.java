@@ -73,14 +73,6 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * 文件的时候，之前已经读取的数据量
 	 */
 	private long fileoffset;
-	/**
-	 * 使用流的时候，要上传的内容
-	 */
-	private InputStream content;
-	/**
-	 * 可以指定内容的MD5值
-	 */
-	private String contentMd5;
 
 	/**
 	 * 
@@ -124,7 +116,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		this.setUploadId(uploadId);
 		this.setPartNumber(partNumber);
 		this.setPartSize(partSize);
-		this.setContent(content);
+		this.setRequestBody(content);
 	}
 
 	@Override
@@ -137,20 +129,17 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 			this.partSize = file.length() - fileoffset < partSize ? file.length()
 					- fileoffset : partSize;
 			try {
-				content = new InputSubStream(new RepeatableFileInputStream(
-						this.file), this.fileoffset, partSize, true);
+				this.setRequestBody(new InputSubStream(new RepeatableFileInputStream(
+						this.file), this.fileoffset, partSize, true));
 
 			} catch (FileNotFoundException e) {
 				throw new ClientFileNotFoundException(e);
 			}
 		} else {
-			this.content = new RepeatableInputStream(content,
-					Constants.DEFAULT_STREAM_BUFFER_SIZE);
+			this.setRequestBody(new RepeatableInputStream(this.getRequestBody(),
+					Constants.DEFAULT_STREAM_BUFFER_SIZE));
 		}
-		if (!StringUtils.isBlank(this.contentMd5))
-			this.addHeader(HttpHeaders.ContentMD5, this.contentMd5);
 		this.addHeader(HttpHeaders.ContentLength, String.valueOf(this.partSize));
-		this.setRequestBody(content);
 	}
 
 	@Override
@@ -164,7 +153,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		if (partNumber < Constants.minPartNumber
 				|| partNumber > Constants.maxPartNumber)
 			throw between("partNumber",String.valueOf(this.partNumber),String.valueOf(Constants.minPartNumber),String.valueOf(Constants.maxPartNumber));
-		if (file == null && content == null) {
+		if (file == null && this.getRequestBody() == null) {
 			throw notNull(
 					"file(要上传的文件)","content(要上传的流)");
 		} else {
@@ -229,19 +218,12 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 							.getRequestBody()).getMd5Digest());
 	}
 
-	public InputStream getContent() {
-		return content;
+
+	public String getContentMD5() {
+		return super.getContentMD5();
 	}
 
-	public void setContent(InputStream content) {
-		this.content = content;
-	}
-
-	public String getContentMd5() {
-		return contentMd5;
-	}
-
-	public void setContentMd5(String contentMd5) {
-		this.contentMd5 = contentMd5;
+	public void setContentMD5(String contentMd5) {
+		super.setContentMD5(contentMd5);
 	}
 }

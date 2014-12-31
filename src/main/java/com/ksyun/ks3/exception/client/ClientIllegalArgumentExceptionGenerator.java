@@ -22,7 +22,7 @@ public class ClientIllegalArgumentExceptionGenerator {
 		return e;
 	}
 	public static ClientIllegalArgumentException notNull(String paramName,String paramName1){
-		ClientIllegalArgumentException e = new ClientIllegalArgumentException(String.format(notBothNull, paramName));
+		ClientIllegalArgumentException e = new ClientIllegalArgumentException(String.format(notBothNull, paramName,paramName1));
 		e.setReason(Reason.notNull);
 		e.setParamName(paramName);
 		return e;

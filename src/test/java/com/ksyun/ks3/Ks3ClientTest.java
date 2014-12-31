@@ -28,6 +28,7 @@ import com.ksyun.ks3.dto.AccessControlPolicy;
 import com.ksyun.ks3.dto.Bucket;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
+import com.ksyun.ks3.dto.CorsRule.AllowedMethods;
 import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Grantee;
@@ -54,6 +55,7 @@ import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
 import com.ksyun.ks3.service.request.PutBucketACLRequest;
+import com.ksyun.ks3.service.request.PutBucketCorsRequest;
 import com.ksyun.ks3.service.request.PutBucketLoggingRequest;
 import com.ksyun.ks3.service.request.PutObjectACLRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
@@ -69,31 +71,11 @@ import com.ksyun.ks3.utils.Timer;
  * 
  * @description
  **/
-public class Ks3ClientTest {
-	private Ks3Client client1 = new Ks3Client("","");
-	private Ks3Client client = new Ks3Client("","");
-	/**
-	 * 测试环境
-	 */
-	private Ks3Client client2 = new Ks3Client("","");
+public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 	@Test
 	public void url(){
 		System.out.println(client1.generatePresignedUrl("preload","52F26F99B71326F45B7B8331A9619A073A88E548",60));
 	}
-	
-	public static void main(String[] args) {
-		String s = "<ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>aw2</Name><Prefix>../../../../../../../../../../../../../../../../etc/</Prefix><Marker></Marker><MaxKeys>30</MaxKeys><Delimiter>/</Delimiter><IsTruncated>false</IsTruncated><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd</Key><LastModified>2014-08-28T12:45:55.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>../../../../../../../../../../../../../../../../etc/passwd.phpinfo.php</Key><LastModified>2014-08-28T12:46:02.000Z</LastModified><ETag>037eef67eb8af9d2948f0e62fe78cc52</ETag><Size>17</Size><Owner><ID>46230816</ID><DisplayName>46230816</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>";
-
-		for (int i = 600; i < 700; i++) {
-			System.out.print(s.charAt(i));
-		}
-	}
-
-	@Before
-	public void init() {
-		ClientConfig config = ClientConfig.getConfig();
-	}
-
 	// @Test
 	public void ListBuckets() {
 		List<Bucket> buckets = client1.listBuckets();
@@ -540,5 +522,30 @@ public class Ks3ClientTest {
 		CompleteMultipartUploadRequest request2 = new CompleteMultipartUploadRequest(
 				tags);
 		client.completeMultipartUpload(request2);
+	}
+	@Test
+	public void putBucketCors(){
+		BucketCorsConfiguration config = new BucketCorsConfiguration();
+		CorsRule rule1 = new CorsRule();
+		List<AllowedMethods> allowedMethods = new ArrayList<AllowedMethods>();
+		allowedMethods.add(AllowedMethods.GET);
+		List<String> allowedOrigins = new ArrayList<String>();
+		allowedOrigins.add("http://example.com");
+		List<String> exposedHeaders = new ArrayList<String>();
+		exposedHeaders.add("x-kss-test1");
+		List<String> allowedHeaders = new ArrayList<String>();
+		allowedHeaders.add("x-kss-test"); 
+
+	//	rule1.setId("1234");
+		rule1.setAllowedHeaders(allowedHeaders);
+		rule1.setAllowedMethods(allowedMethods);
+		rule1.setAllowedOrigins(allowedOrigins);
+		rule1.setExposedHeaders(exposedHeaders);
+		rule1.setMaxAgeSeconds(200);
+		
+		config.addRule(rule1);
+		
+		PutBucketCorsRequest request = new PutBucketCorsRequest("ksc-scm",config);
+		client.putBucketCors(request);
 	}
 }

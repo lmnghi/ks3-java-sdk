@@ -75,10 +75,10 @@ public class ObjectTest {
 		String accesskeySecret2 = null;
 		try {
 			credential.load(ObjectTest.class.getResourceAsStream("accesskey.properties"));// resourece 路径存在问题 NullPointerException
-			accesskeyId1 = credential.getProperty(accesskeyId1);
-			accesskeySecret1 = credential.getProperty(accesskeySecret1);
-			accesskeyId2 = credential.getProperty(accesskeyId2);
-			accesskeySecret2 = credential.getProperty(accesskeySecret2);
+			accesskeyId1 = credential.getProperty("accesskeyId1");
+			accesskeySecret1 = credential.getProperty("accesskeySecret1");
+			accesskeyId2 = credential.getProperty("accesskeyId2");
+			accesskeySecret2 = credential.getProperty("accesskeySecret2");
 			
 		} catch (Exception e) {
 			logger.warn("Error massage : " + e.toString());

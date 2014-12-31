@@ -31,6 +31,8 @@ public class Constants {
 	public static final long minPartSize = 5L*1024*1024;
 	public static final long maxPartSize = 5L*1024*1024*1024;
 	public static final long maxSingleUpload = 5L*1024*1024*1024;
+	
+	public static final int corsMaxRules = 100;
 	/**
 	 * object meta 要忽略的headers
 	 */

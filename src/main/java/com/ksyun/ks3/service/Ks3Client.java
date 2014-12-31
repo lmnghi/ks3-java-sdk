@@ -39,6 +39,7 @@ import com.ksyun.ks3.service.request.ListBucketsRequest;
 import com.ksyun.ks3.service.request.ListMultipartUploadsRequest;
 import com.ksyun.ks3.service.request.ListObjectsRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
+import com.ksyun.ks3.service.request.PutBucketCorsRequest;
 import com.ksyun.ks3.service.request.PutBucketLoggingRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
@@ -581,7 +582,10 @@ public class Ks3Client implements Ks3 {
 		return client
 				.execute(auth, request, ListMultipartUploadsResponse.class);
 	}
-
+	public void putBucketCors(PutBucketCorsRequest request)
+			throws Ks3ClientException, Ks3ClientException {
+		client.execute(auth, request, PutBucketCorsResponse.class);
+	}
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Ks3WebServiceRequest request, Class<X> clazz)
 			throws Ks3ClientException, Ks3ClientException {

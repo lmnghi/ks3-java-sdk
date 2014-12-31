@@ -48,6 +48,8 @@ public class Ks3CoreController {
 
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
+		if(request==null)
+			throw new Ks3ClientException("request不能为空");
 		log.info("Ks3WebServiceRequest:"+request.getClass()+";Ks3WebServiceResponse:"+clazz);
 		Y result = null;
 		try {

@@ -25,9 +25,11 @@ public class Ks3ClientTest {
 	 * 是否接受到异常
 	 */
 	protected boolean isc = false;
+	protected Ks3 client;
 	protected Ks3 client1;
 	protected Ks3 client2;
 	protected Ks3CoreController controller;
+	protected Authorization auth;
 	protected Authorization auth1;
 	protected Authorization auth2;
 	@Before
@@ -37,6 +39,11 @@ public class Ks3ClientTest {
 		credential.load(this.getClass().getClassLoader()
 				.getResourceAsStream("accesskey.properties"));
 
+		final String accesskeyId = credential.getProperty("accesskeyid");
+		final String accesskeySecret = credential.getProperty("accesskeysecret");
+		this.client = new Ks3Client(accesskeyId,accesskeySecret);
+		this.auth = new Authorization(accesskeyId,accesskeySecret);
+		
 		final String accesskeyId1 = credential.getProperty("accesskeyid1");
 		final String accesskeySecret1 = credential.getProperty("accesskeysecret1");
 		this.client1 = new Ks3Client(accesskeyId1,accesskeySecret1);

@@ -1163,6 +1163,15 @@ public interface Ks3 {
 	public ListMultipartUploadsResult listMultipartUploads(
 			ListMultipartUploadsRequest request) throws Ks3ClientException,
 			Ks3ClientException;
+	/**
+	 * PUT Bucket cors
+	 * @param request {@link PutBucketCorsRequest}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ClientException
+	 * <p>配置bucket的跨域资源共享</p>
+	 */
+	public void putBucketCors(PutBucketCorsRequest request) throws Ks3ClientException,
+	Ks3ClientException;
 
 	/**
 	 * 

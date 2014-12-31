@@ -104,7 +104,7 @@ public class ObjectMetadata {
     }
     public void setContentMD5(String md5Base64) {
         if(md5Base64 == null){
-            metadata.remove(HttpHeaders.ContentMD5);
+            metadata.remove(HttpHeaders.ContentMD5.toString());
         }else{
             metadata.put(HttpHeaders.ContentMD5.toString(), md5Base64);
         }
