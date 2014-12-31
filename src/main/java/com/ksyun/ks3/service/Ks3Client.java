@@ -25,9 +25,11 @@ import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CopyObjectRequest;
 import com.ksyun.ks3.service.request.CopyPartRequest;
 import com.ksyun.ks3.service.request.CreateBucketRequest;
+import com.ksyun.ks3.service.request.DeleteBucketCorsRequest;
 import com.ksyun.ks3.service.request.DeleteBucketRequest;
 import com.ksyun.ks3.service.request.DeleteMultipleObjectsRequest;
 import com.ksyun.ks3.service.request.DeleteObjectRequest;
+import com.ksyun.ks3.service.request.GetBucketCorsRequest;
 import com.ksyun.ks3.service.request.GetBucketLocationRequest;
 import com.ksyun.ks3.service.request.GetBucketLoggingRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
@@ -325,18 +327,20 @@ public class Ks3Client implements Ks3 {
 		}
 		if (isPrivate) {
 			String signature = "";
-			long expires =  ((System.currentTimeMillis() / 1000) + expiration);
+			long expires = ((System.currentTimeMillis() / 1000) + expiration);
 			try {
 				signature = AuthUtils.calcSignature(auth.getAccessKeySecret(),
-						"/" + bucket + "/" + key,HttpMethod.GET.toString(),expires);
+						"/" + bucket + "/" + key, HttpMethod.GET.toString(),
+						expires);
 			} catch (SignatureException e) {
 				e.printStackTrace();
 				throw new Ks3ClientException("计算用户签名时出错", e);
 			}
-			
+
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
-					+ key + "?AccessKeyId=" + URLEncoder.encode(auth.getAccessKeyId())
-					+ "&Expires=" + expires + "&Signature=" + URLEncoder.encode(signature);
+					+ key + "?AccessKeyId="
+					+ URLEncoder.encode(auth.getAccessKeyId()) + "&Expires="
+					+ expires + "&Signature=" + URLEncoder.encode(signature);
 		} else {
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
 					+ key;
@@ -470,9 +474,10 @@ public class Ks3Client implements Ks3 {
 	public CompleteMultipartUploadResult completeMultipartUpload(
 			ListPartsResult result) throws Ks3ClientException,
 			Ks3ServiceException {
-		return completeMultipartUpload(new CompleteMultipartUploadRequest(result));
+		return completeMultipartUpload(new CompleteMultipartUploadRequest(
+				result));
 	}
-	
+
 	public CompleteMultipartUploadResult completeMultipartUpload(
 			CompleteMultipartUploadRequest request) throws Ks3ClientException,
 			Ks3ServiceException {
@@ -555,14 +560,14 @@ public class Ks3Client implements Ks3 {
 	}
 
 	public ListMultipartUploadsResult listMultipartUploads(String bucketName)
-			throws Ks3ClientException, Ks3ClientException {
+			throws Ks3ClientException, Ks3ServiceException {
 		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(
 				bucketName);
 		return this.listMultipartUploads(request);
 	}
 
 	public ListMultipartUploadsResult listMultipartUploads(String bucketName,
-			String prefix) throws Ks3ClientException, Ks3ClientException {
+			String prefix) throws Ks3ClientException, Ks3ServiceException {
 		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(
 				bucketName, prefix);
 		return this.listMultipartUploads(request);
@@ -570,7 +575,7 @@ public class Ks3Client implements Ks3 {
 
 	public ListMultipartUploadsResult listMultipartUploads(String bucketName,
 			String prefix, String keyMarker, String uploadIdMarker)
-			throws Ks3ClientException, Ks3ClientException {
+			throws Ks3ClientException, Ks3ServiceException {
 		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(
 				bucketName, prefix, keyMarker, uploadIdMarker);
 		return this.listMultipartUploads(request);
@@ -578,17 +583,39 @@ public class Ks3Client implements Ks3 {
 
 	public ListMultipartUploadsResult listMultipartUploads(
 			ListMultipartUploadsRequest request) throws Ks3ClientException,
-			Ks3ClientException {
+			Ks3ServiceException {
 		return client
 				.execute(auth, request, ListMultipartUploadsResponse.class);
 	}
+
 	public void putBucketCors(PutBucketCorsRequest request)
-			throws Ks3ClientException, Ks3ClientException {
+			throws Ks3ClientException, Ks3ServiceException {
 		client.execute(auth, request, PutBucketCorsResponse.class);
 	}
+
+	public BucketCorsConfiguration getBucketCors(String bucketname)
+			throws Ks3ClientException, Ks3ServiceException {
+		return getBucketCors(new GetBucketCorsRequest(bucketname));
+	}
+
+	public BucketCorsConfiguration getBucketCors(GetBucketCorsRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		return client.execute(auth, request, GetBucketCorsResponse.class);
+	}
+
+	public void deleteBucketCors(String bucketname) throws Ks3ClientException,
+			Ks3ServiceException {
+		deleteBucketCors(new DeleteBucketCorsRequest(bucketname));
+	}
+
+	public void deleteBucketCors(DeleteBucketCorsRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		client.execute(auth, request, DeleteBucketCorsResponse.class);
+	}
+
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Ks3WebServiceRequest request, Class<X> clazz)
-			throws Ks3ClientException, Ks3ClientException {
+			throws Ks3ClientException, Ks3ServiceException {
 		return client.execute(auth, request, clazz);
 	}
 }

@@ -1093,7 +1093,7 @@ public interface Ks3 {
 	 *             </p>
 	 */
 	public ListMultipartUploadsResult listMultipartUploads(String bucketName)
-			throws Ks3ClientException, Ks3ClientException;
+			throws Ks3ClientException, Ks3ServiceException;
 
 	/**
 	 * List Multipart Uploads
@@ -1109,7 +1109,7 @@ public interface Ks3 {
 	 *             </p>
 	 */
 	public ListMultipartUploadsResult listMultipartUploads(String bucketName,
-			String prefix) throws Ks3ClientException, Ks3ClientException;
+			String prefix) throws Ks3ClientException, Ks3ServiceException;
 
 	/**
 	 * List Multipart Uploads
@@ -1146,7 +1146,7 @@ public interface Ks3 {
 	 */
 	public ListMultipartUploadsResult listMultipartUploads(String bucketName,
 			String prefix, String keyMarker, String uploadIdMarker)
-			throws Ks3ClientException, Ks3ClientException;
+			throws Ks3ClientException, Ks3ServiceException;
 
 	/**
 	 * List Multipart Uploads
@@ -1162,7 +1162,7 @@ public interface Ks3 {
 	 */
 	public ListMultipartUploadsResult listMultipartUploads(
 			ListMultipartUploadsRequest request) throws Ks3ClientException,
-			Ks3ClientException;
+			Ks3ServiceException;
 	/**
 	 * PUT Bucket cors
 	 * @param request {@link PutBucketCorsRequest}
@@ -1171,8 +1171,41 @@ public interface Ks3 {
 	 * <p>配置bucket的跨域资源共享</p>
 	 */
 	public void putBucketCors(PutBucketCorsRequest request) throws Ks3ClientException,
-	Ks3ClientException;
-
+	Ks3ServiceException;
+	/**
+	 * GET Bucket cors
+	 * @param bucketname
+	 * @return
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>获取bucket的跨域资源共享配置</p>
+	 */
+	public BucketCorsConfiguration getBucketCors(String bucketname) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * GET Bucket cors
+	 * @param request {@link GetBucketCorsRequest}
+	 * @return
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>获取bucket的跨域资源共享配置</p>
+	 */
+	public BucketCorsConfiguration getBucketCors(GetBucketCorsRequest request) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * DELETE Bucket cors
+	 * @param bucketname
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>删除bucket的跨域资源共享配置</p>
+	 */
+	public void deleteBucketCors(String bucketname) throws Ks3ClientException,Ks3ServiceException;
+	/**
+	 * DELETE Bucket cors
+	 * @param request
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>删除bucket的跨域资源共享配置</p>
+	 */
+	public void deleteBucketCors(DeleteBucketCorsRequest request) throws Ks3ClientException,Ks3ServiceException;
 	/**
 	 * 
 	 * @param request {@code Class<? extends Ks3WebServiceRequest> }
@@ -1184,5 +1217,5 @@ public interface Ks3 {
 	 */
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Ks3WebServiceRequest request, Class<X> clazz)
-			throws Ks3ClientException, Ks3ClientException;
+			throws Ks3ClientException, Ks3ServiceException;
 }

@@ -545,7 +545,38 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		
 		config.addRule(rule1);
 		
+		CorsRule rule2 = new CorsRule();
+		List<AllowedMethods> allowedMethods2 = new ArrayList<AllowedMethods>();
+		allowedMethods2.add(AllowedMethods.GET);
+		allowedMethods2.add(AllowedMethods.POST);
+		List<String> allowedOrigins2 = new ArrayList<String>();
+		allowedOrigins2.add("http://example.com");
+		allowedOrigins2.add("http://*.example.com");
+		List<String> exposedHeaders2 = new ArrayList<String>();
+		exposedHeaders2.add("x-kss-test1");
+		exposedHeaders2.add("x-kss-test2");
+		List<String> allowedHeaders2 = new ArrayList<String>();
+		allowedHeaders2.add("x-kss-test"); 
+		allowedHeaders2.add("x-kss-test2"); 
+
+	//	rule1.setId("1234");
+		rule2.setAllowedHeaders(allowedHeaders2);
+		rule2.setAllowedMethods(allowedMethods2);
+		rule2.setAllowedOrigins(allowedOrigins2);
+		rule2.setExposedHeaders(exposedHeaders2);
+		rule2.setMaxAgeSeconds(500);
+		
+		config.addRule(rule2);
+		
 		PutBucketCorsRequest request = new PutBucketCorsRequest("ksc-scm",config);
 		client.putBucketCors(request);
+	}
+	@Test
+	public void getBucketCors(){
+		System.out.println(client.getBucketCors("ksc-scm"));
+	}
+	@Test
+	public void deleteBucketCors(){
+		client.deleteBucketCors("ksc-scm");
 	}
 }
