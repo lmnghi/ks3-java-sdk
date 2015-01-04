@@ -13,8 +13,6 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description 跨域资源共享规则
  **/
 public class CorsRule {
-	//这条规则的id,配置该id可以方便的在多条CorsRule中找到指定的Rule
-	private String id;
 	//指定允许的跨域请求方法,必须至少指定一种方法
 	private List<AllowedMethods> allowedMethods;
 	//指定允许跨域请求的来源 ，必须至少指定一个。可以使用通配符 *，但是一个值中最多能包含一个*
@@ -30,15 +28,6 @@ public class CorsRule {
 	public String toString(){
 		return StringUtils.object2string(this);
 	}
-	public String getId() {
-		return id;
-	}
-
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 
 	public List<AllowedMethods> getAllowedMethods() {
 		return allowedMethods;

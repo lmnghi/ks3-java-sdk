@@ -46,9 +46,6 @@ public class PutBucketCorsRequest extends Ks3WebServiceRequest implements MD5Cal
 		List<CorsRule> rules = bucketCorsConfiguration.getRules();
 		for(CorsRule rule : rules){
 			writer.start("CORSRule");
-			if(!StringUtils.isBlank(rule.getId())){
-				writer.start("ID").value(rule.getId()).end();
-			}
 			for(AllowedMethods method : rule.getAllowedMethods()){
 				writer.start("AllowedMethod").value(method.toString()).end();
 			}

@@ -668,7 +668,18 @@ public interface Ks3 {
 	 */
 	public String generatePresignedUrl(String bucket, String key, int expiration)
 			throws Ks3ClientException;
-
+	/**
+	 * 生成object的外链地址
+	 * 
+	 * @param bucket
+	 * @param key
+	 * @param expiration 外链地址过期时间，单位秒
+	 * @param overrides 修改返回的headers
+	 * @return
+	 * @throws Ks3ClientException
+	 */
+	public String generatePresignedUrl(String bucket, String key, int expiration,ResponseHeaderOverrides overrides)
+			throws Ks3ClientException;
 	/**
 	 * PUT OBJECT
 	 * 
@@ -685,7 +696,7 @@ public interface Ks3 {
 	 *             上传object
 	 *             </p>
 	 */
-	public PutObjectResult PutObject(String bucketname, String objectkey,
+	public PutObjectResult putObject(String bucketname, String objectkey,
 			File file) throws Ks3ClientException, Ks3ServiceException;
 
 	/**
@@ -710,7 +721,7 @@ public interface Ks3 {
 	 *             上传object
 	 *             </p>
 	 */
-	public PutObjectResult PutObject(String bucketname, String objectkey,
+	public PutObjectResult putObject(String bucketname, String objectkey,
 			InputStream inputstream, ObjectMetadata objectmeta)
 			throws Ks3ClientException, Ks3ServiceException;
 
@@ -1200,7 +1211,7 @@ public interface Ks3 {
 	public void deleteBucketCors(String bucketname) throws Ks3ClientException,Ks3ServiceException;
 	/**
 	 * DELETE Bucket cors
-	 * @param request
+	 * @param request {@link DeleteBucketCorsRequest}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 * <p>删除bucket的跨域资源共享配置</p>

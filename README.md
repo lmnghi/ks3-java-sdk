@@ -13,6 +13,7 @@ com.ksyun.ks3.service.request:对API请求时参数的封装，用户进行使�
 com.ksyun.ks3.service.response:对请求API返回的结果的解析器  
 com.ksyun.ks3.signer:签名生成器，具体使用哪个签名生成器可以在ClientConfig中配置(一般情况下请勿修改)  
 com.ksyun.ks3.utils:工具包  
+
 ## 2 环境准备
 配置Java 5 以上开发环境  
 下载KS3 SDK For Java  
@@ -21,7 +22,7 @@ com.ksyun.ks3.utils:工具包
     <dependency>
         <groupId>com.ksyun.ks3</groupId>
         <artifactId>ks3-kss-java-sdk</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
     </dependency>
     
 ## 3 初始化
@@ -135,8 +136,19 @@ com.ksyun.ks3.utils:工具包
 | 异常      |    说明 |
 | :-------- | :--------|
 |BucketNotEmptyException|这个bucket不为空，无法删除，需要用户先调用client.clearBucket(bucket)方法清空bucket|
-#### 5.2.2 GET Bucket(List Objects)
+#### 5.2.2 DELETE Bucket cors
 ##### 5.2.2.1 使用示例
+
+删除bucket的跨域资源共享规则
+
+	public void deleteBucketCors(){
+		client.deleteBucketCors("test.bucket");
+	}
+
+##### 5.2.2.2 特殊异常
+该方法不会抛出特殊异常
+#### 5.2.3 GET Bucket(List Objects)
+##### 5.2.3.1 使用示例
 
 	/**
 	 * 列出一个bucket下的object，返回的最大数为1000条
@@ -183,11 +195,11 @@ com.ksyun.ks3.utils:工具包
 		}while(list.isTruncated());
 	}
 
-##### 5.2.2.2 特殊异常
+##### 5.2.3.2 特殊异常
 该方法不会抛出特殊异常
 
-#### 5.2.3 GET Bucket acl
-##### 5.2.3.1 使用示例
+#### 5.2.4 GET Bucket acl
+##### 5.2.4.1 使用示例
 
 	public AccessControlPolicy getBucketAcl(){
 		AccessControlPolicy acl = null;
@@ -195,10 +207,34 @@ com.ksyun.ks3.utils:工具包
 		acl = client.getBucketACL("<您的bucket名称>");
 		return acl;
 	}
-##### 5.2.3.2 特殊异常
+##### 5.2.4.2 特殊异常
 该方法不会抛出特殊异常
-#### 5.2.4 GET Bucket location
-##### 5.2.4.1 使用示例
+#### 5.2.5 GET Bucket cors
+##### 5.2.5.1 使用示例
+获取bucket的跨域资源共享配置
+
+	public BucketCorsConfiguration getBucketCors(){
+		BucketCorsConfiguration config = client.getBucketCors("test.bucket");
+		List<CorsRule> rules = config.getRules();
+		for(CorsRule rule : rules){
+			//控制在 OPTIONS 预取指令中 Access-Control-Request-Headers 头中指定的 header 是否允许。
+			rule.getAllowedHeaders();
+			//允许的跨域请求方法(GET/PUT/DELETE/POST/HEAD) 
+			rule.getAllowedMethods();
+			//允许跨域请求的来源 
+			rule.getAllowedOrigins();
+			//允许用户从应用程序中访问的响应头 
+			rule.getExposedHeaders();
+			//浏览器对特定资源的预取(OPTIONS)请求返回结果的缓存时间,单位为秒。 
+			rule.getMaxAgeSeconds();
+		}
+		return config;
+	}
+
+##### 5.2.5.2 特殊异常
+该方法不会抛出特殊异常
+#### 5.2.6 GET Bucket location
+##### 5.2.6.1 使用示例
 获取bucket的存储地点
 
 	public REGION getBucketLocation(){
@@ -206,10 +242,10 @@ com.ksyun.ks3.utils:工具包
 		REGION region = client.getBucketLoaction("<您的bucket名称>");
 		return region;
 	}
-##### 5.2.4.2 特殊异常
+##### 5.2.6.2 特殊异常
 该方法不会抛出特殊异常
-#### 5.2.5 GET Bucket logging
-##### 5.2.5.1 使用示例
+#### 5.2.7 GET Bucket logging
+##### 5.2.7.1 使用示例
 获取bucket的日志配置
 
 	public BucketLoggingStatus getBucketLogging(){
@@ -217,10 +253,10 @@ com.ksyun.ks3.utils:工具包
 		BucketLoggingStatus logging = client.getBucketLogging("<您的bucket名称>");
 		return logging;
 	}
-##### 5.2.5.2 特殊异常
+##### 5.2.7.2 特殊异常
 该方法不会返回特殊异常
-#### 5.2.6 HEAD Bucket
-##### 5.2.6.1 使用示例
+#### 5.2.8 HEAD Bucket
+##### 5.2.8.1 使用示例
 HEAD Bucket可以用来判断一个bucket是否存在
 
 	/**
@@ -240,11 +276,11 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		return client.bucketExists("<您的bucket名称>");
 	}
 
-##### 5.2.6.2 特殊异常
+##### 5.2.8.2 特殊异常
 该方法不会抛出特殊异常
 
-#### 5.2.7 List Multipart Uploads
-##### 5.2.7.1 使用示例
+#### 5.2.9 List Multipart Uploads
+##### 5.2.9.1 使用示例
 列出当前正在执行的分块上传
 
 	public ListMultipartUploadsResult listMultipartUploads() {
@@ -302,10 +338,10 @@ HEAD Bucket可以用来判断一个bucket是否存在
 				.listMultipartUploads(request);
 		return result;
 	}
-##### 5.2.7.2 特殊异常
+##### 5.2.9.2 特殊异常
 该方法不会抛出特殊异常
-#### 5.2.8 PUT Bucket
-##### 5.2.8.1 使用示例
+#### 5.2.10 PUT Bucket
+##### 5.2.10.1 使用示例
 
 	/**
 	 * <p>使用最简单的方式创建一个bucket</p>
@@ -327,7 +363,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		//执行操作
 		client.createBucket(request);
 	}
-##### 5.2.8.2 特殊异常
+##### 5.2.10.2 特殊异常
 |异常|说明|
 | :-------- | :--------|
 |InvalidBucketNameException|bucket名称不符合KS3 Bucket命名规范|
@@ -335,8 +371,8 @@ HEAD Bucket可以用来判断一个bucket是否存在
 |BucketAlreadyExistsException|该bucket名称已经存在。bucket名称是全局唯一的|
 |TooManyBucketsException|用户的bucket数超过了最大限制|
 
-#### 5.2.9 PUT Bucket acl
-##### 5.2.9.1 使用示例
+#### 5.2.11 PUT Bucket acl
+##### 5.2.11.1 使用示例
 设置bucket的访问权限
 
 	public void putBucketAclWithCannedAcl(){
@@ -373,13 +409,75 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		
 		client.putBucketACL(request);
 	}
-##### 5.2.9.2 特殊异常
+##### 5.2.11.2 特殊异常
 |异常|说明|
 | :-------- | :--------|
 |InvalidArgumentException|用户没有设置CannedAccessControlList和AccessControlList|
+#### 5.2.12 PUT Bucket cors
+##### 5.2.12.1 使用示例
+设置bucket的跨域资源共享规则 
 
-#### 5.2.10 PUT Bucket logging
-##### 5.2.10.1 使用示例
+	public void putBucketCors(){
+		BucketCorsConfiguration config = new BucketCorsConfiguration();
+		//资源跨域共享规则
+		CorsRule rule1 = new CorsRule();
+		
+		//指定允许的跨域请求方法(GET/PUT/DELETE/POST/HEAD) 
+		List<AllowedMethods> allowedMethods = new ArrayList<AllowedMethods>();
+		allowedMethods.add(AllowedMethods.GET);
+		//指定允许跨域请求的来源 
+		List<String> allowedOrigins = new ArrayList<String>();
+		allowedOrigins.add("http://example.com");
+		//指定允许用户从应用程序中访问的响应头 
+		List<String> exposedHeaders = new ArrayList<String>();
+		exposedHeaders.add("x-kss-test1");
+		//控制在 OPTIONS 预取指令中 Access-Control-Request-Headers 头中指定的 header 是否允许。
+		List<String> allowedHeaders = new ArrayList<String>();
+		allowedHeaders.add("x-kss-test"); 
+
+		rule1.setAllowedHeaders(allowedHeaders);
+		rule1.setAllowedMethods(allowedMethods);
+		rule1.setAllowedOrigins(allowedOrigins);
+		rule1.setExposedHeaders(exposedHeaders);
+		//指定浏览器对特定资源的预取(OPTIONS)请求返回结果的缓存时间,单位为秒。 
+		rule1.setMaxAgeSeconds(200);
+		
+		config.addRule(rule1);
+		
+		
+		//一个bucket可以最多配置10条规则
+		CorsRule rule2 = new CorsRule();
+		List<AllowedMethods> allowedMethods2 = new ArrayList<AllowedMethods>();
+		allowedMethods2.add(AllowedMethods.GET);
+		allowedMethods2.add(AllowedMethods.POST);
+		List<String> allowedOrigins2 = new ArrayList<String>();
+		allowedOrigins2.add("http://example.com");
+		allowedOrigins2.add("http://*.example.com");
+		List<String> exposedHeaders2 = new ArrayList<String>();
+		exposedHeaders2.add("x-kss-test1");
+		exposedHeaders2.add("x-kss-test2");
+		List<String> allowedHeaders2 = new ArrayList<String>();
+		allowedHeaders2.add("x-kss-test"); 
+		allowedHeaders2.add("x-kss-test2"); 
+		rule2.setAllowedHeaders(allowedHeaders2);
+		rule2.setAllowedMethods(allowedMethods2);
+		rule2.setAllowedOrigins(allowedOrigins2);
+		rule2.setExposedHeaders(exposedHeaders2);
+		rule2.setMaxAgeSeconds(500);
+		
+		config.addRule(rule2);
+		
+		PutBucketCorsRequest request = new PutBucketCorsRequest("test.bucket",config);
+		client.putBucketCors(request);
+	}
+##### 5.2.12.2 特殊异常
+|异常|说明|
+| :-------- | :--------|
+|MaxMessageLengthExceededException|用户配置的CORS规则过大，转化为xml时超过64KB。应该尽量减少规则。|
+|BadDigestException|body的MD5编码值出错，正常使用时不会抛出|
+|InvalidArgumentException|用户设置的规则有误,具体规则请参看KS3 API文档|
+#### 5.2.13 PUT Bucket logging
+##### 5.2.13.1 使用示例
 设置bucket的日志配置
 
 	/**
@@ -395,7 +493,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 		client.putBucketLogging(request);
 	}
 
-##### 5.2.10.2 特殊异常
+##### 5.2.13.2 特殊异常
 
 |异常|说明|
 | :-------- | :--------|

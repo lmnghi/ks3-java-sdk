@@ -65,9 +65,7 @@ public class GetBucketCorsResponse extends Ks3WebServiceXmlResponse<BucketCorsCo
 
 	@Override
 	public void string(String s) {
-		if("ID".equals(getTag())){
-			rule.setId(s);
-		}else if("MaxAgeSeconds".equals(getTag())){
+		if("MaxAgeSeconds".equals(getTag())){
 			rule.setMaxAgeSeconds(Integer.parseInt(s));
 		}else if("AllowedHeader".equals(getTag())){
 			allowedHeaders.add(s);

@@ -60,7 +60,6 @@ public abstract class Ks3WebServiceRequest {
 	private Map<String, String> header = new HashMap<String, String>();
 	private Map<String, String> params = new HashMap<String, String>();
 	private InputStream requestBody;
-	private String paramsToSign = "";
 	private String bucketname;
 	private String objectkey;
 	private HttpRequestBase httpRequest;
@@ -114,10 +113,6 @@ public abstract class Ks3WebServiceRequest {
 		this.objectkey = object;
 	}
 
-	protected void setParamsToSign(String paramsToSign) {
-		this.paramsToSign = paramsToSign;
-	}
-
 	@SuppressWarnings("deprecation")
 	private void initHttpRequestBase() {
 		// 准备计算 md5值
@@ -125,13 +120,13 @@ public abstract class Ks3WebServiceRequest {
 			if (!(this.getRequestBody() instanceof MD5DigestCalculatingInputStream))
 				this.setRequestBody(new MD5DigestCalculatingInputStream(this
 						.getRequestBody()));
-
-		String encodedParams = encodeParams();
-		objectkey = HttpUtils.urlEncode(objectkey, true);
+		String _objectkey=null;
+		String encodedParams = HttpUtils.encodeParams(getParams());
+		_objectkey = HttpUtils.urlEncode(objectkey, true);
 		url = new StringBuffer("http://")
 				.append(StringUtils.isBlank(bucketname) ? "" : bucketname + ".")
 				.append(url).append("/")
-				.append(StringUtils.isBlank(objectkey) ? "" : objectkey)
+				.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
 				.toString();
 		if (!StringUtils.isBlank(encodedParams))
 			url += "?" + encodedParams;
@@ -236,44 +231,6 @@ public abstract class Ks3WebServiceRequest {
 		return this.httpRequest;
 	}
 
-	@SuppressWarnings("deprecation")
-	private String encodeParams() {
-		List<Map.Entry<String, String>> arrayList = new ArrayList<Map.Entry<String, String>>(
-				this.params.entrySet());
-		Collections.sort(arrayList,
-				new Comparator<Map.Entry<String, String>>() {
-					public int compare(Entry<String, String> o1,
-							Entry<String, String> o2) {
-						return o1.getKey().compareTo(o2.getKey());
-					}
-				});
-		List<String> kvList = new ArrayList<String>();
-		List<String> list = new ArrayList<String>();
-		for (Entry<String, String> entry : arrayList) {
-			String value = null;
-			//8203,直接从浏览器粘下来的字符串中可能含有这个非法字符
-			String key = entry.getKey().replace(String.valueOf((char)8203),"");
-			if (!StringUtils.isBlank(entry.getValue()))
-				value = URLEncoder.encode(entry.getValue());
-			if (RequestUtils.subResource.contains(entry.getKey())) {
-				if (value != null && !value.equals(""))
-					kvList.add(key + "=" + value);
-				else
-					kvList.add(key);
-			}
-			if (value != null && !value.equals("")) {
-				list.add(key + "=" + value);
-			} else{
-				if (RequestUtils.subResource.contains(key))
-			    	list.add(key);
-			}
-		}
-
-		String queryParams = StringUtils.join(list.toArray(), "&");
-		this.setParamsToSign(StringUtils.join(kvList.toArray(), "&"));
-		return queryParams;
-	}
-
 	private void configHttpRequestPrivate() {
 		url = ClientConfig.getConfig().getStr(ClientConfig.END_POINT);
 		if (url.startsWith("http://") || url.startsWith("https://"))
@@ -327,10 +284,6 @@ public abstract class Ks3WebServiceRequest {
 					DateUtils.DATETIME_PROTOCOL.RFC1123);
 		}
 
-	}
-
-	public String getParamsToSign() {
-		return paramsToSign;
 	}
 
 	public String getBucketname() {

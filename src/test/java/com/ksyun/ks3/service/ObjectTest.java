@@ -511,11 +511,11 @@ public class ObjectTest {
 	public void deleteObjectTest4001(){
 		
 		try{
-			client.PutObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
+			client.putObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
 		}catch(Exception e){}
 		
 		client.deleteObject(bucket, "deleteTestP.txt");
-		client.PutObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
+		client.putObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
 		
 	}
 	
@@ -552,7 +552,7 @@ public class ObjectTest {
 	public void deleteObjectTest4004(){
 		
 		clientOther.deleteObject(bucket, "deleteTestP.txt");
-		client.PutObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
+		client.putObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
 	}
 	
 	/**
@@ -584,7 +584,7 @@ public class ObjectTest {
 	 */
 	@Test()
 	public void putObjectTest5001(){
-		PutObjectResult result = client.PutObject(bucket, "/putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -596,7 +596,7 @@ public class ObjectTest {
 	 */
 	@Test(expected=Ks3ClientException.class)
 	public void putObjectTest5002(){
-		PutObjectResult result = client.PutObject(bucket, "/putObjectTest.txt",new File("D:/objectTest/notExist.txt"));
+		PutObjectResult result = client.putObject(bucket, "/putObjectTest.txt",new File("D:/objectTest/notExist.txt"));
 		System.out.println(result);
 		
 	}
@@ -609,7 +609,7 @@ public class ObjectTest {
 	@Test(expected=NoSuchBucketException.class)
 	public void putObjectTest5003(){
 		String noBucket = "notExist";
-		PutObjectResult result = client.PutObject(noBucket, "/putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(noBucket, "/putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -645,7 +645,7 @@ public class ObjectTest {
 	 */
 	@Test(expected=BucketAlreadyExistsException.class)
 	public void putObjectTest5005(){
-		PutObjectResult result = client.PutObject(bucket, ".",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, ".",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -657,7 +657,7 @@ public class ObjectTest {
 	 */
 	@Test(expected=Ks3ServiceException.class)
 	public void putObjectTest5006(){
-		PutObjectResult result = client.PutObject(bucket, "..",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "..",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -669,7 +669,7 @@ public class ObjectTest {
 	 */
 	@Test()
 	public void putObjectTest5007(){
-		PutObjectResult result = client.PutObject(bucket, "。",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "。",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -681,7 +681,7 @@ public class ObjectTest {
 	 */
 	@Test()
 	public void putObjectTest5008(){
-		PutObjectResult result = client.PutObject(bucket, "。。",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "。。",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -693,7 +693,7 @@ public class ObjectTest {
 	 */
 	@Test
 	public void putObjectTest5009(){
-		PutObjectResult result = client.PutObject(bucket, "/./putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/./putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -705,7 +705,7 @@ public class ObjectTest {
 	 */
 	@Test(expected=Ks3ServiceException.class)
 	public void putObjectTest5010(){
-		PutObjectResult result = client.PutObject(bucket, "/../putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/../putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -717,7 +717,7 @@ public class ObjectTest {
 	 */
 	@Test
 	public void putObjectTest5011(){
-		PutObjectResult result = client.PutObject(bucket, "/.../putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/.../putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}

@@ -1,5 +1,6 @@
 package com.ksyun.ks3.utils;
 
+import java.net.URLEncoder;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -34,14 +36,18 @@ public class AuthUtils {
 		String value = "KSS "+auth.getAccessKeyId()+":"+signature;
 		return value;
 	}
-	public static String calcSignature(String accessKeySecret,String resource,String requestMethod,long _signDate) throws SignatureException
+	public static String calcSignature(String accessKeySecret,String bucket,String key,Map<String,String> params,String requestMethod,long _signDate) throws SignatureException
 	{
+		String paramsToSign = encodeParams(params);
+		String resource = "/"+bucket+"/"+key;
+		if(!StringUtils.isBlank(paramsToSign))
+			resource+="?"+paramsToSign;
 		 List<String> signList = new ArrayList<String>();
 	        signList.addAll(Arrays.asList(new String[] {
 	                requestMethod,"","",String.valueOf(_signDate),resource
 	        }));
 	    String signStr = StringUtils.join(signList.toArray(), "\n");
-	    log.info("StringToSign:"+signStr);
+	    log.info("StringToSign:"+signStr.replace("\n","\\n"));
 		return calculateRFC2104HMAC(signStr, accessKeySecret);
 	}
 	public static String calcSignature (String accessKeySecret,Ks3WebServiceRequest request) throws SignatureException
@@ -96,7 +102,7 @@ public class AuthUtils {
         
         String resource = buffer.toString();
 
-        String queryParams = request.getParamsToSign();
+        String queryParams = encodeParams(request.getParams());
         if (queryParams != null && !queryParams.equals(""))
         	resource = resource + "?" + queryParams;
         return resource;
@@ -154,5 +160,35 @@ public class AuthUtils {
 					+ e);
 		}
 		return result;
+	}
+	//专为计算resource提供的方法
+	public static String encodeParams(Map<String,String> params) {
+		List<Map.Entry<String, String>> arrayList = new ArrayList<Map.Entry<String, String>>(
+				params.entrySet());
+		Collections.sort(arrayList,
+				new Comparator<Map.Entry<String, String>>() {
+					public int compare(Entry<String, String> o1,
+							Entry<String, String> o2) {
+						return o1.getKey().compareTo(o2.getKey());
+					}
+				});
+		List<String> kvList = new ArrayList<String>();
+		for (Entry<String, String> entry : arrayList) {
+			String value = null;
+			//8203,直接从浏览器粘下来的字符串中可能含有这个非法字符
+			String key = entry.getKey().replace(String.valueOf((char)8203),"");
+			if (!StringUtils.isBlank(entry.getValue()))
+				value = entry.getValue();
+			if (RequestUtils.subResource.contains(entry.getKey())||RequestUtils.QueryParam.contains(entry.getKey())) {
+				if (value != null && !value.equals(""))
+					kvList.add(key + "=" + value);
+				else{
+					if (RequestUtils.subResource.contains(key))
+						kvList.add(key);
+				}
+			}
+		}
+
+		return StringUtils.join(kvList.toArray(), "&");
 	}
 }

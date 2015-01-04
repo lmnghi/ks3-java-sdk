@@ -62,6 +62,7 @@ import com.ksyun.ks3.service.response.PutObjectResponse;
 import com.ksyun.ks3.service.request.*;
 import com.ksyun.ks3.service.response.*;
 import com.ksyun.ks3.utils.AuthUtils;
+import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -307,6 +308,15 @@ public class Ks3Client implements Ks3 {
 
 	public String generatePresignedUrl(String bucket, String key, int expiration)
 			throws Ks3ClientException {
+		return generatePresignedUrl(bucket, key, expiration, null);
+	}
+
+	@SuppressWarnings("deprecation")
+	public String generatePresignedUrl(String bucket, String key,
+			int expiration, ResponseHeaderOverrides overrides)
+			throws Ks3ClientException {
+		if (overrides == null)
+			overrides = new ResponseHeaderOverrides();
 		boolean isPrivate = false;
 		AccessControlList acl = this.getObjectACL(bucket, key)
 				.getAccessControlList();
@@ -325,25 +335,35 @@ public class Ks3Client implements Ks3 {
 		} else {
 			isPrivate = true;
 		}
+		key = HttpUtils.urlEncode(key,true);
 		if (isPrivate) {
 			String signature = "";
 			long expires = ((System.currentTimeMillis() / 1000) + expiration);
 			try {
 				signature = AuthUtils.calcSignature(auth.getAccessKeySecret(),
-						"/" + bucket + "/" + key, HttpMethod.GET.toString(),
-						expires);
+						bucket, key, overrides.getOverrides(),
+						HttpMethod.GET.toString(), expires);
 			} catch (SignatureException e) {
 				e.printStackTrace();
 				throw new Ks3ClientException("计算用户签名时出错", e);
 			}
-
-			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
-					+ key + "?AccessKeyId="
-					+ URLEncoder.encode(auth.getAccessKeyId()) + "&Expires="
-					+ expires + "&Signature=" + URLEncoder.encode(signature);
+			if (overrides.getOverrides().size()>0)
+				return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT
+						+ "/" + key + "?AccessKeyId="
+						+ URLEncoder.encode(auth.getAccessKeyId())
+						+ "&Expires=" + expires + "&Signature="
+						+ URLEncoder.encode(signature) + "&"
+						+ HttpUtils.encodeParams(overrides.getOverrides());
+			else
+				return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT
+						+ "/" + key + "?AccessKeyId="
+						+ URLEncoder.encode(auth.getAccessKeyId())
+						+ "&Expires=" + expires + "&Signature="
+						+ URLEncoder.encode(signature);
 		} else {
 			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
-					+ key;
+					+ key + "?"
+					+ HttpUtils.encodeParams(overrides.getOverrides());
 		}
 	}
 
@@ -372,12 +392,12 @@ public class Ks3Client implements Ks3 {
 		}
 	}
 
-	public PutObjectResult PutObject(String bucketname, String objectkey,
+	public PutObjectResult putObject(String bucketname, String objectkey,
 			File file) throws Ks3ClientException, Ks3ServiceException {
 		return putObject(new PutObjectRequest(bucketname, objectkey, file));
 	}
 
-	public PutObjectResult PutObject(String bucketname, String objectkey,
+	public PutObjectResult putObject(String bucketname, String objectkey,
 			InputStream inputstream, ObjectMetadata objectmeta)
 			throws Ks3ClientException, Ks3ServiceException {
 		return putObject(new PutObjectRequest(bucketname, objectkey,

@@ -180,7 +180,7 @@ public class BucketTest extends Ks3ClientTest {
 				client1.deleteBucket(bucket);
 			}
 			client1.createBucket(bucket);
-			client1.PutObject(bucket, "dir/", new ByteArrayInputStream(
+			client1.putObject(bucket, "dir/", new ByteArrayInputStream(
 					new byte[] {}), null);
 			this.ste = true;
 			this.isc = false;

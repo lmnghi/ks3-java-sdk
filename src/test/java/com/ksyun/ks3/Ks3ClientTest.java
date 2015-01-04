@@ -74,7 +74,9 @@ import com.ksyun.ks3.utils.Timer;
 public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 	@Test
 	public void url(){
-		System.out.println(client1.generatePresignedUrl("preload","52F26F99B71326F45B7B8331A9619A073A88E548",60));
+		ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
+		overrides.setContentType("");
+		System.out.println(client.generatePresignedUrl("beijing.bucket1","work/推送API接口文档.pdf",60,overrides));
 	}
 	// @Test
 	public void ListBuckets() {
@@ -158,9 +160,9 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 
 	@Test
 	public void getObject() throws IOException {
-		GetObjectResult obj = client.getObject("ksc-scm", "IMG.jpg");
+		GetObjectResult obj = client.getObject("beijing.bucket1", "work/推送API接口文档.pdf");
 		OutputStream os = new FileOutputStream(new File("D://"
-				+ obj.getObject().getKey()));
+				+ "123.md"));
 		
 		int bytesRead = 0;
 		byte[] buffer = new byte[8192];
@@ -201,14 +203,14 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 
 	@Test
 	public void putObject() {
-		if (!client.bucketExists("beijing.bucket")) {
+		if (!client.bucketExists("beijing.bucket1")) {
 			CreateBucketRequest request1 = new CreateBucketRequest(
-					"beijing.bucket");
+					"beijing.bucket1");
 			request1.setConfig(new CreateBucketConfiguration(REGION.BEIJING));
 			client.createBucket(request1);
 		}
-		PutObjectRequest request = new PutObjectRequest("beijing.bucket",
-				"新建文件夹 (2).rar", new File("D://新建文件夹.rar"));
+		PutObjectRequest request = new PutObjectRequest("beijing.bucket1",
+				"work/推送API接口文档.pdf", new File("D:\\work\\图片处理文档\\图片.md"));
 		client.putObject(request);
 
 	}
@@ -462,7 +464,7 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		long step = 1024 * 1024 * 1024;
 		for (; index <= max; index = index + step + 1) {
 			request.setRange(index, index + step);
-			GetObjectResult result = client.getObject(request);
+			GetObjectResult result = client1.getObject(request);
 			max = result.getObject().getObjectMetadata().getInstanceLength();
 
 			try {
@@ -489,15 +491,15 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		ObjectMetadata meta = new ObjectMetadata();
 		meta.setContentType("txt");
 		// meta.setContentLength(1);
-		client.PutObject("ksc-scm", "bystream.et", new FileInputStream(
+		client.putObject("ksc-scm", "bystream.et", new FileInputStream(
 				new File("D://work//API//新建文本文档.txt")), meta);
 		System.out.println(client.getObject("ksc-scm", "bystream.et"));
 	}
 
-	// @Test
+	 @Test
 	public void uploadPartByStream() throws FileNotFoundException {
 		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
-				"ksc-scm", "bystream.txt");
+				"beijing.bucket1", "bystream.txt");
 		request1.setCannedAcl(CannedAccessControlList.PublicRead);
 		InitiateMultipartUploadResult result = client
 				.initiateMultipartUpload(request1);
@@ -536,7 +538,6 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		List<String> allowedHeaders = new ArrayList<String>();
 		allowedHeaders.add("x-kss-test"); 
 
-	//	rule1.setId("1234");
 		rule1.setAllowedHeaders(allowedHeaders);
 		rule1.setAllowedMethods(allowedMethods);
 		rule1.setAllowedOrigins(allowedOrigins);
@@ -559,7 +560,6 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		allowedHeaders2.add("x-kss-test"); 
 		allowedHeaders2.add("x-kss-test2"); 
 
-	//	rule1.setId("1234");
 		rule2.setAllowedHeaders(allowedHeaders2);
 		rule2.setAllowedMethods(allowedMethods2);
 		rule2.setAllowedOrigins(allowedOrigins2);
