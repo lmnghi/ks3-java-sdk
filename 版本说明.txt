@@ -1,0 +1,8 @@
+2014年1月4号更新
+0.1.0-SNAPSHOT
+添加Bucket cors相关操作
+修改若干已知的bug
+
+
+0.0.1-SNAPSHOT
+初始化版本
