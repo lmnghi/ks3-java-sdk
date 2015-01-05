@@ -46,6 +46,7 @@ import com.ksyun.ks3.dto.PartETag;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.Ks3Client;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
@@ -530,13 +531,13 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		BucketCorsConfiguration config = new BucketCorsConfiguration();
 		CorsRule rule1 = new CorsRule();
 		List<AllowedMethods> allowedMethods = new ArrayList<AllowedMethods>();
-		allowedMethods.add(AllowedMethods.GET);
+		allowedMethods.add(AllowedMethods.POST);
 		List<String> allowedOrigins = new ArrayList<String>();
-		allowedOrigins.add("http://example.com");
+		allowedOrigins.add("http://*.ele.com");
 		List<String> exposedHeaders = new ArrayList<String>();
-		exposedHeaders.add("x-kss-test1");
+		exposedHeaders.add(HttpHeaders.ServerSideEncryption.toString());
 		List<String> allowedHeaders = new ArrayList<String>();
-		allowedHeaders.add("x-kss-test"); 
+		allowedHeaders.add("*"); 
 
 		rule1.setAllowedHeaders(allowedHeaders);
 		rule1.setAllowedMethods(allowedMethods);
@@ -566,10 +567,10 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		rule2.setExposedHeaders(exposedHeaders2);
 		rule2.setMaxAgeSeconds(500);
 		
-		config.addRule(rule2);
+		//config.addRule(rule2);
 		
-		PutBucketCorsRequest request = new PutBucketCorsRequest("ksc-scm",config);
-		client.putBucketCors(request);
+		PutBucketCorsRequest request = new PutBucketCorsRequest("beijing.bucket",config);
+		client1.putBucketCors(request);
 	}
 	@Test
 	public void getBucketCors(){

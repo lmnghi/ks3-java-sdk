@@ -1,5 +1,6 @@
 package com.ksyun.ks3.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
+import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -36,6 +38,40 @@ public class AuthUtils {
 		String value = "KSS "+auth.getAccessKeyId()+":"+signature;
 		return value;
 	}
+	//post表单时的签名
+	/**
+	 * 
+	 * @param accessKeySecret
+	 * @param policy  getPolicy(Date expiration,String bucket)得到的结果
+	 * @return
+	 * @throws SignatureException
+	 */
+	public static String calcSignature(String accessKeySecret,String policy) throws SignatureException{
+		String signStr = policy;
+		log.info("StringToSign:"+signStr);
+		return calculateRFC2104HMAC(signStr,accessKeySecret);
+	}
+	//post表单时的policy
+	/**
+	 * 
+	 * @param expiration 该签名过期时间
+	 * @param bucket 该签名只能在该bucket上使用
+	 * @return
+	 */
+	public static String getPolicy(Date expiration,String bucket) {
+		String policy = "{\"expiration\": \""
+						+DateUtils.convertDate2Str(expiration, DATETIME_PROTOCOL.ISO8861)
+						+"\",\"conditions\": [ {\"bucket\": \""+bucket+"\"}]}";
+		log.info("policy:"+policy);
+		try {
+			String _policy = new String(Base64.encodeBase64(policy.getBytes("UTF-8")),"UTF-8");
+			return _policy;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	//外链
 	public static String calcSignature(String accessKeySecret,String bucket,String key,Map<String,String> params,String requestMethod,long _signDate) throws SignatureException
 	{
 		String paramsToSign = encodeParams(params);
@@ -50,6 +86,7 @@ public class AuthUtils {
 	    log.info("StringToSign:"+signStr.replace("\n","\\n"));
 		return calculateRFC2104HMAC(signStr, accessKeySecret);
 	}
+	//普通
 	public static String calcSignature (String accessKeySecret,Ks3WebServiceRequest request) throws SignatureException
 	{
         String resource = CanonicalizedKSSResource(request);
