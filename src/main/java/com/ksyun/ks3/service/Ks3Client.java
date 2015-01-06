@@ -18,6 +18,7 @@ import com.ksyun.ks3.dto.*;
 import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.exception.serviceside.NotFoundException;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
@@ -243,14 +244,17 @@ public class Ks3Client implements Ks3 {
 			}
 			if (keys.size() > 0)
 				this.deleteObjects(keys, bucketName);
-			for (String subDir : list.getCommonPrefixes()) {
-				this.removeDir(bucketName, subDir);
-			}
-			// 若不为0，当将下面的子文件夹全部删除掉时会自动将dir删掉
-			if (list.getCommonPrefixes().size() == 0
-					&& !StringUtils.isBlank(dir))
-				this.deleteObject(bucketName, dir);
 		} while (list.isTruncated());
+		if (dir != null) {
+			boolean exists = true;
+			try {
+				headObject(bucketName, dir);
+			} catch (NotFoundException e) {
+				exists = false;
+			}
+			if (exists)
+				deleteObject(bucketName, dir);
+		}
 	}
 
 	public void deleteBucket(String bucketname) throws Ks3ClientException,
@@ -335,7 +339,7 @@ public class Ks3Client implements Ks3 {
 		} else {
 			isPrivate = true;
 		}
-		key = HttpUtils.urlEncode(key,true);
+		key = HttpUtils.urlEncode(key, true);
 		if (isPrivate) {
 			String signature = "";
 			long expires = ((System.currentTimeMillis() / 1000) + expiration);
@@ -347,7 +351,7 @@ public class Ks3Client implements Ks3 {
 				e.printStackTrace();
 				throw new Ks3ClientException("计算用户签名时出错", e);
 			}
-			if (overrides.getOverrides().size()>0)
+			if (overrides.getOverrides().size() > 0)
 				return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT
 						+ "/" + key + "?AccessKeyId="
 						+ URLEncoder.encode(auth.getAccessKeyId())

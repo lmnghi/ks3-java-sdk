@@ -14,7 +14,7 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class BucketCorsConfiguration {
 	//一系列的跨域资源共享规则
-	private List<CorsRule> rules;
+	private List<CorsRule> rules = new ArrayList<CorsRule>();
 
 	@Override
 	public String toString(){

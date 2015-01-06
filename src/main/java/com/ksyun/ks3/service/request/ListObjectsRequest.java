@@ -222,21 +222,19 @@ public class ListObjectsRequest extends Ks3WebServiceRequest {
 		setBucketname(bucketName);
 		this.prefix = prefix;
 		this.marker = marker;
-		if (StringUtils.isBlank(delimiter)) {
-			this.delimiter = "/";
-		} else {
-			this.delimiter = delimiter;
-		}
+		this.delimiter = delimiter;
 		this.maxKeys = maxKeys;
 	}
 
 	@Override
 	protected void configHttpRequest() {
 		this.setHttpMethod(HttpMethod.GET);
-
-		this.addParams("prefix", prefix);
-		this.addParams("marker", marker);
-		this.addParams("delimiter", delimiter);
+		if(prefix!=null)
+			this.addParams("prefix", prefix);
+		if(marker!=null)
+			this.addParams("marker", marker);
+		if(delimiter!=null)
+			this.addParams("delimiter", delimiter);
 		if (maxKeys != null)
 			this.addParams("max-keys", String.valueOf(maxKeys));
 		if (!StringUtils.isBlank(this.encodingType))

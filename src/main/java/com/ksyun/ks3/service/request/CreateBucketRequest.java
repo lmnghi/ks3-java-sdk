@@ -2,6 +2,7 @@ package com.ksyun.ks3.service.request;
 
 import java.io.ByteArrayInputStream;
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.CreateBucketConfiguration;
@@ -113,7 +114,7 @@ public class CreateBucketRequest extends Ks3WebServiceRequest {
 	@Override
 	protected void validateParams() throws IllegalArgumentException {
 		if (StringUtils.validateBucketName(this.getBucketname()) == null)
-			throw notNull("bucketname");
+			throw notCorrect("bucketname",this.getBucketname(),"请参考KS3 API文档");
 	}
 
 	public CreateBucketConfiguration getConfig() {

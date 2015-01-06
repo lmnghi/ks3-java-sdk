@@ -9,7 +9,8 @@ package com.ksyun.ks3.service.response;
 public class DeleteBucketCorsResponse extends Ks3WebServiceDefaultResponse<Boolean>{
 
 	public int[] expectedStatus() {
-		return new int[]{204};
+		//200是为了兼容现在的ks3 api正确应该是204
+		return new int[]{200,204};
 	}
 
 	@Override
