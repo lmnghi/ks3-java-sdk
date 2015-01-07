@@ -175,7 +175,7 @@ public class ObjectHeadersTest extends ObjectTest {
 	 *  If-None-Match
 	 * <pre></p>
 	 */
-	@Test(timeout=1500)
+	@Test()
 	public void headObjectHeaders(){
 		HeadObjectRequest request = new HeadObjectRequest(bucket, "headers/getObjectHeaders.txt");
 		
@@ -330,7 +330,7 @@ public class ObjectHeadersTest extends ObjectTest {
 	 *  redirect-location
 	 * <pre></p>
 	 */
-	@Test(timeout=1500)
+	@Test()
 	public void copyObjectHeaders(){
 		CopyObjectRequest request = new CopyObjectRequest(bucket, "headers/getObjectHeaders.txt", "","");
 		
