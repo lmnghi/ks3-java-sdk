@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -63,6 +64,7 @@ import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.CompleteMultipartUploadResponse;
 import com.ksyun.ks3.service.response.HeadObjectResponse;
+import com.ksyun.ks3.utils.AuthUtils;
 import com.ksyun.ks3.utils.Timer;
 
 /**
@@ -79,11 +81,15 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		overrides.setContentType("");
 		System.out.println(client.generatePresignedUrl("beijing.bucket1","work/推送API接口文档.pdf",60,overrides));
 	}
-	// @Test
+	 @Test
 	public void ListBuckets() {
-		List<Bucket> buckets = client1.listBuckets();
-		System.out.println(buckets);
+		System.out.println(client.listObjects("aposttest"));
 	}
+	 @Test
+	 public void calauth() throws SignatureException{
+		 String policy = "eyAiZXhwaXJhdGlvbiI6ICIyMDE2MTItMDFUMTI6MDA6MDAuMDAwWiIsICAiY29uZGl0aW9ucyI6IFsgICAgeyJidWNrZXQiOiAiYXBvc3R0ZXN0In0sICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJ1c2VyL2VyaWMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL2tzMy5rc3l1bi5jb20ifSwgICAgWyJzdGFydHMtd2l0aCIsICIkQ29udGVudC1UeXBlIiwgImltYWdlLyJdLCAgICBbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwgIjQwMDAiLCAiMTAwMDAwIl0gLHsidGVzdCI6Inh4eCJ9IF19";
+		 System.out.println(AuthUtils.calcSignature("2IDjaPOpFfkq5Zf9K4tKu8k5AKApY8S8eKV1zsRl",policy));
+	 }
 
 	// @Test
 	public void getBucketLocation() {
@@ -151,12 +157,12 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		System.out.println(od);
 	}
 
-	// @Test
+	@Test
 	public void createAndDeleteBucket() {
-		CreateBucketRequest request = new CreateBucketRequest("lijunwei",
+		CreateBucketRequest request = new CreateBucketRequest("aposttest",
 				REGION.BEIJING);
 		client.createBucket(request);
-		client.deleteBucket("lijunwei");
+		//client.deleteBucket("lijunwei");
 	}
 
 	@Test
@@ -535,14 +541,14 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 		List<String> allowedOrigins = new ArrayList<String>();
 		allowedOrigins.add("http://*.ele.com");
 		List<String> exposedHeaders = new ArrayList<String>();
-		exposedHeaders.add(HttpHeaders.ServerSideEncryption.toString());
+		exposedHeaders.add("*");
 		List<String> allowedHeaders = new ArrayList<String>();
 		allowedHeaders.add("*"); 
 
 		rule1.setAllowedHeaders(allowedHeaders);
 		rule1.setAllowedMethods(allowedMethods);
 		rule1.setAllowedOrigins(allowedOrigins);
-		rule1.setExposedHeaders(exposedHeaders);
+		//rule1.setExposedHeaders(exposedHeaders);
 		rule1.setMaxAgeSeconds(200);
 		
 		config.addRule(rule1);
