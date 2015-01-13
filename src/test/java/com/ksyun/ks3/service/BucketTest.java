@@ -395,7 +395,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	@Test()
 	public void testGetBucket_1013() throws Exception {
 		try {
 			if (!client1.bucketExists(bucket))

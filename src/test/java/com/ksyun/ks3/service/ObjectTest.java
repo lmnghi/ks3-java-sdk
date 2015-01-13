@@ -36,6 +36,7 @@ import com.ksyun.ks3.exception.serviceside.InternalErrorException;
 import com.ksyun.ks3.exception.serviceside.NoSuchBucketException;
 import com.ksyun.ks3.exception.serviceside.NoSuchKeyException;
 import com.ksyun.ks3.exception.serviceside.NotFoundException;
+import com.ksyun.ks3.exception.serviceside.SignatureDoesNotMatchException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.Ks3CoreController;
 import com.ksyun.ks3.service.request.CopyObjectRequest;
@@ -74,11 +75,11 @@ public class ObjectTest {
 		String accesskeyId2 = null;
 		String accesskeySecret2 = null;
 		try {
-			credential.load(ObjectTest.class.getResourceAsStream("accesskey.properties"));// resourece 路径存在问题 NullPointerException
-			accesskeyId1 = credential.getProperty("accesskeyId1");
-			accesskeySecret1 = credential.getProperty("accesskeySecret1");
-			accesskeyId2 = credential.getProperty("accesskeyId2");
-			accesskeySecret2 = credential.getProperty("accesskeySecret2");
+			credential.load(ObjectTest.class.getResourceAsStream("/accesskey.properties"));// resourece 路径存在问题 NullPointerException
+			accesskeyId1 = credential.getProperty("accesskeyid1");
+			accesskeySecret1 = credential.getProperty("accesskeysecret1");
+			accesskeyId2 = credential.getProperty("accesskeyid2");
+			accesskeySecret2 = credential.getProperty("accesskeysecret2");
 			
 		} catch (Exception e) {
 			logger.warn("Error massage : " + e.toString());
@@ -560,7 +561,7 @@ public class ObjectTest {
 	 * @Test 客户端删除非本用户文件---私密文件
 	 * @Then 
 	 */
-	@Test(expected=AccessDeniedException.class)
+	@Test(expected=NoSuchKeyException.class)
 	public void deleteObjectTest4005(){
 
 		clientOther.deleteObject(bucket, "deleteTest.txt");
@@ -758,7 +759,7 @@ public class ObjectTest {
 	 * @Test 客户端向非本用户bucket添加文件
 	 * @Then 
 	 */
-	@Test(expected=AccessDeniedException.class)
+	@Test(expected=SignatureDoesNotMatchException.class)
 	public void putObjectTest5013() throws FileNotFoundException{
 		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest1.txt", new File("D:/objectTest/putObjectTest.txt"));
 //		request.setCannedAcl(CannedAccessControlList.Private);
