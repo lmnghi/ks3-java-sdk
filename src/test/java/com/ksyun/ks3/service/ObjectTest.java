@@ -21,7 +21,6 @@ import org.junit.Test;
 import com.ksyun.ks3.AutoAbortInputStream;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.AccessControlPolicy;
-import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.HeadObjectResult;
@@ -32,7 +31,6 @@ import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.exception.serviceside.AccessDeniedException;
 import com.ksyun.ks3.exception.serviceside.BucketAlreadyExistsException;
-import com.ksyun.ks3.exception.serviceside.InternalErrorException;
 import com.ksyun.ks3.exception.serviceside.NoSuchBucketException;
 import com.ksyun.ks3.exception.serviceside.NoSuchKeyException;
 import com.ksyun.ks3.exception.serviceside.NotFoundException;
@@ -51,65 +49,12 @@ import com.ksyun.ks3.service.request.PutObjectRequest;
  * @author ZHANGZHENGYONG [zhangzhengyong@kingsoft.com]
  * @date 2014年11月17日  	20:30
  */
-public class ObjectTest {
-	protected static Ks3 client;
-	protected static Ks3 clientOther;
-	private static Ks3CoreController controller;
-	private static Authorization auth;
-	protected static Authorization authOther;
-	protected static String bucket;
-	private static Properties credential;
+public class ObjectTest extends ObjectBeforeTest{
+
 	
 	private static Log logger = LogFactory.getLog(ObjectTest.class);
 
 	
-	/**
-	 * @description 加载类时调用，配置测试客户端数据，权限数据，和基础数据信息。
-	 * 		
-	 */
-	@BeforeClass
-	public static void beforeClass(){
-		credential = new Properties();
-		String accesskeyId1 = null;
-		String accesskeySecret1 = null;
-		String accesskeyId2 = null;
-		String accesskeySecret2 = null;
-		try {
-			credential.load(ObjectTest.class.getResourceAsStream("/accesskey.properties"));// resourece 路径存在问题 NullPointerException
-			accesskeyId1 = credential.getProperty("accesskeyid1");
-			accesskeySecret1 = credential.getProperty("accesskeysecret1");
-			accesskeyId2 = credential.getProperty("accesskeyid2");
-			accesskeySecret2 = credential.getProperty("accesskeysecret2");
-			
-		} catch (Exception e) {
-			logger.warn("Error massage : " + e.toString());
-			accesskeyId1 = "";
-			accesskeySecret1 = "";
-			accesskeyId2 = "";
-			accesskeySecret2 = "";
-			
-		}
-
-		client = new Ks3Client(accesskeyId1,accesskeySecret1);
-		auth = new Authorization(accesskeyId1,accesskeySecret1);
-		
-		clientOther = new Ks3Client(accesskeyId2,accesskeySecret2);
-		authOther = new Authorization(accesskeyId2,accesskeySecret2);
-		
-		controller = new Ks3CoreController();
-		
-		bucket = "test1-zzy";
-		File fileDir = new File("D:/objectTest");
-		fileDir.mkdir();
-	}
-	
-	/**
-	 * @description 配置测试客户端数据，执行每一个测试用例前都会执行 @Before 中代码
-	 */
-	@AfterClass
-	public static void afterClass(){
-		
-	}
 	
 	/**
 	 * @tag 功能测试
@@ -217,11 +162,13 @@ public class ObjectTest {
 		GetObjectRequest request = new GetObjectRequest(bucket, "hosts.txt");
 		
 		Calendar cal = Calendar.getInstance();
+//		cal.add(Calendar.YEAR, -5);
 		request.setModifiedSinceConstraint(cal.getTime());
-		request.setUnmodifiedSinceConstraint(cal.getTime());
+//		request.setUnmodifiedSinceConstraint(cal.getTime());
 		
 		GetObjectResult object = client.getObject(request);
 		
+		System.out.println(cal.getTime());
 		assertTrue(object.isIfModified());
 		assertTrue(object.isIfPreconditionSuccess());
 	}
