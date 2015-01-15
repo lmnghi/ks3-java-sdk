@@ -29,7 +29,7 @@ import com.ksyun.ks3.service.request.PutObjectRequest;
  * @author ZHANGZHENGYONG
  * @date 2014 年 11 月 24 日	11:22	
  */
-public class ObjectHeadersTest extends ObjectTest {
+public class ObjectHeadersTest extends ObjectBeforeTest {
 	
 	/**
 	 * <p>The implementation of the <code>GET Object</code> can use the following 
@@ -388,32 +388,5 @@ public class ObjectHeadersTest extends ObjectTest {
 //		System.out.println(result);
 	}
 	
-	public List<String> getETags(){
-		List<String> eTags = new ArrayList<String>();
-		try{
-			GetObjectResult result = client.getObject(bucket, "hosts.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-			
-			result = client.getObject(bucket, "deleteTest.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-			
-			result = client.getObject(bucket, "putObjectTest.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-			
-			result = client.getObject(bucket, "putObjectTestP.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-			
-			result = client.getObject(bucket, "hostsPulbic.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-			
-			result = client.getObject(bucket, "headers/getObjectHeaders.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-			
-			result = client.getObject(bucket, "headers/headObjectHeaders.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return eTags;
-	}
+
 }
