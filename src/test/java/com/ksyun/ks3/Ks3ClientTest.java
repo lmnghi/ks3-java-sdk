@@ -83,13 +83,9 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 	}
 	 @Test
 	public void ListBuckets() {
-		System.out.println(client.listObjects("aposttest"));
+		 System.out.println(client.listBuckets());
+	//	System.out.println(client.listObjects("aposttest"));
 	}
-	 @Test
-	 public void calauth() throws SignatureException{
-		 String policy = "eyAiZXhwaXJhdGlvbiI6ICIyMDE2MTItMDFUMTI6MDA6MDAuMDAwWiIsICAiY29uZGl0aW9ucyI6IFsgICAgeyJidWNrZXQiOiAiYXBvc3R0ZXN0In0sICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJ1c2VyL2VyaWMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL2tzMy5rc3l1bi5jb20ifSwgICAgWyJzdGFydHMtd2l0aCIsICIkQ29udGVudC1UeXBlIiwgImltYWdlLyJdLCAgICBbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwgIjQwMDAiLCAiMTAwMDAwIl0gLHsidGVzdCI6Inh4eCJ9IF19";
-		 System.out.println(AuthUtils.calcSignature("2IDjaPOpFfkq5Zf9K4tKu8k5AKApY8S8eKV1zsRl",policy));
-	 }
 
 	// @Test
 	public void getBucketLocation() {

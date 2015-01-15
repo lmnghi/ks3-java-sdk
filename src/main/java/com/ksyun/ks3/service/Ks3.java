@@ -1229,4 +1229,24 @@ public interface Ks3 {
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Ks3WebServiceRequest request, Class<X> clazz)
 			throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * 
+	 * @param policy
+	 * @return {@link PostObjectFormFields}
+	 * @throws Ks3ClientException
+	 * <p>通过自定义policy规则获取post object时表单中的Signature、KSSAccessKeyId、policy三项的值</p>
+	 */
+	public PostObjectFormFields postObject(PostPolicy policy) throws Ks3ClientException;
+	/**
+	 * 
+	 * @param bucket 目标bucket
+	 * @param filename 要上传的文件名称,当postFormData中没有使用${filename}时可以不提供
+	 * @param postFormData 可以确定值得表单项
+	 * @param unknowValueFormFiled 无法确定值得表单项
+	 * @return {@link PostObjectFormFields}
+	 * @throws Ks3ClientException
+	 * <p>通过bucket和表单中的除 Signature、KSSAccessKeyId、policy外的所有表单项 获取post object时表单中的Signature、KSSAccessKeyId、policy三项的值</p>
+	 * <p>由此方法生成的签名只能适用于本次请求，matchingType全部使用eq或通配</p>
+	 */
+	public PostObjectFormFields postObject(String bucket,String filename,Map<String,String> postFormData,List<String> unknowValueFormFiled) throws Ks3ClientException;
 }

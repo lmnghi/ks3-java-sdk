@@ -611,8 +611,88 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 |异常|说明|
 | :-------- | :--------|
 |NotFoudException|请求的资源不存在，由于Head请求不能返回body，所以客户端不知道具体的错误信息|
-#### 5.3.6 PUT Object
+
+#### 5.3.6 POST Object
+SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Policy、Signature三个表单项，具体要上传Object需要用户使用HTML表单或者使用js进行跨域上传，具体参考KS3 API文档POST Object
 ##### 5.3.6.1 使用示例
+
+	/**
+	  如果用户对KS3协议不是特别清楚,建议使用该方法。每次上传的时候都去获取一次最新的签名信息
+	*/
+	public PostObjectFormFields postObjectSimple(){
+		/**
+		 * 需要用户在postData和unknowValueField中提供所有的除KSSAccessKeyId, signature, file, policy外的所有表单项。否则用生成的签名上传会返回403</br>
+		 * 对于用户可以确定表单值的放在 postData中，对于用户无法确定表单值的放在unknownValueField中(比如有的上传控件会添加一些表单项,但表单项的值可能是随机的)</br>
+		 * 
+		 */
+		Map<String,String> postData = new HashMap<String,String>();
+		
+		postData.put("acl","public-read");
+		postData.put("Cache-Control","no-cache");
+		postData.put("Content-Type", "image/jpeg");
+		postData.put("Content-Disposition","file;xx");
+		postData.put("Content-Encoding","gzip");
+		postData.put("Expires","Thu, 01 Dec 1994 16:00:00 GMT");
+		//用户可以在表单值中使用${filename}占位符，上传上去后将会把${filename}自动替换成上传的文件名称
+		postData.put("key","20150115/中文/${filename}");
+		postData.put("success_action_status","204");
+		postData.put("x-kss-meta-xx6", "xx6");
+		
+		List<String> unknowValueField = new ArrayList<String>();
+		
+		unknowValueField.add("cewiuhfew");
+		unknowValueField.add("fwefwefwec");
+		unknowValueField.add("wqqqqqq");
+		
+		PostObjectFormFields fields = client.postObject("<您的bucket名称>", "<要上传的文件名称,不包含路径信息>", postData, unknowValueField);
+		
+		fields.getKssAccessKeyId();
+		fields.getPolicy();
+		fields.getSignature();
+		
+		return fields;
+	}
+	/**
+	 * 如果用户对KS3协议比较熟悉，建议使用该方法，自定义校验规则
+	 */
+	public PostObjectFormFields postObject(){ 
+		PostPolicy policy = new PostPolicy();
+		
+		//指定签名过期时间 格式为2015-01-14T06:53:31.473Z 为格林时间
+		policy.setExpiration("2015-01-14T06:53:31.473Z");
+		
+		//指定使用该签名上传时 content-length为0-100000才会成功
+		PostPolicyCondition condition = new PostPolicyCondition();
+		condition.setMatchingType(MatchingType.contentLengthRange);
+		condition.setParamA("0");
+		condition.setParamB("100000");
+		policy.getConditions().add(condition);
+		
+		//指定objectkey必须是以test/开头的，即使用该签名只能往test/目录下传文件
+		PostPolicyCondition condition1 = new PostPolicyCondition();
+		condition1.setMatchingType(MatchingType.startsWith);
+		condition1.setParamA("$key");
+		condition1.setParamB("test/");
+		policy.getConditions().add(condition1);
+		
+		//指定bucket必须等于testbucket，即使用该签名只能往testbucket这个bucket下传文件
+		PostPolicyCondition condition2 = new PostPolicyCondition();
+		condition2.setMatchingType(MatchingType.eq);
+		condition2.setParamA("$bucket");
+		condition2.setParamB("testbucket");
+		policy.getConditions().add(condition2);
+		
+		PostObjectFormFields fields =client.postObject(policy);
+		
+		fields.getKssAccessKeyId();
+		fields.getPolicy();
+		fields.getSignature();
+		
+		return fields;
+	}
+
+#### 5.3.7 PUT Object
+##### 5.3.7.1 使用示例
 	/**
 	 * 将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
 	 */
@@ -674,7 +754,7 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 
 		client.putObject(request);
 	}
-##### 5.3.6.2 特殊异常
+##### 5.3.7.2 特殊异常
 |异常|说明|
 | :-------- | :--------|
 |MissingContentLengthException|用户没有提供Content-Length，正常使用SDK时不应该抛出|
@@ -685,8 +765,8 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 |InvalidDigestException|服务端MD5校验失败，文件上传失败|
 |ClientInvalidDigestException|客户端MD5校验失败，文件虽然上传成功但是可能有缺失或损坏,建议重新上传|
 
-#### 5.3.7 PUT Object acl
-##### 5.3.7.1 使用示例
+#### 5.3.8 PUT Object acl
+##### 5.3.8.1 使用示例
 修改object的权限控制
 
 	public void putBucketAclWithCannedAcl(){
@@ -723,11 +803,11 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		
 		client.putBucketACL(request);
 	}
-##### 5.3.7.2 特殊异常
+##### 5.3.8.2 特殊异常
 这个方法不会抛出特殊异常
 
-#### 5.3.8 PUT Object - Copy
-##### 5.3.8.1 使用示例
+#### 5.3.9 PUT Object - Copy
+##### 5.3.9.1 使用示例
 
 	public void copyObject(){
 		/**将sourceBucket这个存储空间下的sourceKey这个object复制到destinationBucket这个存储空间下，并命名为destinationObject
@@ -745,7 +825,7 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		client.copyObject(request);
 	}
 
-##### 5.3.8.2 特殊错误
+##### 5.3.9.2 特殊错误
 |异常|说明|
 | :-------- | :--------|
 |MissingContentLengthException|用户没有提供Content-Length，正常使用SDK时不应该抛出|
@@ -753,8 +833,8 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 |InvalidArgumentException|没有提供sourceBucket或sourceKey,正常使用SDK时不应该抛出|
 |InvalidKeyException|目标object已经存在，无法copy|
 
-#### 5.3.9 Multipart Upload
-##### 5.3.9.1 使用示例
+#### 5.3.10 Multipart Upload
+##### 5.3.10.1 使用示例
 注：中途想停止分块上传的话请调用client.abortMultipartUpload(bucketname, objectkey, uploadId);
 
 
@@ -882,7 +962,7 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 				tags);
 		client.completeMultipartUpload(request);
 	}
-##### 5.3.9.2 特殊异常
+##### 5.3.10.2 特殊异常
 Init Multipart Upload
 
 |异常|说明|

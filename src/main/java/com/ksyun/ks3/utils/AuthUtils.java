@@ -58,6 +58,7 @@ public class AuthUtils {
 	 * @param bucket 该签名只能在该bucket上使用
 	 * @return
 	 */
+	@Deprecated
 	public static String getPolicy(Date expiration,String bucket) {
 		String policy = "{\"expiration\": \""
 						+DateUtils.convertDate2Str(expiration, DATETIME_PROTOCOL.ISO8861)
