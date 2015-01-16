@@ -42,8 +42,7 @@ public class PostObjectTest extends Ks3ClientTest{
 		postData.put("Content-Disposition","file;xx");
 		postData.put("Content-Encoding","gzip");
 		postData.put("Expires","Thu, 01 Dec 1994 16:00:00 GMT");
-		
-		postData.put("key","20150115/中文/${filename}");
+		postData.put("key","\\$20150115/中文\\ta$\"l\"\\$;66/${filename}");
 		postData.put("success_action_status","204");
 		
 		postData.put("x-kss-meta-xx6", "xx6");
@@ -53,7 +52,7 @@ public class PostObjectTest extends Ks3ClientTest{
 		unknowValueField.add("fwefwefwec");
 		unknowValueField.add("wqqqqqq");
 		
-		PostObjectFormFields fields = client.postObject("abtest", "1234.jpeg", postData, unknowValueField);
+		PostObjectFormFields fields = client.postObject("abtest", "git.exe", postData, unknowValueField);
 		
 		postData.put("policy",fields.getPolicy());
 		postData.put("KSSAccessKeyId",fields.getKssAccessKeyId());
@@ -73,7 +72,7 @@ public class PostObjectTest extends Ks3ClientTest{
 	  
 	    // 设定要上传的文件  
 	    ArrayList<UploadFileItem> ufi = new ArrayList<UploadFileItem>();  
-	    ufi.add(new UploadFileItem("file", System.getProperty("user.dir")+"/src/test/resources/1234.jpeg")); 
+	    ufi.add(new UploadFileItem("file", System.getProperty("user.dir")+"/src/test/resources/git.exe")); 
 	        
 	        
 	    HttpPostEmulator hpe = new HttpPostEmulator();  
