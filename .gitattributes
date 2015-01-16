@@ -1,0 +1,6 @@
+*  text eol=lf
+#Definitively text files
+
+*.java text
+*.properties text
+*.xml  text
