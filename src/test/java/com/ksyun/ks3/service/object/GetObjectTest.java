@@ -251,4 +251,14 @@ public class GetObjectTest extends ObjectBeforeTest {
 		request.setNonmatchingEtagConstraints(eTagList);
 		System.out.println(client.getObject(request));
 	}
+	
+	/**
+	 * Range
+	 */
+	@Test
+	public void getObject1019(){
+		GetObjectRequest request = new GetObjectRequest(bucket, "hosts.txt");
+		request.setRange(0, 300);
+		System.out.println(client.getObject(request));
+	}
 }

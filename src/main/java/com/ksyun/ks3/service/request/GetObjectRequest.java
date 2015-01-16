@@ -1,8 +1,10 @@
 package com.ksyun.ks3.service.request;
 
 import java.util.ArrayList;
+
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
@@ -10,6 +12,8 @@ import java.util.Map.Entry;
 import com.ksyun.ks3.dto.ResponseHeaderOverrides;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.DateUtils;
+import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -54,7 +58,6 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 		this.setBucketname(bucketname);
 		this.setObjectkey(key);
 	}
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void configHttpRequest() {
 		this.setHttpMethod(HttpMethod.GET);
@@ -65,9 +68,9 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 		if(nonmatchingEtagConstraints.size()>0)
 			this.addHeader(HttpHeaders.IfNoneMatch, StringUtils.join(nonmatchingEtagConstraints, ","));
 		if(this.unmodifiedSinceConstraint !=null)
-			this.addHeader(HttpHeaders.IfUnmodifiedSince, this.unmodifiedSinceConstraint.toGMTString());
+			this.addHeader(HttpHeaders.IfUnmodifiedSince, DateUtils.convertDate2Str(this.unmodifiedSinceConstraint, DATETIME_PROTOCOL.RFC1123).toString());
 		if(this.modifiedSinceConstraint !=null)
-			this.addHeader(HttpHeaders.IfModifiedSince, this.modifiedSinceConstraint.toGMTString());
+			this.addHeader(HttpHeaders.IfModifiedSince, DateUtils.convertDate2Str(this.modifiedSinceConstraint, DATETIME_PROTOCOL.RFC1123).toString());
 		this.getParams().putAll(this.getOverrides().getOverrides());
 	}
 
