@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.ksyun.ks3.dto.Owner;
 
@@ -183,5 +185,13 @@ public class StringUtils {
 		    value.append(object2string(index + 1, obj1.getValue(),obj1.getKey()));
 		}
 		return value.toString();
+	}
+	public static boolean checkLong(Object o){
+		String value = String.valueOf(o);
+		Pattern pattern = Pattern.compile("^[0-9]+$");
+		Matcher matcher = pattern.matcher(value);
+		if(matcher.find())
+			return true;
+		return false;
 	}
 }

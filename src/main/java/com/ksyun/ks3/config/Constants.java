@@ -1,6 +1,7 @@
 package com.ksyun.ks3.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ksyun.ks3.http.HttpHeaders;
@@ -50,4 +51,6 @@ public class Constants {
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.Connection.toString());
 		KS3_IGNOREG_HEADERS.add(HttpHeaders.XKssOp.toString());
 	}
+	
+	public static List<String> postFormIgnoreFields = Arrays.asList(new String[]{"AWSAccessKeyId","KSSAccessKeyId","signature","policy","submit","file"});
 }

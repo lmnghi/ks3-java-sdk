@@ -5,9 +5,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ksyun.ks3</groupId>
 	<artifactId>ks3-kss-java-sdk</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<name>ks3-kss-java-sdk</name>
 	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<json-lib.version>2.3</json-lib.version>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -30,19 +35,19 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-			<plugin>  
-                <artifactId>maven-assembly-plugin</artifactId>  
-                <configuration>  
-                    <archive>  
-                        <manifest>  
-                            <mainClass>com.allen.capturewebdata.Main</mainClass>  
-                        </manifest>  
-                    </archive>  
-                    <descriptorRefs>  
-                        <descriptorRef>jar-with-dependencies</descriptorRef>  
-                    </descriptorRefs>  
-                </configuration>  
-            </plugin>  
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>com.allen.capturewebdata.Main</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -89,6 +94,18 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>${json-lib.version}</version>
+			<classifier>jdk15</classifier>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

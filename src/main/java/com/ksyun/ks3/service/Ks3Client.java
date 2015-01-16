@@ -3,21 +3,35 @@ package com.ksyun.ks3.service;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+
+import net.sf.json.JSONObject;
 
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.*;
 import com.ksyun.ks3.dto.CreateBucketConfiguration.REGION;
+import com.ksyun.ks3.dto.PostPolicyCondition.MatchingType;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.exception.client.ClientIllegalArgumentException;
+import com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator;
 import com.ksyun.ks3.exception.serviceside.NotFoundException;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.Ks3CoreController;
@@ -63,6 +77,8 @@ import com.ksyun.ks3.service.response.PutObjectResponse;
 import com.ksyun.ks3.service.request.*;
 import com.ksyun.ks3.service.response.*;
 import com.ksyun.ks3.utils.AuthUtils;
+import com.ksyun.ks3.utils.DateUtils;
+import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -74,6 +90,8 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description ks3客户端，用户使用时需要先配置{@link ClientConfig},然后初始化一个Ks3Client进行操作
  **/
 public class Ks3Client implements Ks3 {
+	private static final Log log = LogFactory.getLog(Ks3Client.class);
+	
 	private Authorization auth;
 
 	public Authorization getAuth() {
@@ -641,5 +659,81 @@ public class Ks3Client implements Ks3 {
 			Ks3WebServiceRequest request, Class<X> clazz)
 			throws Ks3ClientException, Ks3ServiceException {
 		return client.execute(auth, request, clazz);
+	}
+
+	public PostObjectFormFields postObject(PostPolicy policy)
+			throws Ks3ClientException {
+		Map<String,Object> policyMap = new HashMap<String,Object>();
+		policyMap.put("expiration", policy.getExpiration());
+		
+		List<List<String>> conditions = new ArrayList<List<String>>();
+		for(PostPolicyCondition condition : policy.getConditions()){
+			List<String> conditionList = new ArrayList<String>();
+			if(condition.getMatchingType()==MatchingType.startsWith){
+				if(!condition.getParamA().startsWith("$")){
+					condition.setParamA("$"+condition.getParamA());
+				}
+			}else if(condition.getMatchingType() == MatchingType.contentLengthRange){		
+				if(!StringUtils.checkLong(condition.getParamA())||!StringUtils.checkLong(condition.getParamB())){
+					throw new ClientIllegalArgumentException("contentLengthRange匹配规则的参数A和参数B都应该是Long型");
+				}
+			}
+			conditionList.add(condition.getMatchingType().toString());
+			conditionList.add(condition.getParamA());
+			conditionList.add(condition.getParamB());
+			conditions.add(conditionList);
+		}
+		policyMap.put("conditions", conditions);
+		String policyJson = JSONObject.fromObject(policyMap).toString();
+		log.debug("");
+		String policyBase64 = "";
+		try {
+			policyBase64 = new String(Base64.encodeBase64(policyJson.getBytes("UTF-8")),"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			//unexpected
+		}
+		PostObjectFormFields fields = new PostObjectFormFields();
+		fields.setKssAccessKeyId(auth.getAccessKeyId());
+		fields.setPolicy(policyBase64);
+		try {
+			fields.setSignature(AuthUtils.calcSignature(auth.getAccessKeySecret(), policyBase64));
+		} catch (SignatureException e) {
+			throw new Ks3ClientException("计算签名出错",e);
+		}
+		return fields;
+	}
+	
+	public PostObjectFormFields postObject(String bucket,String filename,
+			Map<String, String> postFormData,List<String> unknowValueFormFiled) throws Ks3ClientException {
+		if(StringUtils.isBlank(bucket))
+			throw ClientIllegalArgumentExceptionGenerator.notNull("bucket");
+		if(postFormData==null)
+			postFormData = new HashMap<String,String>();
+		if(unknowValueFormFiled==null)
+			unknowValueFormFiled = new ArrayList<String>();
+		postFormData.put("bucket",bucket);
+		PostPolicy policy = new PostPolicy();
+		//签名将在五小时后过期
+		policy.setExpiration(DateUtils.convertDate2Str(new DateTime().plusHours(5).toDate(),DATETIME_PROTOCOL.ISO8861));
+		
+		for(Entry<String,String> entry:postFormData.entrySet()){
+			if(!Constants.postFormIgnoreFields.contains(entry.getKey())){
+				PostPolicyCondition condition = new PostPolicyCondition();
+				condition.setMatchingType(MatchingType.eq);
+				condition.setParamA("$"+entry.getKey());
+				condition.setParamB(entry.getValue().replace("${filename}", filename));
+				policy.getConditions().add(condition);
+			}
+		}
+		for(String field:unknowValueFormFiled){
+			if(!Constants.postFormIgnoreFields.contains(field)){
+				PostPolicyCondition condition = new PostPolicyCondition();
+				condition.setMatchingType(MatchingType.startsWith);
+				condition.setParamA("$"+field);
+				condition.setParamB("");
+				policy.getConditions().add(condition);
+			}
+		}
+		return postObject(policy);
 	}
 }
