@@ -87,7 +87,7 @@ public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 	}
 	 @Test
 	 public void calauth() throws SignatureException{
-		 String policy = "eyAKICAgImV4cGlyYXRpb24iOiAiMjAxNS0xMi0wMVQxMjowMDowMC4wMDBaIiwKICAiY29uZGl0aW9ucyI6IFsKCiAgICB7ImFjbCI6ICJwdWJsaWMtcmVhZCIgfSwKCiAgICB7ImJ1Y2tldCI6ICJhcG9zdHRlc3QiIH0sCgogICAgWyJzdGFydHMtd2l0aCIsICIka2V5IiwgImFiYy8iXSwKICAgIFsic3RhcnRzLXdpdGgiLCAiJHRlc3QiLCAiXCQiXQoKICBdCgp9";
+		 String policy = "eyAiZXhwaXJhdGlvbiI6ICIyMDE3LTEyLTAxVDEyOjAwOjAwLjAwMFoiLAoKICAiY29uZGl0aW9ucyI6IFsKCiAgICB7ImFjbCI6ICJwdWJsaWMtcmVhZCIgfSwKCiAgICB7ImJ1Y2tldCI6ICJhYnRlc3QiIH0sCgogICAgWyJzdGFydHMtd2l0aCIsICIka2V5IiwgImFiYyJdLAoKICBdCgp9";
 		 System.out.println(AuthUtils.calcSignature("2IDjaPOpFfkq5Zf9K4tKu8k5AKApY8S8eKV1zsRl",policy));
 	 }
 
