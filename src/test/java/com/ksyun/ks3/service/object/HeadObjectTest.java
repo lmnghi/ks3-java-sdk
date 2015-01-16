@@ -129,4 +129,5 @@ public class HeadObjectTest extends ObjectBeforeTest {
 		client.putObject(request);
 		System.out.println(client.getObject(bucket, "headObject3001").getObject().getObjectMetadata());
 	}
+	
 }
