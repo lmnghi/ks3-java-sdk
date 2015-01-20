@@ -123,11 +123,16 @@ public abstract class Ks3WebServiceRequest {
 		String _objectkey=null;
 		String encodedParams = HttpUtils.encodeParams(getParams());
 		_objectkey = HttpUtils.urlEncode(objectkey, true);
-		url = new StringBuffer("http://")
+		/*url = new StringBuffer("http://")
 				.append(StringUtils.isBlank(bucketname) ? "" : bucketname + ".")
 				.append(url).append("/")
 				.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
-				.toString();
+				.toString();*/
+		url = new StringBuffer("http://")
+		.append(url).append("/")
+		.append(StringUtils.isBlank(bucketname) ? "" : bucketname + "/")
+		.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
+		.toString();
 		if (!StringUtils.isBlank(encodedParams))
 			url += "?" + encodedParams;
 		HttpRequestBase httpRequest = null;

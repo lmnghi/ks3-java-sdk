@@ -74,7 +74,7 @@ public enum HttpHeaders {
 	/**
 	 * default None
 	 */
-	XKssWebsiteRedirectLocation("x-kss-website​-redirect-location"),
+	XKssWebsiteRedirectLocation("x-kss-website-redirect-location"),
 	XKssCopySource("x-kss-copy-source"),
 	XKssCopySourceRange("x-kss-copy-source-range")
 	;

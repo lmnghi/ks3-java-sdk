@@ -12,10 +12,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+ 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -685,10 +686,39 @@ public class Ks3Client implements Ks3 {
 		}
 		policyMap.put("conditions", conditions);
 		String policyJson = JSONObject.fromObject(policyMap).toString();
-		log.debug("");
+		byte backslash = 92;
+		byte dollar = 36;
 		String policyBase64 = "";
 		try {
-			policyBase64 = new String(Base64.encodeBase64(policyJson.getBytes("UTF-8")),"UTF-8");
+			// \\$的特殊处理
+			byte[] bytes = policyJson.getBytes("UTF-8");
+			int length = 0;
+			for(int i = 0;i < bytes.length;i++){
+				byte pre = 0;
+				if(i>0)
+					pre = bytes[i-1];
+				byte cur = bytes[i];
+				if(cur==dollar&&pre==backslash){
+					length++;
+				}
+			}
+			byte[] escape = new byte[bytes.length+length];
+			int j = 0;
+			for(int i = 0;i < bytes.length;i++){
+				byte pre = 0;
+				if(i>0)
+					pre = bytes[i-1];
+				byte cur = bytes[i];
+				if(cur==dollar&&pre==backslash){
+					escape[j] = backslash;
+					j++;
+					escape[j] = bytes[i];
+				}else{
+					escape[j] = bytes[i];
+				}
+				j++;
+			}
+			policyBase64 = new String(Base64.encodeBase64(escape),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			//unexpected
 		}
