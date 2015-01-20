@@ -966,7 +966,7 @@ public class ObjectTest extends ObjectBeforeTest{
 		} catch (Exception e) {// 屏蔽异常，方便测试
 		}
 		
-		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "notExist");
+		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "notExist1");
 		client.copyObject(request);
 	}
 	
