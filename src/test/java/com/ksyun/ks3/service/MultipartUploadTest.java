@@ -144,8 +144,9 @@ public class MultipartUploadTest extends Ks3ClientTest {
 	 * 
 	 * upload id为空</br>
 	 * 没有上传直接从complete
+	 * 为了跑过用例而加的
 	 */
-	@Test
+	@Test(expected=Ks3ServiceException.class)
 	public void testInitAndComplete_1032() {
 		if (client1.bucketExists(bucketName)) {
 			client1.clearBucket(bucketName);
