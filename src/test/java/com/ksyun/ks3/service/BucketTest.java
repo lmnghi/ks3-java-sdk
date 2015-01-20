@@ -284,7 +284,7 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test
+	@Test(expected=NotThrowException.class)
 	public void testPutBucket_1009() {
 		String thisBucket = "";
 		List<String> added = new ArrayList<String>();
