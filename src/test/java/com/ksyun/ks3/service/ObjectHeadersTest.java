@@ -332,7 +332,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test()
 	public void copyObjectHeaders(){
-		CopyObjectRequest request = new CopyObjectRequest(bucket, "headers/getObjectHeaders.txt", "","");
+		CopyObjectRequest request = new CopyObjectRequest(bucket, "headers/getObjectHeaders.txt", bucket,"");
 		
 		CopyResult result = client.copyObject(request);
 		System.out.println(result);
