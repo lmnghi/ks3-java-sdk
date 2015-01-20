@@ -116,23 +116,31 @@ public abstract class Ks3WebServiceRequest {
 	@SuppressWarnings("deprecation")
 	private void initHttpRequestBase() {
 		// 准备计算 md5值
-		if (this instanceof MD5CalculateAble && this.getRequestBody() != null && StringUtils.isBlank(this.getContentMD5()))
+		if (this instanceof MD5CalculateAble && this.getRequestBody() != null
+				&& StringUtils.isBlank(this.getContentMD5()))
 			if (!(this.getRequestBody() instanceof MD5DigestCalculatingInputStream))
 				this.setRequestBody(new MD5DigestCalculatingInputStream(this
 						.getRequestBody()));
-		String _objectkey=null;
+		String _objectkey = null;
 		String encodedParams = HttpUtils.encodeParams(getParams());
 		_objectkey = HttpUtils.urlEncode(objectkey, true);
-		/*url = new StringBuffer("http://")
-				.append(StringUtils.isBlank(bucketname) ? "" : bucketname + ".")
-				.append(url).append("/")
-				.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
-				.toString();*/
-		url = new StringBuffer("http://")
-		.append(url).append("/")
-		.append(StringUtils.isBlank(bucketname) ? "" : bucketname + "/")
-		.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
-		.toString();
+		int format = ClientConfig.getConfig().getInt(
+				ClientConfig.CLIENT_URLFORMAT);
+		if (format == 0) {
+			url = new StringBuffer("http://")
+					.append(StringUtils.isBlank(bucketname) ? "" : bucketname
+							+ ".").append(url).append("/")
+					.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
+					.toString();
+		} else {
+			url = new StringBuffer("http://")
+					.append(url)
+					.append("/")
+					.append(StringUtils.isBlank(bucketname) ? "" : bucketname
+							+ "/")
+					.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
+					.toString();
+		}
 		if (!StringUtils.isBlank(encodedParams))
 			url += "?" + encodedParams;
 		HttpRequestBase httpRequest = null;
@@ -143,8 +151,7 @@ public abstract class Ks3WebServiceRequest {
 				try {
 					postMethod.setEntity(new StringEntity(encodedParams));
 				} catch (UnsupportedEncodingException e) {
-					throw new Ks3ClientException(
-							"无法创建 HTTP entity:" + e, e);
+					throw new Ks3ClientException("无法创建 HTTP entity:" + e, e);
 				}
 			} else {
 				String length = this.getHeader().get(
@@ -165,8 +172,8 @@ public abstract class Ks3WebServiceRequest {
 												.getMd5Digest()));
 				} catch (IOException e) {
 					e.printStackTrace();
-					throw new Ks3ClientException("初始化Http Request出错(" + e
-							+ ")", e);
+					throw new Ks3ClientException(
+							"初始化Http Request出错(" + e + ")", e);
 				}
 				postMethod.setEntity(entity);
 			}
@@ -199,8 +206,8 @@ public abstract class Ks3WebServiceRequest {
 													.getMd5Digest()));
 					} catch (IOException e) {
 						e.printStackTrace();
-						throw new Ks3ClientException("初始化Http Request出错("
-								+ e + ")", e);
+						throw new Ks3ClientException("初始化Http Request出错(" + e
+								+ ")", e);
 					}
 				} else {
 					entity = new RepeatableInputStreamRequestEntity(
@@ -215,7 +222,7 @@ public abstract class Ks3WebServiceRequest {
 			HttpHead headMethod = new HttpHead(url);
 			httpRequest = headMethod;
 		} else {
-			//永远不会到这儿
+			// 永远不会到这儿
 			throw new Ks3ClientException("Unknow http method : "
 					+ this.getHttpMethod());
 		}
@@ -242,7 +249,7 @@ public abstract class Ks3WebServiceRequest {
 			url = url.replace("http://", "").replace("https://", "");
 		httpMethod = HttpMethod.POST;
 		this.setContentMD5("");
-		this.addHeader(HttpHeaders.UserAgent,Constants.KS3_SDK_USER_AGENT);
+		this.addHeader(HttpHeaders.UserAgent, Constants.KS3_SDK_USER_AGENT);
 		this.setContentType("text/plain");
 		this.setDate(new Date());
 	}

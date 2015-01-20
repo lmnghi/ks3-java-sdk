@@ -1,9 +1,11 @@
 package com.ksyun.ks3.service;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ksyun.ks3.dto.CannedAccessControlList;
@@ -31,8 +33,20 @@ import com.ksyun.ks3.utils.Timer;
  **/
 public class MultipartUploadTest extends Ks3ClientTest {
 	String bucketName = "lijunwei.sdk.test.multi";
-	String file = "file.rar";
-
+	File file = null;
+	String filename = "file.rar";
+	@Before
+	public void initFile() throws IOException{
+		file = new File("D://"+filename);
+		FileWriter writer = new FileWriter(file);
+		StringBuilder  value= new StringBuilder();
+		String sub ="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+		for(int i = 0;i < 300000;i++){
+			value.append(sub);
+		}
+		writer.write(value.toString());
+		writer.close();
+	}
 	@Test
 	public void testInitAndAbort_1031() throws Exception {
 		if (client1.bucketExists(bucketName)) {
@@ -42,7 +56,7 @@ public class MultipartUploadTest extends Ks3ClientTest {
 		try {
 			this.isc = false;
 			InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
-					bucketName, file);
+					bucketName, filename);
 			try {
 				client1.initiateMultipartUpload(request);
 			} catch (NoSuchBucketException e) {
@@ -126,6 +140,11 @@ public class MultipartUploadTest extends Ks3ClientTest {
 		}
 	}
 
+	/**
+	 * 
+	 * upload id为空</br>
+	 * 没有上传直接从complete
+	 */
 	@Test
 	public void testInitAndComplete_1032() {
 		if (client1.bucketExists(bucketName)) {
@@ -136,7 +155,7 @@ public class MultipartUploadTest extends Ks3ClientTest {
 			client1.createBucket(bucketName);
 
 			InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
-					bucketName, file);
+					bucketName, filename);
 			InitiateMultipartUploadResult result1 = client1
 					.initiateMultipartUpload(request);
 			this.isc = false;
@@ -169,16 +188,12 @@ public class MultipartUploadTest extends Ks3ClientTest {
 
 			long part = 5 * 1024 * 1024;
 			String bucket = bucketName;
-			URL filename = this.getClass().getClassLoader()
-					.getResource("git.exe");
 			InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
-					bucket, file);
+					bucket, filename);
 			request1.setCannedAcl(CannedAccessControlList.PublicRead);
 			InitiateMultipartUploadResult result = client1
 					.initiateMultipartUpload(request1);
 			System.out.println(result);
-			// upload
-			File file = new File(filename.toString().substring(6));
 			long n = file.length() / part;
 			for (int i = 0; i <= n; i++) {
 				UploadPartRequest request = new UploadPartRequest(
@@ -197,23 +212,6 @@ public class MultipartUploadTest extends Ks3ClientTest {
 			// complete
 			int i = 0;
 			for (PartETag etag : request.getPartETags()) {
-				if (etag.getPartNumber() == 1) {
-					request.getPartETags().remove(i);
-					break;
-				}
-				i++;
-			}
-			this.isc = false;
-			try {
-				client1.completeMultipartUpload(request);
-			} catch (Ks3ServiceException e) {
-				this.isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
-
-			i = 0;
-			for (PartETag etag : request.getPartETags()) {
 				if (etag.getPartNumber() == 2) {
 					request.getPartETags().remove(i);
 					break;
@@ -222,15 +220,27 @@ public class MultipartUploadTest extends Ks3ClientTest {
 			}
 			this.isc = false;
 			try {
+				//不连续
 				client1.completeMultipartUpload(request);
 			} catch (Ks3ServiceException e) {
 				this.isc = true;
 			}
 			if (!isc)
 				throw new NotThrowException();
-
-			request.getPartETags().remove(n - 1);
+			
+			
+			i = 0;
+			for (PartETag etag : request.getPartETags()) {
+				if (etag.getPartNumber() == 1) {
+					request.getPartETags().remove(i);
+					break;
+				}
+				i++;
+			}
+			this.isc = false;
+			//不从1开始
 			client1.completeMultipartUpload(request);
+
 
 		} finally {
 			if (client1.bucketExists(bucketName)) {
@@ -251,16 +261,13 @@ public class MultipartUploadTest extends Ks3ClientTest {
 
 			long part = 5 * 1024 * 1024 - 1;
 			String bucket = bucketName;
-			URL filename = this.getClass().getClassLoader()
-					.getResource("git.exe");
 			InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
-					bucket, file);
+					bucket, filename);
 			request1.setCannedAcl(CannedAccessControlList.PublicRead);
 			InitiateMultipartUploadResult result = client1
 					.initiateMultipartUpload(request1);
 			System.out.println(result);
 			// upload
-			File file = new File(filename.toString().substring(6));
 			long n = file.length() / part;
 			for (int i = 0; i <= n; i++) {
 				UploadPartRequest request = new UploadPartRequest(

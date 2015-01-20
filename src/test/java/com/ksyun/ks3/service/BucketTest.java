@@ -49,7 +49,7 @@ import com.ksyun.ks3.service.response.PutBucketACLResponse;
  * @description
  **/
 public class BucketTest extends Ks3ClientTest {
-	private String bucket = "test.ljw.sdk.001";
+	private String bucket = "test.ljw.sdk.001"+System.currentTimeMillis();
 
 	@Test
 	public void testPutBucket_1001() {
@@ -405,11 +405,11 @@ public class BucketTest extends Ks3ClientTest {
 							.getResourceAsStream("uploadtest.xml"), null);
 			client1.putObject(request);
 			ListObjectsRequest request1 = new ListObjectsRequest(bucket);
-			request1.setMaxKeys(-1);
+			request1.setMaxKeys(1);
 			ObjectListing listing = client1.listObjects(request1);
 			if (listing.getObjectSummaries().size()
-					+ listing.getCommonPrefixes().size() > 0)
-				throw new Exception("返回的结果数不为0");
+					+ listing.getCommonPrefixes().size() > 1)
+				throw new Exception("返回的结果数不为1");
 		} finally {
 			client1.deleteObject(bucket, "file.xml");
 			client1.deleteBucket(bucket);
@@ -1636,11 +1636,11 @@ public class BucketTest extends Ks3ClientTest {
 	@Test
 	public void testListMultiPartUploads_1035() throws Exception{
 		ListMultipartUploadsRequest request = new ListMultipartUploadsRequest("ksc-scm");
-		request.setDelimiter("");
-		request.setKeyMarker("");
+		request.setDelimiter("delimiter");
+		request.setKeyMarker("keyMarker");
 		request.setMaxUploads(10);
-		request.setPrefix("");
-		request.setUploadIdMarker("56182c1cd7ae4718bb15fe6380e81d18");
+		request.setPrefix("prefix");
+		request.setUploadIdMarker("uploadIdMarker");
 		ListMultipartUploadsResult result = client1.listMultipartUploads(request);
 		if(!"delimiter".equals(result.getDelimiter())){
 			throw new Exception();
