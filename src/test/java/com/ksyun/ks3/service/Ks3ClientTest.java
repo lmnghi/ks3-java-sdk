@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.junit.Before;
 
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.http.Ks3CoreController;
 
@@ -35,6 +36,9 @@ public class Ks3ClientTest {
 	@Before
 	public void init() throws IOException {
 
+		ClientConfig.getConfig().set(ClientConfig.CLIENT_URLFORMAT, "1");
+		
+		
 		final Properties credential = new Properties();
 		credential.load(this.getClass().getClassLoader()
 				.getResourceAsStream("accesskey.properties"));

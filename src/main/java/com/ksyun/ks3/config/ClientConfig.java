@@ -110,10 +110,13 @@ public class ClientConfig {
 	 * ks3 client auth加载器
 	 */
 	public static final String CLIENT_SIGNER = "ks3client.signer";
+	
 	/**
-	 * 用户默认的文件组织分隔符号
+	 * 路径格式;</br>
+	 * 0  bucket.kss.ksyun.com</br>
+	 * 1  kss.ksyun.com/bucket
 	 */
-	//public static final String CLIENT_DEFAULT_DELIMITER = "ks3client.delimiter";
+	public static final String CLIENT_URLFORMAT = "ks3client.urlformat";
 	/**
 	 * 配置加载器列表
 	 */
