@@ -3,7 +3,6 @@ package com.ksyun.ks3.service;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,9 +13,7 @@ import org.junit.Test;
 import com.ksyun.ks3.dto.CopyResult;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.HeadObjectResult;
-import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.ObjectMetadata;
-import com.ksyun.ks3.dto.PutObjectResult;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.service.request.CopyObjectRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
@@ -42,46 +39,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 *  If-None-Match
 	 * <pre></p>
 	 */
-	@Test(timeout=10000)
 	public void getObjectHeaders(){
-		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
-		GetObjectRequest requestSec= new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
-		
-		/* part range */
-		//set the headers 
-		request.setRange(0, 299);
-		//get the result 
-		GetObjectResult result = client.getObject(request);
-		//assert the setting 
-		assertEquals(300, result.getObject().getObjectMetadata().getContentLength());
-		
-		/* part Modified-Since */
-		//set the headers
-		Calendar cal = Calendar.getInstance();
-		Date date = cal.getTime();
-		request.setModifiedSinceConstraint(date);
-		requestSec.setUnmodifiedSinceConstraint(date);
-		//get the result 
-		result = client.getObject(request);
-		GetObjectResult resultSec = client.getObject(requestSec);
-		//assert the setting
-//		assertEquals(result.isIfModified(), !resultSec.isIfModified());
-	
-		/* part If-Match */
-		//set the headers
-		List<String> eTags = this.getETags();
-		List<String> eTagsSec = new ArrayList<String>();
-		eTagsSec.add("21c49d6cf6400735433c02cb1b6c90f4");
-		request.setMatchingETagConstraints(eTags);
-		request.setNonmatchingEtagConstraints(eTags);
-		//get the result 
-		result = client.getObject(request);
-		resultSec = client.getObject(requestSec);
-		//assert the setting
-		assertEquals(true, result.isIfPreconditionSuccess());
-//		assertEquals(false, resultSec.isIfModified());
-		System.out.println(result);
-//		System.out.println(resultSec);
 	}
 	
 	/**
@@ -104,7 +62,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	
 	/**
 	 * <code>getObjectHeaders</code>
-	 * @part Modified-Since
+	 * @part Modified-Since 
 	 */
 	@Test(timeout=10000)
 	public void getObjectHeaders2102(){
@@ -115,16 +73,16 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 		//set the headers
 		Calendar cal = Calendar.getInstance();
 		Date date1 = cal.getTime();
-		cal.add(Calendar.MONTH, -2);
+		cal.add(Calendar.YEAR, -2);
 		Date date2 = cal.getTime();
-		request.setModifiedSinceConstraint(date1);
-		requestSec.setUnmodifiedSinceConstraint(date2);
+		request.setModifiedSinceConstraint(date1);	//304
+		requestSec.setUnmodifiedSinceConstraint(date2);	//412
 		//get the result 
 		GetObjectResult result = client.getObject(request);
 		GetObjectResult resultSec = client.getObject(requestSec);
 		//assert the setting
-		assertEquals(false, result.isIfModified());
-		assertEquals(false, resultSec.isIfPreconditionSuccess());
+		assertEquals(false, result.isIfModified()); //304
+		assertEquals(false, resultSec.isIfPreconditionSuccess()); //412
 		
 		System.out.println("date1:"+date1+"\ndate2:"+date2);
 		System.out.println(result+"\n"+resultSec);
@@ -132,7 +90,34 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	
 	/**
 	 * <code>getObjectHeaders</code>
-	 * @part If-Match
+	 * @part Modified-Since
+	 */
+	@Test(timeout=10000)
+	public void getObjectHeaders2105(){
+		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		GetObjectRequest requestSec= new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		
+		/* part Modified-Since */
+		//set the headers
+		Calendar cal = Calendar.getInstance();
+		Date date1 = cal.getTime();
+		cal.add(Calendar.YEAR, -2);
+		Date date2 = cal.getTime();
+		request.setModifiedSinceConstraint(date2);
+		requestSec.setUnmodifiedSinceConstraint(date1);
+		
+		//get the result 
+		GetObjectResult result = client.getObject(request);
+		GetObjectResult resultSec = client.getObject(requestSec);
+		//assert the setting
+		assertEquals(true, result.isIfModified()); //200
+		assertEquals(true, resultSec.isIfPreconditionSuccess()); //200
+		
+	}
+	
+	/**
+	 * <code>getObjectHeaders</code>
+	 * @part If-Match  412
 	 */
 	@Test(timeout=10000)
 	public void getObjectHeaders2103(){
@@ -141,128 +126,51 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 		//set the headers
 		List<String> eTags = this.getETags();
 		List<String> eTagsSec = new ArrayList<String>();
-		eTagsSec.add("21c49d6cf6400735433c02cb1b6c90f4");
+		eTagsSec.add("21c49d6cf6400735433c02cb1b6c90f1");
+		
 		request.setMatchingETagConstraints(eTags);
-		requestSec.setNonmatchingEtagConstraints(eTags);
+		requestSec.setNonmatchingEtagConstraints(eTagsSec);
+		
 		//get the result 
 		GetObjectResult result = client.getObject(request);
 		GetObjectResult resultSec = client.getObject(requestSec);
 		//assert the setting
-//		assertEquals(true, result.isIfPreconditionSuccess());
-//		assertEquals(false, resultSec.isIfModified());
-		
-		request.setMatchingETagConstraints(eTagsSec);
-		requestSec.setNonmatchingEtagConstraints(eTagsSec);
-		//get the result 
-		result = client.getObject(request);
-		resultSec = client.getObject(requestSec);
-		//assert the setting
-		assertEquals(false, result.isIfPreconditionSuccess());
+		assertEquals(true, result.isIfPreconditionSuccess());
+		assertEquals(true, resultSec.isIfPreconditionSuccess());
+		assertEquals(true, result.isIfModified());
 		assertEquals(true, resultSec.isIfModified());
-		
+			
 //		System.out.println(result);
 //		System.out.println(resultSec);
 	}
 	
 	/**
-	 * <p>The implementation of the <code>HEAD Object</code> can use the following 
-	 * 	request headers in addition to the request headers common to all operations.
-	 * <pre>
-	 *  Range
-	 *  If-Modified-Since
-	 *  If-Unmodified-Since
-	 *  If-Match
-	 *  If-None-Match
-	 * <pre></p>
-	 */
-	@Test()
-	public void headObjectHeaders(){
-		HeadObjectRequest request = new HeadObjectRequest(bucket, "headers/getObjectHeaders.txt");
-		
-		HeadObjectResult result = client.headObject(request);
-		System.out.println(result);
-	}
-	
-	/**
-	 * <code>headObjectHeaders</code>
-	 * @part Range
+	 * <code>getObjectHeaders</code>
+	 * @part If-Match  304
 	 */
 	@Test(timeout=10000)
-	public void headObjectHeaders2201(){
-		HeadObjectRequest request = new HeadObjectRequest(bucket, "headers/headObjectHeaders.txt");
-		
-		/* part range */
-		//set the headers 
-		request.setRange(0, 299);
-		//get the result 
-		HeadObjectResult result = client.headObject(request);
-		//assert the setting 
-//		assertEquals(300, result.getObjectMetadata().getContentLength());
-		
-	}
-	
-	/**
-	 * <code>headObjectHeaders</code>
-	 * @part Modified-Since
-	 */
-	@Test(timeout=10000)
-	public void headObjectHeaders2202(){
-		HeadObjectRequest request = new HeadObjectRequest(bucket, "headers/headObjectHeaders.txt");
-		HeadObjectRequest requestSec= new HeadObjectRequest(bucket, "headers/headObjectHeaders.txt");
-		
-		/* part Modified-Since */
-		//set the headers
-		Calendar cal = Calendar.getInstance();
-		Date date1 = cal.getTime();
-		cal.add(Calendar.MONTH, -2);
-		Date date2 = cal.getTime();
-		request.setModifiedSinceConstraint(date1);
-		requestSec.setUnmodifiedSinceConstraint(date2);
-		//get the result 
-		HeadObjectResult result = client.headObject(request);
-		HeadObjectResult resultSec = client.headObject(requestSec);
-		//assert the setting
-//		assertEquals(false, result.isIfModified());
-//		assertEquals(false, resultSec.isIfPreconditionSuccess());
-		
-		System.out.println("date1:"+date1+"\ndate2:"+date2);
-		System.out.println(result+"\n"+resultSec);
-		
-	}
-	
-	/**
-	 * <code>headObjectHeaders</code>
-	 * @part If-Match
-	 */
-	@Test(timeout=10000)
-	public void headObjectHeaders2203(){
-		HeadObjectRequest request = new HeadObjectRequest(bucket, "headers/headObjectHeaders.txt");
-		HeadObjectRequest requestSec= new HeadObjectRequest(bucket, "headers/headObjectHeaders.txt");
+	public void getObjectHeaders2104(){
+		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		GetObjectRequest requestSec= new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
 		//set the headers
 		List<String> eTags = this.getETags();
 		List<String> eTagsSec = new ArrayList<String>();
-		eTagsSec.add("21c49d6cf6400735433c02cb1b6c90f4");
-		request.setMatchingETagConstraints(eTags);
-		requestSec.setNonmatchingEtagConstraints(eTags);
-		//get the result 
-		HeadObjectResult result = client.headObject(request);
-		HeadObjectResult resultSec = client.headObject(requestSec);
-		//assert the setting
-//		assertEquals(true, result.isIfPreconditionSuccess());
-//		assertEquals(false, resultSec.isIfModified());
+		eTagsSec.add("21c49d6cf6400735433c02cb1b6c90f1");
 		
 		request.setMatchingETagConstraints(eTagsSec);
-		requestSec.setNonmatchingEtagConstraints(eTagsSec);
-		//get the result 
-		result = client.headObject(request);
-		resultSec = client.headObject(requestSec);
-		//assert the setting
-		assertEquals(false, result.isIfPreconditionSuccess());
-		assertEquals(true, resultSec.isIfModified());
+		requestSec.setNonmatchingEtagConstraints(eTags);
 		
+		//get the result 
+		GetObjectResult result = client.getObject(request);
+		GetObjectResult resultSec = client.getObject(requestSec);
+		//assert the setting
+		assertEquals(false, result.isIfPreconditionSuccess());//412
+		assertEquals(false, resultSec.isIfModified());//304
+		assertEquals(true, result.isIfModified());//412
+		assertEquals(true, resultSec.isIfPreconditionSuccess());//304
+			
 //		System.out.println(result);
 //		System.out.println(resultSec);
-		
 	}
 	
 	
@@ -293,7 +201,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=10000)
 	public void putObjectHeaders(){
-		PutObjectRequest request = new PutObjectRequest(bucket, "headers/putObjectHeaders.txt", new File("D:/objectTest/headers/putObjectHeaders.txt"));
+		PutObjectRequest request = new PutObjectRequest(bucket, "headers/putObjectHeaders.txt", new File("D:/objectTest/putObjectHeaders.txt"));
 
 		ObjectMetadata objectMeta = new ObjectMetadata();
 		objectMeta.setCacheControl("no-cache");
@@ -330,7 +238,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 *  redirect-location
 	 * <pre></p>
 	 */
-	@Test()
+	@Test
 	public void copyObjectHeaders(){
 		try{
 			client.deleteObject(bucket, "headers/getObjectHeaders.txt");
@@ -385,7 +293,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=1500)
 	public void uploadPart(){
-//		PutObjectRequest request = new PutObjectRequest(bucket, "headers/getObjectHeaders.txt", new File("D:/objectTest/headers/headObjectHeaders"));
+//		PutObjectRequest request = new PutObjectRequest(bucket, "headers/getObjectHeaders.txt", new File("D:/objectTest/headObjectHeaders"));
 //		
 //		PutObjectResult result = client.putObject(request);
 //		System.out.println(result);
