@@ -1,6 +1,8 @@
 package com.ksyun.ks3.service;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,11 +23,12 @@ public class ObjectBeforeTest {
 	private static Log logger = LogFactory.getLog(ObjectBeforeTest.class);
 	
 	/**
+	 * @throws IOException 
 	 * @description 加载类时调用，配置测试客户端数据，权限数据，和基础数据信息。
 	 * 		
 	 */
 	@BeforeClass
-	public static void beforeClass(){
+	public static void beforeClass() throws IOException{
 		Properties credential = new Properties();
 		String accesskeyId1 = null;
 		String accesskeySecret1 = null;
@@ -54,8 +57,27 @@ public class ObjectBeforeTest {
 		new Ks3CoreController();
 		
 		bucket = "test1-zzy";
-		File fileDir = new File("D:/objectTest");
+		String filePath = "D:/objectTest";
+		File fileDir = new File(filePath);
 		fileDir.mkdir();
+		
+		//add test files
+		String[] fileNames = {
+			"deleteTestP.txt","putObjectTest.txt","putObjectTestP.txt",
+			"putObjectHeaders.txt","headObjectHeaders","abc.txt","record.txt","putObjectHeaders.txt"
+		};
+		
+		for(String fileName:fileNames){
+			File file = new File(filePath+ "/" + fileName);
+			System.out.println(file.getPath());
+			file.createNewFile();
+			
+			FileWriter fw = new FileWriter(file);
+			fw.write("test file:" + file.getPath());
+			
+			fw.close();
+		}
+		
 	}
 	
 	/**
@@ -70,9 +92,6 @@ public class ObjectBeforeTest {
 		List<String> eTags = new ArrayList<String>();
 		try{
 			GetObjectResult result = client.getObject(bucket, "hosts.txt");
-			eTags.add(result.getObject().getObjectMetadata().getETag());
-			
-			result = client.getObject(bucket, "deleteTest.txt");
 			eTags.add(result.getObject().getObjectMetadata().getETag());
 			
 			result = client.getObject(bucket, "putObjectTest.txt");
