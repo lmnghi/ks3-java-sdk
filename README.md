@@ -22,7 +22,7 @@ com.ksyun.ks3.utils:工具包
     <dependency>
         <groupId>com.ksyun.ks3</groupId>
         <artifactId>ks3-kss-java-sdk</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
     </dependency>
     
 ## 3 初始化
@@ -46,7 +46,7 @@ com.ksyun.ks3.utils:工具包
 	config.set(ClientConfig.IS_PREEMPTIVE_BASIC_PROXY_AUTH,"false");//Whether to authenticate preemptively against proxy server.
 	config.set(ClientConfig.END_POINT,"kss.ksyun.com");//KS3服务器域名
 	config.set(ClientConfig.CLIENT_SIGNER,"com.ksyun.ks3.signer.DefaultSigner");//配置签名算法生成器，一般情况下请勿修改。
-	ClientConfig.getConfig().set(ClientConfig.CLIENT_URLFORMAT, "0"); //设置 url格式.0 {bucket}.kss.ksyun.com/{key}.1 kss.ksyun.com/{bucket}/{key}
+	config.set(ClientConfig.CLIENT_URLFORMAT, "0"); //设置 url格式.0 {bucket}.kss.ksyun.com/{key}.1 kss.ksyun.com/{bucket}/{key}
 #### 3.1.2配置方法二
 新建配置文件config.properties
 
