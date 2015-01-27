@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.http.Ks3CoreController;
 
@@ -29,6 +30,8 @@ public class ObjectBeforeTest {
 	 */
 	@BeforeClass
 	public static void beforeClass() throws IOException{
+		ClientConfig.getConfig().set(ClientConfig.CLIENT_URLFORMAT, "1");
+		
 		Properties credential = new Properties();
 		String accesskeyId1 = null;
 		String accesskeySecret1 = null;

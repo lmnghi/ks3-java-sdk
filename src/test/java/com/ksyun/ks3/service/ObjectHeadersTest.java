@@ -52,11 +52,11 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 		
 		/* part range */
 		//set the headers 
-		request.setRange(0, 299);
+		request.setRange(0, 1);
 		//get the result 
 		GetObjectResult result = client.getObject(request);
 		//assert the setting 
-		assertEquals(300, result.getObject().getObjectMetadata().getContentLength());
+		assertEquals(2, result.getObject().getObjectMetadata().getContentLength());
 		
 	}
 	
@@ -72,6 +72,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 		/* part Modified-Since */
 		//set the headers
 		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, 1);
 		Date date1 = cal.getTime();
 		cal.add(Calendar.YEAR, -2);
 		Date date2 = cal.getTime();

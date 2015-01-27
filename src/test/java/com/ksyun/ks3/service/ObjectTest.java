@@ -126,11 +126,11 @@ public class ObjectTest extends ObjectBeforeTest{
 	public void getObjectTest1004() throws IOException{
 		GetObjectRequest request = new GetObjectRequest(bucket, "hosts.txt");
 		
-		request.setRange(0, 299);
+		request.setRange(0, 1);
 		GetObjectResult object = client.getObject(request);
 		
 		
-		assertEquals(300, object.getObject().getObjectMetadata().getContentLength());
+		assertEquals(2, object.getObject().getObjectMetadata().getContentLength());
 		
 		File file = new File("D:/objectTest/getObjectTest1004.txt");
 
@@ -299,17 +299,36 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(timeout=5000)
 	public void headObjectTest2004() throws IOException{
+		GetObjectResult ret1 = client.getObject(bucket, "hosts.txt");
+		long length = ret1.getObject().getObjectMetadata().getContentLength();
+		
 		HeadObjectRequest request = new HeadObjectRequest(bucket, "hosts.txt");
 		
-		request.setRange(0, 299);
+		request.setRange(0, 2);
 		
 		HeadObjectResult result = client.headObject(request);
 		
-		System.out.println(result);
+		assertEquals(3,result.getObjectMetadata().getContentLength());
 		
-		System.out.println("getContentLength :" + result.getObjectMetadata().getContentLength());
 		
-		System.out.println("getContentLength :" + result.getObjectMetadata().getMeta(HttpHeaders.ContentLength.toString()));
+		
+		HeadObjectRequest request1 = new HeadObjectRequest(bucket, "hosts.txt");
+		
+		request1.setRange(1, 2);
+		
+		HeadObjectResult result1 = client.headObject(request1);
+		
+		assertEquals(2,result1.getObjectMetadata().getContentLength());
+		
+		
+		
+		HeadObjectRequest request2 = new HeadObjectRequest(bucket, "hosts.txt");
+		
+		request2.setRange(1,length+10);
+		
+		HeadObjectResult result2 = client.headObject(request2);
+		
+		assertEquals(length-1,result2.getObjectMetadata().getContentLength());
 	}
 	
 	/**

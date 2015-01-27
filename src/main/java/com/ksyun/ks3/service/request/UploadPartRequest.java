@@ -121,6 +121,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 
 	@Override
 	protected void configHttpRequest() {
+		
 		this.setContentType("binary/octet-stream");
 		this.setHttpMethod(HttpMethod.PUT);
 		this.addParams("uploadId", this.uploadId);
