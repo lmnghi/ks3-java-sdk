@@ -98,7 +98,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	public void getObjectTest1003() throws IOException {
 		GetObjectResult object = client.getObject(bucket, "hosts.txt");
 		
-		File file = new File("D:/objectTest/getObjectTest1003.txt");
+		File file = new File(filePath + "/getObjectTest1003.txt");
 		FileOutputStream fos = null;
 
 		if (!file.exists()) {
@@ -132,7 +132,7 @@ public class ObjectTest extends ObjectBeforeTest{
 		
 		assertEquals(2, object.getObject().getObjectMetadata().getContentLength());
 		
-		File file = new File("D:/objectTest/getObjectTest1004.txt");
+		File file = new File(filePath + "/getObjectTest1004.txt");
 
 		FileOutputStream fos = null;
 		
@@ -180,6 +180,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test
 	public void getObjectTest1006(){
+		client.putObjectACL(bucket, "hostsPulbic.txt", CannedAccessControlList.PublicReadWrite);
 		GetObjectResult object = clientOther.getObject(bucket, "hostsPulbic.txt");
 		System.out.println(object);
 	}
@@ -437,7 +438,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 * @Test 客户端访问非本用户文件---公开文件
 	 * @Then 
 	 */
-	@Test(expected=AccessDeniedException.class)
+	@Test()
 	public void getObjectACLTest3004(){
 
 		AccessControlPolicy object = clientOther.getObjectACL(bucket, "hostsPulbic.txt");
@@ -478,11 +479,11 @@ public class ObjectTest extends ObjectBeforeTest{
 	public void deleteObjectTest4001(){
 		
 		try{
-			client.putObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
+			client.putObject(bucket, "deleteTestP.txt", new File(filePath + "/deleteTestP.txt"));
 		}catch(Exception e){}
 		
 		client.deleteObject(bucket, "deleteTestP.txt");
-		client.putObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
+		client.putObject(bucket, "deleteTestP.txt", new File(filePath + "/deleteTestP.txt"));
 		
 	}
 	
@@ -515,11 +516,11 @@ public class ObjectTest extends ObjectBeforeTest{
 	 * @Test 客户端删除非本用户文件---公开文件
 	 * @Then 
 	 */
-	@Test(expected=AccessDeniedException.class)
+	@Test()
 	public void deleteObjectTest4004(){
-		
+		client.putObjectACL(bucket, "deleteTestP.txt", CannedAccessControlList.PublicReadWrite);
 		clientOther.deleteObject(bucket, "deleteTestP.txt");
-		client.putObject(bucket, "deleteTestP.txt", new File("D:/objectTest/deleteTestP.txt"));
+		client.putObject(bucket, "deleteTestP.txt", new File(filePath + "/deleteTestP.txt"));
 	}
 	
 	/**
@@ -551,7 +552,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test()
 	public void putObjectTest5001(){
-		PutObjectResult result = client.putObject(bucket, "/putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/putObjectTest.txt",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -563,7 +564,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=Ks3ClientException.class)
 	public void putObjectTest5002(){
-		PutObjectResult result = client.putObject(bucket, "/putObjectTest.txt",new File("D:/objectTest/notExist.txt"));
+		PutObjectResult result = client.putObject(bucket, "/putObjectTest.txt",new File(filePath + "/notExist.txt"));
 		System.out.println(result);
 		
 	}
@@ -576,7 +577,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	@Test(expected=NoSuchBucketException.class)
 	public void putObjectTest5003(){
 		String noBucket = "notExist";
-		PutObjectResult result = client.putObject(noBucket, "/putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(noBucket, "/putObjectTest.txt",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -589,11 +590,11 @@ public class ObjectTest extends ObjectBeforeTest{
 	@Test()
 	public void putObjectTest5004(){
 		List<String> resultList = new ArrayList<String>();
-		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest.txt", new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest.txt", new File(filePath + "/putObjectTest.txt"));
 		request.setCannedAcl(CannedAccessControlList.Private);
 		resultList.add(request.getCannedAcl() + ":" + client.putObject(request));
 		
-		request = new PutObjectRequest(bucket, "/putObjectTestP.txt", new File("D:/objectTest/putObjectTestP.txt"));
+		request = new PutObjectRequest(bucket, "/putObjectTestP.txt", new File(filePath + "/putObjectTestP.txt"));
 		request.setCannedAcl(CannedAccessControlList.PublicRead);
 		resultList.add(request.getCannedAcl() + ":" + client.putObject(request));
 		
@@ -612,7 +613,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=BucketAlreadyExistsException.class)
 	public void putObjectTest5005(){
-		PutObjectResult result = client.putObject(bucket, ".",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, ".",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -624,7 +625,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=Ks3ServiceException.class)
 	public void putObjectTest5006(){
-		PutObjectResult result = client.putObject(bucket, "..",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "..",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -636,7 +637,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test()
 	public void putObjectTest5007(){
-		PutObjectResult result = client.putObject(bucket, "。",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "。",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -648,7 +649,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test()
 	public void putObjectTest5008(){
-		PutObjectResult result = client.putObject(bucket, "。。",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "。。",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -660,7 +661,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test
 	public void putObjectTest5009(){
-		PutObjectResult result = client.putObject(bucket, "/./putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/./putObjectTest.txt",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -672,7 +673,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test()
 	public void putObjectTest5010(){
-		PutObjectResult result = client.putObject(bucket, "/../putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/../putObjectTest.txt",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -684,7 +685,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test
 	public void putObjectTest5011(){
-		PutObjectResult result = client.putObject(bucket, "/.../putObjectTest.txt",new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectResult result = client.putObject(bucket, "/.../putObjectTest.txt",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
 		
 	}
@@ -697,7 +698,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test
 	public void putObjectTest5012() {
-		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTestMeta.txt", new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectRequest request = new PutObjectRequest(bucket, "putObjectTestMeta.txt", new File(filePath + "/putObjectTest.txt"));
 		
 		ObjectMetadata objectMeta = new ObjectMetadata();
 		objectMeta.setContentType("txt");
@@ -726,7 +727,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=SignatureDoesNotMatchException.class)
 	public void putObjectTest5013() throws FileNotFoundException{
-		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest1.txt", new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest1.txt", new File(filePath + "/putObjectTest.txt"));
 //		request.setCannedAcl(CannedAccessControlList.Private);
 		PutObjectResult result = clientOther.putObject(request);
 		System.out.println(result);
@@ -739,7 +740,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test()
 	public void putObjectTest5014(){
-		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTestUserMeta.txt", new File("D:/objectTest/putObjectTest.txt"));
+		PutObjectRequest request = new PutObjectRequest(bucket, "putObjectTestUserMeta.txt", new File(filePath + "/putObjectTest.txt"));
 		ObjectMetadata objectMeta = new ObjectMetadata();
 		objectMeta.setUserMeta("abc", "abc");
 		objectMeta.setUserMeta("cdd", "1131445");
@@ -836,7 +837,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test
 	public void putObjectACLTest6005(){
-		AccessControlList acl = client.getObjectACL(bucket, "putObjectTest1.txt").getAccessControlList();
+		AccessControlList acl = client.getObjectACL(bucket, "putObjectTest.txt").getAccessControlList();
 		
 		
 		PutObjectACLRequest request = new PutObjectACLRequest(bucket, "putObjectTestP1.txt", acl, CannedAccessControlList.Private);
@@ -895,7 +896,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test
 	public void copyObjectTest7001(){
-		String desBucket = "test2-zzy";
+		String desBucket = bucketOther;
 		String desObject = "abc.txt";
 		try{
 			if(client.getObject(desBucket, desObject).getObject().getObjectContent()!=null){
@@ -914,7 +915,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=Ks3ServiceException.class)
 	public void copyObjectTest7002(){
-		String desBucket = "test2-zzy";
+		String desBucket = bucketOther;
 		String desObject = "abc.txt";
 		if(client.getObject(desBucket, desObject).getObject()==null){
 			CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
@@ -930,9 +931,9 @@ public class ObjectTest extends ObjectBeforeTest{
 	 * @expected NoSuchBucketException
 	 * @Then 
 	 */
-	@Test(expected=NoSuchBucketException.class, timeout=2000)
+	@Test(expected=NoSuchBucketException.class)
 	public void copyObjectTest7003(){
-		String desBucket = "test3-zzy";
+		String desBucket = "test100-zzy";
 		String desObject = "abc.txt";
 		try {
 			if (client.getObject(desBucket, desObject).getObject() != null) {
@@ -953,7 +954,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=NoSuchBucketException.class)
 	public void copyObjectTest7004(){
-		String desBucket = "test2-zzy";
+		String desBucket = bucketOther;
 		String desObject = "abc.txt";
 		try {
 			if (client.getObject(desBucket, desObject).getObject() != null) {
@@ -975,7 +976,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=NoSuchKeyException.class)
 	public void copyObjectTest7005(){
-		String desBucket = "test2-zzy";
+		String desBucket = bucketOther;
 		String desObject = "abc.txt";
 		try {
 			if (client.getObject(desBucket, desObject).getObject() != null) {
@@ -996,7 +997,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test()
 	public void copyObjectTest7006(){
-		String desBucket = "test2-zzy";
+		String desBucket = bucketOther;
 		String desObject = "abc12.txt";
 		try {
 			if (client.getObject(desBucket, desObject).getObject() != null) {
@@ -1016,15 +1017,16 @@ public class ObjectTest extends ObjectBeforeTest{
 	 * @expected 
 	 * @Then {@value NoSuchKeyException}
 	 */
-	@Test(expected=Ks3ServiceException.class,timeout=3000)
+	@Test(expected=Ks3ServiceException.class)
 	public void copyObjectTest7007(){
-		String desBucket = "test2-zzy"; 
+		String desBucket = bucketOther; 
 		String desObject = "abc88.txt";
 		
 		CopyObjectRequest request = new CopyObjectRequest(desBucket, desObject, bucket, "hosts.txt");
 		request.setCannedAcl(CannedAccessControlList.PublicReadWrite);
 		AccessControlList acl1 = client.getObjectACL(bucket, "hosts.txt").getAccessControlList();
 		request.setAccessControlList(acl1);
+		client.copyObject(request);
 		client.copyObject(request);
 		
 		AccessControlList acl2 = client.getObjectACL(desBucket, desObject).getAccessControlList();
@@ -1039,7 +1041,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected=AccessDeniedException.class)
 	public void copyObjectTest7008(){
-		String desBucket = "test2-zzy";
+		String desBucket = bucketOther;
 		String desObject = "abc13.txt";
 		try{
 			if(client.getObject(desBucket, desObject).getObject()!=null){

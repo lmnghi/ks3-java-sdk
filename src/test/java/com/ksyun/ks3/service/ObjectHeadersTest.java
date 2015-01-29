@@ -48,7 +48,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=10000)
 	public void getObjectHeaders2101(){
-		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		GetObjectRequest request = new GetObjectRequest(bucket, "getObjectHeaders.txt");
 		
 		/* part range */
 		//set the headers 
@@ -66,8 +66,8 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=10000)
 	public void getObjectHeaders2102(){
-		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
-		GetObjectRequest requestSec= new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		GetObjectRequest request = new GetObjectRequest(bucket, "getObjectHeaders.txt");
+		GetObjectRequest requestSec= new GetObjectRequest(bucket, "getObjectHeaders.txt");
 		
 		/* part Modified-Since */
 		//set the headers
@@ -95,8 +95,8 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=10000)
 	public void getObjectHeaders2105(){
-		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
-		GetObjectRequest requestSec= new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		GetObjectRequest request = new GetObjectRequest(bucket, "getObjectHeaders.txt");
+		GetObjectRequest requestSec= new GetObjectRequest(bucket, "getObjectHeaders.txt");
 		
 		/* part Modified-Since */
 		//set the headers
@@ -122,8 +122,8 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=10000)
 	public void getObjectHeaders2103(){
-		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
-		GetObjectRequest requestSec= new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		GetObjectRequest request = new GetObjectRequest(bucket, "getObjectHeaders.txt");
+		GetObjectRequest requestSec= new GetObjectRequest(bucket, "getObjectHeaders.txt");
 		//set the headers
 		List<String> eTags = this.getETags();
 		List<String> eTagsSec = new ArrayList<String>();
@@ -149,10 +149,10 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 * <code>getObjectHeaders</code>
 	 * @part If-Match  304
 	 */
-	@Test(timeout=10000)
+	@Test()
 	public void getObjectHeaders2104(){
-		GetObjectRequest request = new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
-		GetObjectRequest requestSec= new GetObjectRequest(bucket, "headers/getObjectHeaders.txt");
+		GetObjectRequest request = new GetObjectRequest(bucket, "getObjectHeaders.txt");
+		GetObjectRequest requestSec= new GetObjectRequest(bucket, "getObjectHeaders.txt");
 		//set the headers
 		List<String> eTags = this.getETags();
 		List<String> eTagsSec = new ArrayList<String>();
@@ -202,7 +202,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=10000)
 	public void putObjectHeaders(){
-		PutObjectRequest request = new PutObjectRequest(bucket, "headers/putObjectHeaders.txt", new File("D:/objectTest/putObjectHeaders.txt"));
+		PutObjectRequest request = new PutObjectRequest(bucket, "putObjectHeaders.txt", new File("D:/objectTest/putObjectHeaders.txt"));
 
 		ObjectMetadata objectMeta = new ObjectMetadata();
 		objectMeta.setCacheControl("no-cache");
@@ -218,7 +218,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 		request.setRedirectLocation("http://ks3.ksyun.com/");
 		client.putObject(request);
 		
-		GetObjectResult result = client.getObject(bucket, "headers/putObjectHeaders.txt");
+		GetObjectResult result = client.getObject(bucket, "putObjectHeaders.txt");
 
 		ObjectMetadata objMeta = result.getObject().getObjectMetadata();
 		System.out.println("redirectLocation"+result.getObject().getRedirectLocation());
@@ -242,9 +242,9 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	@Test
 	public void copyObjectHeaders(){
 		try{
-			client.deleteObject(bucket, "headers/getObjectHeaders.txt");
+			client.deleteObject(bucket, "getObjectHeaders.txt");
 		}catch(Exception e){}
-		CopyObjectRequest request = new CopyObjectRequest(bucket, "headers/getObjectHeaders.txt", bucket,"headers/putObjectHeaders.txt");
+		CopyObjectRequest request = new CopyObjectRequest(bucket, "getObjectHeaders.txt", bucket,"putObjectHeaders.txt");
 		
 		CopyResult result = client.copyObject(request);
 		System.out.println(result);
@@ -264,7 +264,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=1500)
 	public void initiateMultipartUpload(){
-		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucket, "headers/uploadObjectHeaders.txt");
+		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucket, "uploadObjectHeaders.txt");
 		
 		ObjectMetadata objectMeta = new ObjectMetadata();
 		objectMeta.setCacheControl("no-cache");
@@ -277,7 +277,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 		request.setRedirectLocation("http://ks3.ksyun.com/");
 		client.initiateMultipartUpload(request);
 		
-		GetObjectResult result = client.getObject(bucket, "headers/putObjectHeaders.txt");
+		GetObjectResult result = client.getObject(bucket, "putObjectHeaders.txt");
 
 		System.out.println("redirectLocation"+result.getObject().getRedirectLocation());
 		System.out.println(result);
@@ -294,7 +294,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 */
 	@Test(timeout=1500)
 	public void uploadPart(){
-//		PutObjectRequest request = new PutObjectRequest(bucket, "headers/getObjectHeaders.txt", new File("D:/objectTest/headObjectHeaders"));
+//		PutObjectRequest request = new PutObjectRequest(bucket, "getObjectHeaders.txt", new File("D:/objectTest/headObjectHeaders"));
 //		
 //		PutObjectResult result = client.putObject(request);
 //		System.out.println(result);

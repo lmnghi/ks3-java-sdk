@@ -20,7 +20,8 @@ public class ObjectBeforeTest {
 	protected static Ks3 client;
 	protected static Ks3 clientOther;
 	protected static String bucket;
-	
+	protected static String bucketOther;
+	protected static String filePath;
 	private static Log logger = LogFactory.getLog(ObjectBeforeTest.class);
 	
 	/**
@@ -60,14 +61,17 @@ public class ObjectBeforeTest {
 		new Ks3CoreController();
 		
 		bucket = "test1-zzy";
-		String filePath = "D:/objectTest";
+		bucketOther = "test2-zzy";
+		
+		filePath = "D:/objectTest";
 		File fileDir = new File(filePath);
 		fileDir.mkdir();
 		
 		//add test files
 		String[] fileNames = {
 			"deleteTestP.txt","putObjectTest.txt","putObjectTestP.txt",
-			"putObjectHeaders.txt","headObjectHeaders","abc.txt","record.txt","putObjectHeaders.txt"
+			"putObjectHeaders.txt","headObjectHeaders.txt","abc.txt","record.txt","putObjectHeaders.txt","getObjectHeaders.txt","hosts.txt"
+			,"hostsPulbic.txt","putObjectTestMeta.txt","putObjectTestP1.txt"
 		};
 		
 		for(String fileName:fileNames){
@@ -81,8 +85,23 @@ public class ObjectBeforeTest {
 			fw.close();
 		}
 		
+		//初始化文件
+		client.putObject(bucket, "deleteTestP.txt", new File(filePath + "/getObjectHeaders.txt"));
+		client.putObject(bucket, "putObjectTest.txt", new File(filePath + "/putObjectTest.txt"));
+		client.putObject(bucket, "putObjectTestP.txt", new File(filePath + "/putObjectTestP.txt"));
+		client.putObject(bucket, "putObjectHeaders.txt", new File(filePath + "/putObjectHeaders.txt"));
+		client.putObject(bucket, "headObjectHeaders.txt", new File(filePath + "/headObjectHeaders.txt"));
+		client.putObject(bucket, "abc.txt", new File(filePath + "/abc.txt"));
+		client.putObject(bucket, "record.txt", new File(filePath + "/record.txt"));
+		client.putObject(bucket, "putObjectHeaders.txt", new File(filePath + "/putObjectHeaders.txt"));
+		client.putObject(bucket, "getObjectHeaders.txt", new File(filePath + "/getObjectHeaders.txt"));
+		client.putObject(bucket, "hosts.txt", new File(filePath + "/hosts.txt"));
+		client.putObject(bucket, "hostsPulbic.txt", new File(filePath + "/hostsPulbic.txt"));
+		client.putObject(bucket, "putObjectTestMeta.txt", new File(filePath + "/putObjectTestMeta.txt"));
+		client.putObject(bucket, "putObjectTestP1.txt", new File(filePath + "/putObjectTestP1.txt"));
 	}
 	
+
 	/**
 	 * @description 配置测试客户端数据，执行每一个测试用例前都会执行 @Before 中代码
 	 */
@@ -106,10 +125,10 @@ public class ObjectBeforeTest {
 			result = client.getObject(bucket, "hostsPulbic.txt");
 			eTags.add(result.getObject().getObjectMetadata().getETag());
 			
-			result = client.getObject(bucket, "headers/getObjectHeaders.txt");
+			result = client.getObject(bucket, "getObjectHeaders.txt");
 			eTags.add(result.getObject().getObjectMetadata().getETag());
 			
-			result = client.getObject(bucket, "headers/headObjectHeaders.txt");
+			result = client.getObject(bucket, "headObjectHeaders.txt");
 			eTags.add(result.getObject().getObjectMetadata().getETag());
 		}catch(Exception e){
 			e.printStackTrace();
