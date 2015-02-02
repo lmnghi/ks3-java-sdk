@@ -62,6 +62,8 @@ public abstract class Ks3WebServiceRequest {
 	private InputStream requestBody;
 	private String bucketname;
 	private String objectkey;
+	//由于查询数据处理任务那个接口特殊而加的一个东西
+	private String pathVariable;
 	private HttpRequestBase httpRequest;
 
 	protected void setHeader(Map<String, String> header) {
@@ -112,7 +114,9 @@ public abstract class Ks3WebServiceRequest {
 	protected void setObjectkey(String object) {
 		this.objectkey = object;
 	}
-
+	protected void setPathVariable(String pathVariable) {
+		this.pathVariable = pathVariable;
+	}
 	@SuppressWarnings("deprecation")
 	private void initHttpRequestBase() {
 		// 准备计算 md5值
@@ -129,16 +133,16 @@ public abstract class Ks3WebServiceRequest {
 		if (format == 0) {
 			url = new StringBuffer("http://")
 					.append(StringUtils.isBlank(bucketname) ? "" : bucketname
-							+ ".").append(url).append("/")
-					.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
+							+ ".").append(url)
+					.append(StringUtils.isBlank(pathVariable) ? "" :"/"+ pathVariable)
+					.append(StringUtils.isBlank(_objectkey) ? "" :"/"+ _objectkey)
 					.toString();
 		} else {
 			url = new StringBuffer("http://")
 					.append(url)
-					.append("/")
-					.append(StringUtils.isBlank(bucketname) ? "" : bucketname
-							+ "/")
-					.append(StringUtils.isBlank(_objectkey) ? "" : _objectkey)
+					.append(StringUtils.isBlank(bucketname) ? "" :"/" +bucketname)
+					.append(StringUtils.isBlank(pathVariable) ? "" :"/"+ pathVariable)
+					.append(StringUtils.isBlank(_objectkey) ? "" : "/"+_objectkey)
 					.toString();
 		}
 		if (!StringUtils.isBlank(encodedParams))

@@ -82,6 +82,9 @@ public enum HttpHeaders {
 	 */
 	XKssCallbackUrl("x-kss-callbackurl"),
 	XKssCallbackBody("x-kss-callbackbody"),
+	Fops("fops"),
+	NotifyURL("notifyURL"),
+	TaskId("taskid")
 	;
 	private String value;
 	

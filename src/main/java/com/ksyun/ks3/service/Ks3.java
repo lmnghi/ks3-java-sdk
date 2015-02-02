@@ -1249,4 +1249,56 @@ public interface Ks3 {
 	 * <p>由此方法生成的签名只能适用于本次请求，matchingType全部使用eq或通配</p>
 	 */
 	public PostObjectFormFields postObject(String bucket,String filename,Map<String,String> postFormData,List<String> unknowValueFormFiled) throws Ks3ClientException;
+	/**
+	 * 
+	 * @param bucketName 要处理的数据所在的bucket
+	 * @param objectKey 要处理的数据的key
+	 * @param fops 一系列的操作指令{@link Fop}
+	 * @return 任务id(taskid)
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * 
+	 * <p>添加数据处理任务</p>
+	 */
+	public String putPfopTask(String bucketName,String objectKey,List<Fop> fops) throws Ks3ClientException, Ks3ServiceException;;
+	/**
+	 * 
+	 * @param bucketName 要处理的数据所在的bucket
+	 * @param objectKey 要处理的数据的key
+	 * @param fops 一系列的操作指令{@link Fop}
+	 * @param notifyURL 处理完成后KS3将调用该url,以通知用户
+	 * @return 任务id(taskid)
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * 
+	 * <p>添加数据处理任务</p>
+	 */
+	public String putPfopTask(String bucketName,String objectKey,List<Fop> fops,String notifyURL) throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * 
+	 * @param request {@link PutPfopRequest}
+	 * @return 任务id(taskid)
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * 
+	 * <p>添加数据处理任务</p>
+	 */
+	public String putPfopTask(PutPfopRequest request) throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * 
+	 * @param taskid 由putpfop，postobject，putobject，complete_mutipart_upload返回的taskid
+	 * @return {@link FopTask}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>查询数据处理任务的状态</p>
+	 */
+	public FopTask getPfopTask(String taskid) throws Ks3ClientException, Ks3ServiceException;
+	/**
+	 * @param request {@link GetPfopRequest}
+	 * @return {@link FopTask}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 * <p>查询数据处理任务的状态</p>
+	 */
+	public FopTask getPfopTask(GetPfopRequest request) throws Ks3ClientException, Ks3ServiceException;
 }

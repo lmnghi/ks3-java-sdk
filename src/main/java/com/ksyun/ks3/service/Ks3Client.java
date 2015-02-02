@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
  
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,7 @@ import com.ksyun.ks3.service.request.GetBucketCorsRequest;
 import com.ksyun.ks3.service.request.GetBucketLocationRequest;
 import com.ksyun.ks3.service.request.GetBucketLoggingRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
+import com.ksyun.ks3.service.request.GetPfopRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
@@ -60,6 +62,7 @@ import com.ksyun.ks3.service.request.ListPartsRequest;
 import com.ksyun.ks3.service.request.PutBucketCorsRequest;
 import com.ksyun.ks3.service.request.PutBucketLoggingRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
+import com.ksyun.ks3.service.request.PutPfopRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.AbortMultipartUploadResponse;
 import com.ksyun.ks3.service.response.CompleteMultipartUploadResponse;
@@ -765,5 +768,35 @@ public class Ks3Client implements Ks3 {
 			}
 		}
 		return postObject(policy);
+	}
+
+	public String putPfopTask(String bucketName, String objectKey,
+			List<Fop> fops) throws Ks3ClientException, Ks3ServiceException {
+		PutPfopRequest request = new PutPfopRequest(bucketName,objectKey,fops);
+		return putPfopTask(request);
+	}
+
+	public String putPfopTask(String bucketName, String objectKey,
+			List<Fop> fops, String notifyURL) throws Ks3ClientException,
+			Ks3ServiceException {
+		PutPfopRequest request = new PutPfopRequest(bucketName,objectKey,fops);
+		request.setNotifyURL(notifyURL);
+		return putPfopTask(request);
+	}
+
+	public String putPfopTask(PutPfopRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		return client.execute(auth, request, PutPfopResponse.class);
+	}
+
+	public FopTask getPfopTask(String taskid) throws Ks3ClientException,
+			Ks3ServiceException {
+		GetPfopRequest request = new GetPfopRequest(taskid);
+		return getPfopTask(request);
+	}
+
+	public FopTask getPfopTask(GetPfopRequest request)
+			throws Ks3ClientException, Ks3ServiceException {
+		return client.execute(auth, request, GetPfopResponse.class);
 	}
 }
