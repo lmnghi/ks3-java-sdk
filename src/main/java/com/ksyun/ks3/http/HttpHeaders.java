@@ -76,7 +76,12 @@ public enum HttpHeaders {
 	 */
 	XKssWebsiteRedirectLocation("x-kss-website-redirect-location"),
 	XKssCopySource("x-kss-copy-source"),
-	XKssCopySourceRange("x-kss-copy-source-range")
+	XKssCopySourceRange("x-kss-copy-source-range"),
+	/**
+	 * callback
+	 */
+	XKssCallbackUrl("x-kss-callbackurl"),
+	XKssCallbackBody("x-kss-callbackbody"),
 	;
 	private String value;
 	

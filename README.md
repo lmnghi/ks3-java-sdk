@@ -715,7 +715,26 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		meta.setContentDisposition("attachment; filename=fname.ext");
 
 		request.setObjectMeta(meta);
-
+		//设置callBack
+		CallBackConfiguration config = new CallBackConfiguration();
+		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
+		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
+		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
+		magicVariables.put("bucket", MagicVariables.bucket);
+		magicVariables.put("createTime", MagicVariables.createTime);
+		magicVariables.put("etag", MagicVariables.etag);
+		magicVariables.put("key", MagicVariables.key);
+		magicVariables.put("mimeType", MagicVariables.mimeType);
+		magicVariables.put("objectSize", MagicVariables.objectSize);
+		
+		config.setBodyMagicVariables(magicVariables);
+		
+		Map<String,String> kssVariables = new HashMap<String,String>();
+		
+		kssVariables.put("user", "lijunwei");
+		kssVariables.put("time", "20150222");
+		kssVariables.put("location", "beijing");
+		request.setCallBackConfiguration(config);
 		client.putObject(request);
 	}
 
@@ -754,6 +773,27 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		// 设置acl
 		request.setAcl(acl);
 
+		//设置callBack
+		CallBackConfiguration config = new CallBackConfiguration();
+		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
+		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
+		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
+		magicVariables.put("bucket", MagicVariables.bucket);
+		magicVariables.put("createTime", MagicVariables.createTime);
+		magicVariables.put("etag", MagicVariables.etag);
+		magicVariables.put("key", MagicVariables.key);
+		magicVariables.put("mimeType", MagicVariables.mimeType);
+		magicVariables.put("objectSize", MagicVariables.objectSize);
+		
+		config.setBodyMagicVariables(magicVariables);
+		
+		Map<String,String> kssVariables = new HashMap<String,String>();
+		
+		kssVariables.put("user", "lijunwei");
+		kssVariables.put("time", "20150222");
+		kssVariables.put("location", "beijing");
+		request.setCallBackConfiguration(config);
+
 		client.putObject(request);
 	}
 ##### 5.3.7.2 特殊异常
@@ -766,6 +806,8 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 |ClientFileNotFoundException|用户指定的文件不存在，读取时抛出java.io.FileNotFoundException,被客户端处理为ClientFileNotFoundException|
 |InvalidDigestException|服务端MD5校验失败，文件上传失败|
 |ClientInvalidDigestException|客户端MD5校验失败，文件虽然上传成功但是可能有缺失或损坏,建议重新上传|
+|CallbackFailException|KS3服务端回调用户提供的callbackurl时出错|
+|CallbackTimeoutException|KS3服务端回调用户提供的callbackurl超时|
 
 #### 5.3.8 PUT Object acl
 ##### 5.3.8.1 使用示例
@@ -900,6 +942,26 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		//***********************完成分块上传，使服务端将块合并成一个文件*****************************************
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 				tags);//提供了一个简便的方式
+		//设置callBack
+		CallBackConfiguration config = new CallBackConfiguration();
+		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
+		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
+		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
+		magicVariables.put("bucket", MagicVariables.bucket);
+		magicVariables.put("createTime", MagicVariables.createTime);
+		magicVariables.put("etag", MagicVariables.etag);
+		magicVariables.put("key", MagicVariables.key);
+		magicVariables.put("mimeType", MagicVariables.mimeType);
+		magicVariables.put("objectSize", MagicVariables.objectSize);
+		
+		config.setBodyMagicVariables(magicVariables);
+		
+		Map<String,String> kssVariables = new HashMap<String,String>();
+		
+		kssVariables.put("user", "lijunwei");
+		kssVariables.put("time", "20150222");
+		kssVariables.put("location", "beijing");
+		request.setCallBackConfiguration(config);
 		client.completeMultipartUpload(request);
 	}
 	public void multipartUploadWithInputStream(){
@@ -951,7 +1013,7 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 					result.getBucket(), result.getKey(), result.getUploadId(),
 					i + 1,content,5*1024*1024);
 			//可以指定内容的MD5值，否则程序只会在客户端进行MD5校验。如果指定的话会在服务端进行MD5校验
-			//request.setContentMd5("52D04DC20036DBD8");
+			//request.setContentMD5("52D04DC20036DBD8");
 			client.uploadPart(request);
 		}
 		//***********************列出分块上传以上传的块*****************************************
@@ -962,6 +1024,26 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		//***********************完成分块上传，使服务端将块合并成一个文件*****************************************
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 				tags);
+	    //设置callBack
+		CallBackConfiguration config = new CallBackConfiguration();
+		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
+		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
+		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
+		magicVariables.put("bucket", MagicVariables.bucket);
+		magicVariables.put("createTime", MagicVariables.createTime);
+		magicVariables.put("etag", MagicVariables.etag);
+		magicVariables.put("key", MagicVariables.key);
+		magicVariables.put("mimeType", MagicVariables.mimeType);
+		magicVariables.put("objectSize", MagicVariables.objectSize);
+		
+		config.setBodyMagicVariables(magicVariables);
+		
+		Map<String,String> kssVariables = new HashMap<String,String>();
+		
+		kssVariables.put("user", "lijunwei");
+		kssVariables.put("time", "20150222");
+		kssVariables.put("location", "beijing");
+		request.setCallBackConfiguration(config);
 		client.completeMultipartUpload(request);
 	}
 ##### 5.3.10.2 特殊异常
@@ -1003,3 +1085,5 @@ Complete Multipart Upload
 |NoSuchUploadException|用户提供的UploadId不存在|
 |InvalidPartException|用户提供的某个块不存在或是ETag不匹配|
 |EntityTooSmallException|除最后一块外的块大小 小于KS3要求的最小值|
+|CallbackFailException|KS3服务端回调用户提供的callbackurl时出错|
+|CallbackTimeoutException|KS3服务端回调用户提供的callbackurl超时|

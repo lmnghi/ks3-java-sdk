@@ -22,6 +22,8 @@ import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
+import com.ksyun.ks3.dto.CallBackConfiguration;
+import com.ksyun.ks3.dto.CallBackConfiguration.MagicVariables;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -71,6 +73,10 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	 * 设置新的object的acl
 	 */
 	private AccessControlList acl = new AccessControlList();
+	/**
+	 * 设置callback
+	 */
+	private  CallBackConfiguration callBackConfiguration; 
 	private String redirectLocation;
 
 	/**
@@ -174,6 +180,26 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			this.addHeader(HttpHeaders.XKssWebsiteRedirectLocation,
 					this.redirectLocation);
 		}
+		if(this.callBackConfiguration!=null){
+			this.addHeader(HttpHeaders.XKssCallbackUrl, callBackConfiguration.getCallBackUrl());
+			StringBuffer body = new StringBuffer();
+			if(callBackConfiguration.getBodyMagicVariables()!=null){
+				for(Entry<String,MagicVariables> mvs : callBackConfiguration.getBodyMagicVariables().entrySet()){
+					body.append(mvs.getKey()+"=${"+mvs.getValue()+"}&");
+				}
+			}
+			if(callBackConfiguration.getBodyKssVariables()!=null){
+				for(Entry<String,String> mvs : callBackConfiguration.getBodyKssVariables().entrySet()){
+					body.append(mvs.getKey()+"=${kss-"+mvs.getKey()+"}&");
+					this.addHeader("kss-"+mvs.getKey(), mvs.getValue());
+				}
+			}
+			String bodyString  = body.toString();
+			if(bodyString.endsWith("&")){
+				bodyString = bodyString.substring(0,bodyString.length()-1);
+			}
+			this.addHeader(HttpHeaders.XKssCallbackBody,bodyString);
+		}
 		this.setHttpMethod(HttpMethod.PUT);
 	}
 
@@ -204,6 +230,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 						String.valueOf(objectMeta.getContentLength()),
 						String.valueOf(0),
 						String.valueOf(Constants.maxSingleUpload));
+		}
+		if(this.callBackConfiguration!=null){
+			if(StringUtils.isBlank(this.callBackConfiguration.getCallBackUrl())){
+				throw notNull("callBackConfiguration.callBackUrl");
+			}
 		}
 	}
 
@@ -247,6 +278,13 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		this.redirectLocation = redirectLocation;
 	}
 
+	public CallBackConfiguration getCallBackConfiguration() {
+		return callBackConfiguration;
+	}
+
+	public void setCallBackConfiguration(CallBackConfiguration callBackConfiguration) {
+		this.callBackConfiguration = callBackConfiguration;
+	}
 	public String getMd5() {
 		if (!StringUtils.isBlank(this.getContentMD5()))
 			return this.getContentMD5();
@@ -255,5 +293,4 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 					.encodeAsString(((MD5DigestCalculatingInputStream) super
 							.getRequestBody()).getMd5Digest());
 	}
-
 }
