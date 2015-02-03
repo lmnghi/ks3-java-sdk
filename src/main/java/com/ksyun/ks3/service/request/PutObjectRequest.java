@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CallBackConfiguration;
 import com.ksyun.ks3.dto.CallBackConfiguration.MagicVariables;
 import com.ksyun.ks3.dto.CannedAccessControlList;
+import com.ksyun.ks3.dto.Fop;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.Permission;
@@ -77,6 +79,14 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	 * 设置callback
 	 */
 	private  CallBackConfiguration callBackConfiguration; 
+	/**
+	 * 要进行的数据处理任务
+	 */
+	private List<Fop> fops = new ArrayList<Fop>();
+	/**
+	 * 数据处理任务完成后通知的url
+	 */
+	private String notifyURL;
 	private String redirectLocation;
 
 	/**
@@ -200,6 +210,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			}
 			this.addHeader(HttpHeaders.XKssCallbackBody,bodyString);
 		}
+		if(this.fops!=null&&fops.size()>0){
+			this.addHeader(HttpHeaders.Fops, URLEncoder.encode(HttpUtils.convertFops2String(fops)));
+			if(!StringUtils.isBlank(notifyURL))
+				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
+		}
 		this.setHttpMethod(HttpMethod.PUT);
 	}
 
@@ -235,6 +250,15 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			if(StringUtils.isBlank(this.callBackConfiguration.getCallBackUrl())){
 				throw notNull("callBackConfiguration.callBackUrl");
 			}
+		}
+		if(fops!=null&&fops.size()>0){
+			for(Fop fop : fops){
+				if(StringUtils.isBlank(fop.getCommand())){
+					throw notNullInCondition("fops.command","fops不为空");
+				}
+			}
+			if(StringUtils.isBlank(notifyURL))
+				throw notNullInCondition("notifyURL","fops不为空");
 		}
 	}
 
@@ -285,6 +309,23 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	public void setCallBackConfiguration(CallBackConfiguration callBackConfiguration) {
 		this.callBackConfiguration = callBackConfiguration;
 	}
+	
+	public List<Fop> getFops() {
+		return fops;
+	}
+
+	public void setFops(List<Fop> fops) {
+		this.fops = fops;
+	}
+
+	public String getNotifyURL() {
+		return notifyURL;
+	}
+
+	public void setNotifyURL(String notifyURL) {
+		this.notifyURL = notifyURL;
+	}
+
 	public String getMd5() {
 		if (!StringUtils.isBlank(this.getContentMD5()))
 			return this.getContentMD5();

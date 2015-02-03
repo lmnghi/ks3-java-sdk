@@ -1,6 +1,7 @@
 package com.ksyun.ks3.service.request;
 
 import java.io.ByteArrayInputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,15 +10,18 @@ import java.util.Map.Entry;
 
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.dto.CallBackConfiguration;
+import com.ksyun.ks3.dto.Fop;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.Part;
 import com.ksyun.ks3.dto.PartETag;
 import com.ksyun.ks3.dto.CallBackConfiguration.MagicVariables;
 
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNullInCondition;
 
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 import com.ksyun.ks3.utils.XmlWriter;
 
@@ -41,6 +45,14 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	 * 设置callback
 	 */
 	private  CallBackConfiguration callBackConfiguration; 
+	/**
+	 * 要进行的数据处理任务
+	 */
+	private List<Fop> fops = new ArrayList<Fop>();
+	/**
+	 * 数据处理任务完成后通知的url
+	 */
+	private String notifyURL;
 	/**
 	 * 
 	 * @param bucketname
@@ -126,6 +138,11 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 			}
 			this.addHeader(HttpHeaders.XKssCallbackBody,bodyString);
 		}
+		if(this.fops!=null&&fops.size()>0){
+			this.addHeader(HttpHeaders.Fops, URLEncoder.encode(HttpUtils.convertFops2String(fops)));
+			if(!StringUtils.isBlank(notifyURL))
+				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
+		}
 	}
 
 	@Override
@@ -143,7 +160,15 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 				throw notNull("callBackConfiguration.callBackUrl");
 			}
 		}
-		
+		if(fops!=null&&fops.size()>0){
+			for(Fop fop : fops){
+				if(StringUtils.isBlank(fop.getCommand())){
+					throw notNullInCondition("fops.command","fops不为空");
+				}
+			}
+			if(StringUtils.isBlank(notifyURL))
+				throw notNullInCondition("notifyURL","fops不为空");
+		}
 	}
 	/**
 	 * 通过Init Multipart Upload 初始化得到的uploadId
@@ -174,6 +199,18 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	}
 	public void setCallBackConfiguration(CallBackConfiguration callBackConfiguration) {
 		this.callBackConfiguration = callBackConfiguration;
+	}
+	public List<Fop> getFops() {
+		return fops;
+	}
+	public void setFops(List<Fop> fops) {
+		this.fops = fops;
+	}
+	public String getNotifyURL() {
+		return notifyURL;
+	}
+	public void setNotifyURL(String notifyURL) {
+		this.notifyURL = notifyURL;
 	}
 	
 }

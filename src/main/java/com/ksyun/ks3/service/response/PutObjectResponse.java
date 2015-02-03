@@ -22,6 +22,7 @@ public class PutObjectResponse extends Ks3WebServiceDefaultResponse<PutObjectRes
 	public void preHandle() {
 		result = new PutObjectResult();
 		result.seteTag(this.getHeader(HttpHeaders.ETag.toString()));
+		result.setTaskid(super.getHeader(HttpHeaders.TaskId.toString()));
 	}
 
 	public String getETag() {

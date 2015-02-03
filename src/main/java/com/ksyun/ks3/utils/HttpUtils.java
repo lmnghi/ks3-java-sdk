@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
@@ -24,6 +25,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.AccessControlPolicy;
+import com.ksyun.ks3.dto.Fop;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator;
@@ -110,6 +112,27 @@ public class HttpUtils {
 			headers.put(HttpHeaders.GrantWrite.toString(),StringUtils.join(grants_write,","));
 		}
 		return headers;
+	}
+	public static String convertFops2String(List<Fop> fops){
+		StringBuffer fopStringBuffer = new StringBuffer();
+		for(Fop fop : fops){
+			fopStringBuffer.append(fop.getCommand());
+			if(!(StringUtils.isBlank(fop.getBucket())&&StringUtils.isBlank(fop.getKey()))){
+				if(StringUtils.isBlank(fop.getBucket())){
+					fopStringBuffer.append(String.format("|tag=saveas&object=%s",Base64.encodeAsString(fop.getKey().getBytes())));
+				}else if(StringUtils.isBlank(fop.getKey())){
+					fopStringBuffer.append(String.format("|tag=saveas&bucket=%s",fop.getBucket()));
+				}else{
+					fopStringBuffer.append(String.format("|tag=saveas&bucket=%s&object=%s",fop.getBucket(),Base64.encodeAsString(fop.getKey().getBytes())));
+				}
+			}
+			fopStringBuffer.append(";");
+		}
+		String fopString = fopStringBuffer.toString();
+		if(fopString.endsWith(";")){
+			fopString = fopString.substring(0,fopString.length()-1);
+		}
+		return fopString;
 	}
 	//encode objectkey时不会编码斜杠
 	public static String urlEncode(final String value, final boolean path) {

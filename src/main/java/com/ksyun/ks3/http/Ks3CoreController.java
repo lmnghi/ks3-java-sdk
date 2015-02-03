@@ -88,7 +88,6 @@ public class Ks3CoreController {
 		this.client = this.factory.createHttpClient();
 		HttpResponse response = null;
 		HttpRequestBase httpRequest = request.getHttpRequest();
-		log.info("finished convert httprequest : " + Timer.end());
 		try {
 			String signerString = ClientConfig.getConfig().getStr(
 					ClientConfig.CLIENT_SIGNER);
@@ -100,9 +99,7 @@ public class Ks3CoreController {
 					"计算签名时发生了一个异常 ("
 							+ e + ")", e);
 		}
-		log.info("finished calculate authorization: " + Timer.end());
 		try {
-			log.info("sending http request..... please wait");
 			log.info(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
 			log.info(response.getStatusLine());

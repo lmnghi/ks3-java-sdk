@@ -4,6 +4,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
+import com.ksyun.ks3.http.HttpHeaders;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -21,12 +22,13 @@ public class CompleteMultipartUploadResponse extends
 
 	@Override
 	public void preHandle() {
-		
+		//preHandle在startDocument之前执行
 	}
 
 	@Override
 	public void startDocument() throws SAXException {
 		result = new CompleteMultipartUploadResult();
+		result.setTaskid(super.getHeader(HttpHeaders.TaskId.toString()));
 	}
 
 	@Override

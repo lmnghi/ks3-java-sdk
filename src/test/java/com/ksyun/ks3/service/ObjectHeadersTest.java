@@ -262,7 +262,7 @@ public class ObjectHeadersTest extends ObjectBeforeTest {
 	 *  redirect-location
 	 * <pre></p>
 	 */
-	@Test(timeout=1500)
+	@Test(timeout=3000)
 	public void initiateMultipartUpload(){
 		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucket, "uploadObjectHeaders.txt");
 		

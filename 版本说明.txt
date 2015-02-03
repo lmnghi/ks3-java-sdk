@@ -1,3 +1,10 @@
+0.3.0-SNAPSHOT
+1、添加callback的支持,可以在put object和complete mulitipart upload时调用request.setCallBackConfiguration(config);设置callback参数
+2、添加数据处理接口
+2、1 可以通过putPfopTask添加数据处理任务，可以通过getPfopTask查询数据处理状态
+2、2 putObject和completeMultipartUpload时可以配置数据处理任务，为新上传的数据开启一个数据处理任务。
+
+
 2015年1月15号更新
 0.2.0-SNAPSHOT
 Ks3Client中添加postObject方法，可以获取到post object时需要的 signature、KSSAccessKeyId和policy

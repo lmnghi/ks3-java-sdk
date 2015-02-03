@@ -18,7 +18,11 @@ public class FopInfo {
 	 */
 	private String command;
 	/**
-	 * 处理结果描述
+	 * 是否处理成功
+	 */
+	private boolean success;
+	/**
+	 * 处理信息信息
 	 */
 	private String desc;
 	/**
@@ -30,25 +34,37 @@ public class FopInfo {
 	{
 		return StringUtils.object2string(this);
 	}
-	
+
 	public String getCommand() {
 		return command;
 	}
+
 	public void setCommand(String command) {
 		this.command = command;
 	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+
 	public String getDesc() {
 		return desc;
 	}
+
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
+
 	public List<String> getKeys() {
 		return keys;
 	}
+
 	public void setKeys(List<String> keys) {
 		this.keys = keys;
 	}
-	
 	
 }

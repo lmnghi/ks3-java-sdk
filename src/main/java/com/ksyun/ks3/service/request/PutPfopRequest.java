@@ -9,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import com.ksyun.ks3.dto.Fop;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.Base64;
+import com.ksyun.ks3.utils.HttpUtils;
 
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 
@@ -52,25 +54,7 @@ public class PutPfopRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void configHttpRequest() {
 		this.addParams("pfop", "");
-		StringBuffer fopStringBuffer = new StringBuffer();
-		for(Fop fop : fops){
-			fopStringBuffer.append(fop.getCommand());
-			if(!(StringUtils.isBlank(fop.getBucket())&&StringUtils.isBlank(fop.getKey()))){
-				if(StringUtils.isBlank(fop.getBucket())){
-					fopStringBuffer.append(String.format("|tag=saveas&object=%s",fop.getKey()));
-				}else if(StringUtils.isBlank(fop.getKey())){
-					fopStringBuffer.append(String.format("|tag=saveas&bucket=%s",fop.getBucket()));
-				}else{
-					fopStringBuffer.append(String.format("|tag=saveas&bucket=%s&object=%s",fop.getBucket(),fop.getKey()));
-				}
-			}
-			fopStringBuffer.append(";");
-		}
-		String fopString = fopStringBuffer.toString();
-		if(fopString.endsWith(";")){
-			fopString = fopString.substring(0,fopString.length()-1);
-		}
-		this.addHeader(HttpHeaders.Fops, URLEncoder.encode(fopString));
+		this.addHeader(HttpHeaders.Fops, URLEncoder.encode(HttpUtils.convertFops2String(fops)));
 		if(!StringUtils.isBlank(notifyURL))
 			this.addHeader(HttpHeaders.NotifyURL, notifyURL);
 		this.setHttpMethod(HttpMethod.PUT);

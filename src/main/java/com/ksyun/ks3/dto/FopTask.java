@@ -35,6 +35,18 @@ public class FopTask {
 	{
 		return StringUtils.object2string(this);
 	}
+	public boolean isProcessFinished(){
+		return !"2".equals(processstatus);
+	}
+	public boolean isProcessSuccess(){
+		return "3".equals(processstatus);
+	}
+	public boolean isNotified(){
+		return !"0".equals(notifystatus);
+	}
+	public boolean isNotifiedSuccess(){
+		return "1".equals(notifystatus);
+	}
 	public String getTaskId() {
 		return taskId;
 	}

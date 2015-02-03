@@ -34,17 +34,15 @@ public class GetPfopResponse extends Ks3WebServiceXmlResponse<FopTask>{
 	@Override
 	public void startDocument() throws SAXException {
 		result = new FopTask();
+		fopInfos = new ArrayList<FopInfo>();
 	}
 
 	@Override
 	public void startEle(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-		if("itmes".equals(getTag())){
-			fopInfos = new ArrayList<FopInfo>();
-		}
-		else if("pfopinfo".equals(getTag())){
+		if("pfopinfo".equals(getTag())){
 			fopInfo = new FopInfo();
-		}else if("keyList".equals(getTag())){
+		}else if("keys".equals(getTag())){
 			keys = new ArrayList<String>();
 		}
 	}
@@ -52,12 +50,12 @@ public class GetPfopResponse extends Ks3WebServiceXmlResponse<FopTask>{
 	@Override
 	public void endEle(String uri, String localName, String qName)
 			throws SAXException {
-		if("itmes".equals(getTag())){
+		if("Task".equals(getTag())){
 			result.setFopInfos(fopInfos);
 		}
 		else if("pfopinfo".equals(getTag())){
 			fopInfos.add(fopInfo);
-		}else if("keyList".equals(getTag())){
+		}else if("keys".equals(getTag())){
 			fopInfo.setKeys(keys);
 		}
 	}
@@ -76,8 +74,10 @@ public class GetPfopResponse extends Ks3WebServiceXmlResponse<FopTask>{
 			result.setNotifydesc(s);
 		}else if("cmd".equals(getTag())){
 			fopInfo.setCommand(s);
-		}else if("desc".equals(getTag())){
+		}else if("error".equals(getTag())){
 			fopInfo.setDesc(s);
+		}else if("desc".equals(getTag())){
+			fopInfo.setSuccess("success".equalsIgnoreCase(s));
 		}else if("value".equals(getTag())){
 			keys.add(s);
 		}

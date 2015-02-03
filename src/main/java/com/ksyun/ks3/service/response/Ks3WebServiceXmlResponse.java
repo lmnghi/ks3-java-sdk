@@ -120,6 +120,10 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 	@Override  
 	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
+		if(buffer.startsWith("<![CDATA[")&&buffer.endsWith("]]>")){
+			buffer = buffer.substring("<![CDATA[".length());
+			buffer = buffer.substring(0,buffer.length() - "]]>".length());
+		}
 		string(buffer);
 		buffer = "";
 		if(qName.startsWith("ns2:"))
