@@ -60,8 +60,8 @@ public class ObjectBeforeTest {
 		
 		new Ks3CoreController();
 		
-		bucket = "test1-zzy";
-		bucketOther = "test2-zzy";
+		bucket = "test3-zzy";
+		bucketOther = "test4-zzy";
 		
 		filePath = "D:/objectTest";
 		File fileDir = new File(filePath);

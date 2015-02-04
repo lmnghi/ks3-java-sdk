@@ -71,15 +71,15 @@ public class MultipartUploadByThreads extends Ks3ClientTest {
 
 	@After
 	public void after() {
-		if (client1.bucketExists(bucketName)) {
+/*		if (client1.bucketExists(bucketName)) {
 			client1.clearBucket(bucketName);
 			client1.deleteBucket(bucketName);
-		}
+		}*/
 	}
 
 	@Test
 	public void uploadAndDownloadByMutiThreads() throws FileNotFoundException,
-			IOException {
+			IOException, Exception {
 		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
 				bucketName, filename);
 		final InitiateMultipartUploadResult initResult = client1
@@ -92,7 +92,6 @@ public class MultipartUploadByThreads extends Ks3ClientTest {
 
 		// 上传块的线程
 		for (int i = 0; i < partnums; i++) {
-
 			final int partNum = i;
 			Thread t = new Thread() {
 				@Override

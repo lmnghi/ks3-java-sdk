@@ -43,6 +43,7 @@ import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.ListPartsRequest;
 import com.ksyun.ks3.service.request.PutBucketCorsRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
+import com.ksyun.ks3.utils.Md5Utils;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -194,7 +195,7 @@ public class Validate extends Ks3ClientTest{
 	    	content.close(); 
 	    }
 	    File fileDown = new File("D://getObjectTest.txt");
-	    assertEquals(fileDown.length(),result.getObject().getObjectMetadata().getContentLength());
+	    assertEquals(Md5Utils.md5AsBase64(fileDown),result.getObject().getObjectMetadata().getContentMD5());
 	    fileDown.delete();
 		client.deleteObject(bucketName, objectkey);
 		
