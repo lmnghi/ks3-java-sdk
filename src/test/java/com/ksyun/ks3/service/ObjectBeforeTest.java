@@ -60,12 +60,28 @@ public class ObjectBeforeTest {
 		
 		new Ks3CoreController();
 		
+		
+		//测试时需进行的配置：
+		//若为线上环境需要将bucket,bucketOther设为test1-zzy,test2-zzy
+		//若为测试环境则需要将bucket,bucketOther设为test3-zzy,test4-zzy
 		bucket = "test3-zzy";
 		bucketOther = "test4-zzy";
+		
+		//若第一次运行测试用例需要将initFile配置为 true，运行后改为false，避免重复上传影响效率
+		Boolean initFile = false;
 		
 		filePath = "D:/objectTest";
 		File fileDir = new File(filePath);
 		fileDir.mkdir();
+		
+		if(initFile){
+			init();
+		}
+		
+	}
+	
+	private static void init() throws IOException{
+		
 		
 		//add test files
 		String[] fileNames = {
@@ -100,7 +116,6 @@ public class ObjectBeforeTest {
 		client.putObject(bucket, "putObjectTestMeta.txt", new File(filePath + "/putObjectTestMeta.txt"));
 		client.putObject(bucket, "putObjectTestP1.txt", new File(filePath + "/putObjectTestP1.txt"));
 	}
-	
 
 	/**
 	 * @description 配置测试客户端数据，执行每一个测试用例前都会执行 @Before 中代码
