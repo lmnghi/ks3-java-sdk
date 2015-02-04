@@ -50,11 +50,6 @@ public class PfopTest extends Ks3ClientTest{
 		}else{
 			client.clearBucket(bucketName);
 		}
-		try{
-			client.headObject(bucketName, key);
-		}catch(Exception e){
-			client.putObject(bucketName,key,file);
-		}
 		client.putObject(bucketName, "IMG.jpg", logo);
 	}
 	@After
@@ -66,6 +61,7 @@ public class PfopTest extends Ks3ClientTest{
 	}
 	@Test(timeout=1000*2000)
 	public void testPutPfop() throws InterruptedException{
+		client.putObject(bucketName,key,file);
 		PutPfopRequest request = new PutPfopRequest(bucketName,key);
 		List<Fop> fops = new ArrayList<Fop>();
 		
@@ -147,6 +143,7 @@ public class PfopTest extends Ks3ClientTest{
 	}
 	@Test(timeout=1000*600)
 	public void testPutPfopWithErrorCommand() throws InterruptedException{
+		client.putObject(bucketName,key,file);
 		PutPfopRequest request = new PutPfopRequest(bucketName,key);
 		List<Fop> fops = new ArrayList<Fop>();
 		

@@ -1,21 +1,17 @@
-package com.ksyun.ks3.service.request;
+package com.ksyun.ks3.request;
 
-import java.io.File;
-
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
+import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNullInCondition;
-import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
-import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.between;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
@@ -24,43 +20,31 @@ import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CallBackConfiguration;
-import com.ksyun.ks3.dto.CallBackConfiguration.MagicVariables;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.Fop;
-import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.ObjectMetadata;
-import com.ksyun.ks3.dto.Permission;
+import com.ksyun.ks3.dto.CallBackConfiguration.MagicVariables;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.client.ClientFileNotFoundException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.Mimetypes;
+import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
+import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.support.MD5CalculateAble;
-import com.ksyun.ks3.utils.DateUtils;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.Md5Utils;
 import com.ksyun.ks3.utils.StringUtils;
-import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
  * 
- * @date 2014年10月22日 上午10:28:06
+ * @date 2015年2月4日 下午3:11:10
  * 
- * @description 上传文件的请求
- *              <p>
- *              提供通过文件来上传，请使用PutObjectRequest(String bucketname, String key,
- *              File file)这个构造函数
- *              </p>
- *              <p>
- *              提供通过流来上传，请使用PutObjectRequest(String bucketname, String
- *              key,InputStream inputStream, ObjectMetadata
- *              metadata)这个构造函数，使用时请尽量在metadata中提供content
- *              -length,否则有可能导致jvm内存溢出。可以再metadata中指定contentMD5
- *              </p>
+ * @description
  **/
-public class PutObjectRequest extends Ks3WebServiceRequest implements
-		MD5CalculateAble {
+public class WithOutContentTypePutObjectRequest extends Ks3WebServiceRequest
+		implements MD5CalculateAble {
 	/**
 	 * 要上传的文件
 	 */
@@ -80,7 +64,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	/**
 	 * 设置callback
 	 */
-	private  CallBackConfiguration callBackConfiguration; 
+	private CallBackConfiguration callBackConfiguration;
 	/**
 	 * 要进行的数据处理任务
 	 */
@@ -98,7 +82,8 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	 * @param file
 	 *            要上传的文件
 	 */
-	public PutObjectRequest(String bucketname, String key, File file) {
+	public WithOutContentTypePutObjectRequest(String bucketname, String key,
+			File file) {
 		this.setBucketname(bucketname);
 		this.setObjectkey(key);
 		this.setFile(file);
@@ -112,7 +97,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	 * @param metadata
 	 *            请尽量提供content-length,否则可能会导致jvm内存溢出
 	 */
-	public PutObjectRequest(String bucketname, String key,
+	public WithOutContentTypePutObjectRequest(String bucketname, String key,
 			InputStream inputStream, ObjectMetadata metadata) {
 		this.setBucketname(bucketname);
 		this.setObjectkey(key);
@@ -124,7 +109,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void configHttpRequest() {
-		this.setContentType("binary/octet-stream");
+		this.setContentType("");
 		/**
 		 * 设置request body meta
 		 */
@@ -147,8 +132,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				throw new ClientFileNotFoundException(e);
 			} catch (IOException e) {
 				e.printStackTrace();
-				throw new Ks3ClientException("计算文件的MD5值出错 (" + e
-						+ ")", e);
+				throw new Ks3ClientException("计算文件的MD5值出错 (" + e + ")", e);
 			}
 		}
 		if (this.objectMeta != null) {
@@ -168,8 +152,8 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				this.addHeader(HttpHeaders.ContentLength,
 						String.valueOf(this.objectMeta.getContentLength()));
 			if (this.objectMeta.getHttpExpiresDate() != null)
-				this.addHeader(HttpHeaders.Expires, DateUtils.convertDate2Str(this.objectMeta
-						.getHttpExpiresDate(), DATETIME_PROTOCOL.RFC1123).toString());
+				this.addHeader(HttpHeaders.Expires, this.objectMeta
+						.getHttpExpiresDate().toGMTString());
 			if (this.objectMeta.getContentMD5() != null)
 				this.addHeader(HttpHeaders.ContentMD5,
 						this.objectMeta.getContentMD5());
@@ -192,29 +176,33 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			this.addHeader(HttpHeaders.XKssWebsiteRedirectLocation,
 					this.redirectLocation);
 		}
-		if(this.callBackConfiguration!=null){
-			this.addHeader(HttpHeaders.XKssCallbackUrl, callBackConfiguration.getCallBackUrl());
+		if (this.callBackConfiguration != null) {
+			this.addHeader(HttpHeaders.XKssCallbackUrl,
+					callBackConfiguration.getCallBackUrl());
 			StringBuffer body = new StringBuffer();
-			if(callBackConfiguration.getBodyMagicVariables()!=null){
-				for(Entry<String,MagicVariables> mvs : callBackConfiguration.getBodyMagicVariables().entrySet()){
-					body.append(mvs.getKey()+"=${"+mvs.getValue()+"}&");
+			if (callBackConfiguration.getBodyMagicVariables() != null) {
+				for (Entry<String, MagicVariables> mvs : callBackConfiguration
+						.getBodyMagicVariables().entrySet()) {
+					body.append(mvs.getKey() + "=${" + mvs.getValue() + "}&");
 				}
 			}
-			if(callBackConfiguration.getBodyKssVariables()!=null){
-				for(Entry<String,String> mvs : callBackConfiguration.getBodyKssVariables().entrySet()){
-					body.append(mvs.getKey()+"=${kss-"+mvs.getKey()+"}&");
-					this.addHeader("kss-"+mvs.getKey(), mvs.getValue());
+			if (callBackConfiguration.getBodyKssVariables() != null) {
+				for (Entry<String, String> mvs : callBackConfiguration
+						.getBodyKssVariables().entrySet()) {
+					body.append(mvs.getKey() + "=${kss-" + mvs.getKey() + "}&");
+					this.addHeader("kss-" + mvs.getKey(), mvs.getValue());
 				}
 			}
-			String bodyString  = body.toString();
-			if(bodyString.endsWith("&")){
-				bodyString = bodyString.substring(0,bodyString.length()-1);
+			String bodyString = body.toString();
+			if (bodyString.endsWith("&")) {
+				bodyString = bodyString.substring(0, bodyString.length() - 1);
 			}
-			this.addHeader(HttpHeaders.XKssCallbackBody,bodyString);
+			this.addHeader(HttpHeaders.XKssCallbackBody, bodyString);
 		}
-		if(this.fops!=null&&fops.size()>0){
-			this.addHeader(HttpHeaders.Fops, URLEncoder.encode(HttpUtils.convertFops2String(fops)));
-			if(!StringUtils.isBlank(notifyURL))
+		if (this.fops != null && fops.size() > 0) {
+			this.addHeader(HttpHeaders.Fops,
+					URLEncoder.encode(HttpUtils.convertFops2String(fops)));
+			if (!StringUtils.isBlank(notifyURL))
 				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
 		}
 		this.setHttpMethod(HttpMethod.PUT);
@@ -248,19 +236,20 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 						String.valueOf(0),
 						String.valueOf(Constants.maxSingleUpload));
 		}
-		if(this.callBackConfiguration!=null){
-			if(StringUtils.isBlank(this.callBackConfiguration.getCallBackUrl())){
+		if (this.callBackConfiguration != null) {
+			if (StringUtils
+					.isBlank(this.callBackConfiguration.getCallBackUrl())) {
 				throw notNull("callBackConfiguration.callBackUrl");
 			}
 		}
-		if(fops!=null&&fops.size()>0){
-			for(Fop fop : fops){
-				if(StringUtils.isBlank(fop.getCommand())){
-					throw notNullInCondition("fops.command","fops不为空");
+		if (fops != null && fops.size() > 0) {
+			for (Fop fop : fops) {
+				if (StringUtils.isBlank(fop.getCommand())) {
+					throw notNullInCondition("fops.command", "fops不为空");
 				}
 			}
-			if(StringUtils.isBlank(notifyURL))
-				throw notNullInCondition("notifyURL","fops不为空");
+			if (StringUtils.isBlank(notifyURL))
+				throw notNullInCondition("notifyURL", "fops不为空");
 		}
 	}
 
@@ -308,10 +297,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		return callBackConfiguration;
 	}
 
-	public void setCallBackConfiguration(CallBackConfiguration callBackConfiguration) {
+	public void setCallBackConfiguration(
+			CallBackConfiguration callBackConfiguration) {
 		this.callBackConfiguration = callBackConfiguration;
 	}
-	
+
 	public List<Fop> getFops() {
 		return fops;
 	}

@@ -1,5 +1,6 @@
 package com.ksyun.ks3.service.multipartpost;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,14 +117,23 @@ public class HttpPostEmulator {
 			out.write(boundaryMessage2.getBytes("utf-8"));
 
 			// 开始真正向服务器写文件
+			InputStream stream = null;
+			int length = 0;
+			String name = ufi.getFileName();
+			if(name.substring(1).startsWith("://")){
+				File file = new File(ufi.getFileName());
+				stream = new FileInputStream(file);
+				length = (int) file.length();
+			}else{
+				stream = new ByteArrayInputStream(name.getBytes());
+				length = name.length();
+			}
 
-			File file = new File(ufi.getFileName());
-
-			DataInputStream dis = new DataInputStream(new FileInputStream(file));
+			DataInputStream dis = new DataInputStream(stream);
 
 			int bytes = 0;
 
-			byte[] bufferOut = new byte[(int) file.length()];
+			byte[] bufferOut = new byte[length];
 
 			bytes = dis.read(bufferOut);
 

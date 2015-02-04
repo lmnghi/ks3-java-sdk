@@ -92,8 +92,8 @@ public class AuthUtils {
 	{
         String resource = CanonicalizedKSSResource(request);
         String requestMethod = request.getHttpMethod().toString();
-        String contentMd5 = request.getContentMD5();
-        String contentType = request.getContentType();
+        String contentMd5 = request.getContentMD5()==null?"":request.getContentMD5();
+        String contentType = request.getContentType()==null?"": request.getContentType();
 
         
         String _signDate = DateUtils.convertDate2Str(request.getDate(),

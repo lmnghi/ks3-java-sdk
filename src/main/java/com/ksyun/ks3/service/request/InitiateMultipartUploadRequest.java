@@ -1,8 +1,10 @@
 package com.ksyun.ks3.service.request;
 
 import java.util.ArrayList;
+
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
+
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -14,8 +16,10 @@ import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.DateUtils;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
+import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -46,6 +50,7 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 	@Override
 	protected void configHttpRequest() {
 		this.setHttpMethod(HttpMethod.POST);
+		this.setContentType("binary/octet-stream");
 		this.addParams("uploads", null);
 		//添加meta data  content-length 是由Apache HTTP框架自动添加的
 		if (this.objectMeta != null) {
@@ -62,8 +67,8 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest{
 				this.addHeader(HttpHeaders.ContentEncoding,
 						this.objectMeta.getContentEncoding());
 			if (this.objectMeta.getHttpExpiresDate() != null)
-				this.addHeader(HttpHeaders.Expires, this.objectMeta
-						.getHttpExpiresDate().toGMTString());
+				this.addHeader(HttpHeaders.Expires, DateUtils.convertDate2Str(this.objectMeta
+						.getHttpExpiresDate(), DATETIME_PROTOCOL.RFC1123).toString());
 			//添加user meta
 			for(Entry<String,String> entry:this.objectMeta.getAllUserMeta().entrySet())
 			{
