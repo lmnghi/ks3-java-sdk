@@ -3,9 +3,15 @@ package com.ksyun.ks3.service;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Map.Entry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,7 +20,11 @@ import com.ksyun.ks3.dto.FopInfo;
 import com.ksyun.ks3.dto.FopTask;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.ListPartsResult;
+import com.ksyun.ks3.dto.PostObjectFormFields;
 import com.ksyun.ks3.exception.serviceside.QueryTaskFailException;
+import com.ksyun.ks3.service.multipartpost.FormFieldKeyValuePair;
+import com.ksyun.ks3.service.multipartpost.HttpPostEmulator;
+import com.ksyun.ks3.service.multipartpost.UploadFileItem;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.PutPfopRequest;
@@ -32,18 +42,22 @@ public class PfopTest extends Ks3ClientTest{
 	final String key = "野生动物.3gp";
 	final File file = new File("D://"+key);
 	final File filePut = new File(this.getClass().getClassLoader().getResource("git.exe").toString().substring(6));
+	final File logo = new File(this.getClass().getClassLoader().getResource("IMG.jpg").toString().substring(6));
 	@Before
 	public void createTestBucket(){
 		if(!client.bucketExists(bucketName)){
 			client.createBucket(bucketName);
+		}else{
+			client.clearBucket(bucketName);
 		}
 		try{
 			client.headObject(bucketName, key);
 		}catch(Exception e){
 			client.putObject(bucketName,key,file);
 		}
+		client.putObject(bucketName, "IMG.jpg", logo);
 	}
-	//@After
+	@After
 	public void deleteBucket(){
 		if(client.bucketExists(bucketName)){
 			client.clearBucket(bucketName);
@@ -105,7 +119,7 @@ public class PfopTest extends Ks3ClientTest{
 		fops.add(fop10);
 		
 		Fop fop11 = new Fop();
-		fop11.setCommand("tag=avconcat&f=flv&mode=2&file=YWFhYWFhYWF2aWRlbzrph47nlJ/liqjniakt5Zu+54mH5rC05Y2wLjNncA==&loglevel=error");
+		fop11.setCommand("tag=avconcat&f=flv&mode=2&file=YWFhYWFhYWF2aWRlbzrph47nlJ/liqjniakuM2dw&loglevel=error");
 		fop11.setKey("野生动物-视频拼接.3gp");
 		fops.add(fop11);
 		
@@ -221,6 +235,54 @@ public class PfopTest extends Ks3ClientTest{
 		FopTask task;
 		while(true){
 			task = client.getPfopTask(taskId);
+			System.out.println(task);
+			if(task.isProcessFinished()&&task.isNotified())
+				break;
+			Thread.sleep(5000);
+		}
+		assertEquals("3",task.getProcessstatus());
+		assertEquals("1",task.getNotifystatus());
+		for(FopInfo info :task.getFopInfos()){
+			assertEquals(true,info.isSuccess());
+		}
+	}
+	@Test
+	public void postObjectPfop() throws Exception{
+		Map<String,String> postData = new HashMap<String,String>();
+
+		postData.put("key",key);
+		
+		PostObjectFormFields fields = client.postObject(bucketName,key, postData,null);
+		
+		postData.put("policy",fields.getPolicy());
+		postData.put("KSSAccessKeyId",fields.getKssAccessKeyId());
+		postData.put("signature",fields.getSignature());
+		
+		String serverUrl = "http://kss.ksyun.com/"+bucketName;//上传地址  
+          
+	    // 设定要上传的普通Form Field及其对应的value  
+	    ArrayList<FormFieldKeyValuePair> ffkvp = new ArrayList<FormFieldKeyValuePair>();  
+	    
+	    for(Entry<String,String> entry:postData.entrySet()){
+	    	ffkvp.add(new FormFieldKeyValuePair(entry.getKey(),entry.getValue()));
+	    }
+	  
+	    // 设定要上传的文件  
+	    ArrayList<UploadFileItem> ufi = new ArrayList<UploadFileItem>();  
+	    ufi.add(new UploadFileItem("file","D://"+key)); 
+	        
+	    Map<String,String> headers = new HashMap<String,String>();
+	    headers.put("fops",URLEncoder.encode("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k"));
+	    headers.put("notifyURL","http://10.4.2.38:19090/");
+	    HttpPostEmulator hpe = new HttpPostEmulator();  
+	    Map<String, List<String>> response = hpe.sendHttpPostRequest(serverUrl, ffkvp, ufi,headers);  
+	    System.out.println("Responsefrom server is: " + response);   
+	    List<String> taskid = response.get("taskid");
+	    assertNotNull(taskid);
+	    assertEquals(1,taskid.size());
+	    FopTask task;
+		while(true){
+			task = client.getPfopTask(taskid.get(0));
 			System.out.println(task);
 			if(task.isProcessFinished()&&task.isNotified())
 				break;

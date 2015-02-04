@@ -76,7 +76,7 @@ public class PostObjectTest extends Ks3ClientTest{
 	        
 	        
 	    HttpPostEmulator hpe = new HttpPostEmulator();  
-	    String response = hpe.sendHttpPostRequest(serverUrl, ffkvp, ufi);  
+	    Map<String, List<String>> response = hpe.sendHttpPostRequest(serverUrl, ffkvp, ufi,new HashMap<String,String>());  
 	    System.out.println("Responsefrom server is: " + response);   
 	        
 	}

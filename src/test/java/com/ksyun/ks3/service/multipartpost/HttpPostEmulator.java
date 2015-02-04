@@ -10,14 +10,17 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class HttpPostEmulator {
 	// 每个post参数之间的分隔。随意设定，只要不会和其他的字符串重复即可。
 	private static final String BOUNDARY = "----------HV2ymHFg03ehbqgZCaKO6jyH";
 
-	public String sendHttpPostRequest(String serverUrl,
+	public Map<String,List<String>> sendHttpPostRequest(String serverUrl,
 			ArrayList<FormFieldKeyValuePair> generalFormFields,
-			ArrayList<UploadFileItem> filesToBeUploaded) throws Exception {
+			ArrayList<UploadFileItem> filesToBeUploaded,Map<String,String> headers) throws Exception {
 
 		// 向服务器发送post请求
 
@@ -35,6 +38,10 @@ public class HttpPostEmulator {
 		connection.setRequestProperty("Charset", "UTF-8");
 		connection.setRequestProperty("Content-Type",
 				"multipart/form-data; boundary=" + BOUNDARY);
+		
+		for(Entry<String,String> head:headers.entrySet()){
+			connection.setRequestProperty(head.getKey(),head.getValue());
+		}
 
 		// 头
 
@@ -165,7 +172,7 @@ public class HttpPostEmulator {
 
 		// System.out.print(strResponse);
 
-		return strResponse;
+		return connection.getHeaderFields();
 
 	}
 
