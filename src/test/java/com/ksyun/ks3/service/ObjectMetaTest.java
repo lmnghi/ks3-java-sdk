@@ -21,11 +21,13 @@ import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.PostObjectFormFields;
+import com.ksyun.ks3.dto.ResponseHeaderOverrides;
 import com.ksyun.ks3.request.WithOutContentTypeInitMultipartUploadRequest;
 import com.ksyun.ks3.service.multipartpost.FormFieldKeyValuePair;
 import com.ksyun.ks3.service.multipartpost.HttpPostEmulator;
 import com.ksyun.ks3.service.multipartpost.UploadFileItem;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
@@ -48,6 +50,7 @@ public class ObjectMetaTest extends Ks3ClientTest{
 	String disposition = "attachment; filename=fname.ext";
 	String encoding = "gzip";
 	String type = "text/plain-xx";
+	String lang = "ZH-cn";
 	@Before
 	public void createBucket(){
 		if(client.bucketExists(bucketName))
@@ -69,7 +72,12 @@ public class ObjectMetaTest extends Ks3ClientTest{
 				DateUtils.convertDate2Str(result.getObjectMetadata().getHttpExpiresDate(), DATETIME_PROTOCOL.RFC1123).toString()
 				);
 		
-		GetObjectResult res = client.getObject(bucketName,key);
+		
+		GetObjectRequest request = new GetObjectRequest(bucketName,key);
+		ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
+		overrides.setContentLanguage(lang);
+		request.setOverrides(overrides);
+		GetObjectResult res = client.getObject(request);
 		assertEquals(cache,res.getObject().getObjectMetadata().getCacheControl());
 		assertEquals(disposition,res.getObject().getObjectMetadata().getContentDisposition());
 		assertEquals(encoding,res.getObject().getObjectMetadata().getContentEncoding());
@@ -78,7 +86,7 @@ public class ObjectMetaTest extends Ks3ClientTest{
 				DateUtils.convertDate2Str(expire, DATETIME_PROTOCOL.RFC1123).toString(),
 				DateUtils.convertDate2Str(result.getObjectMetadata().getHttpExpiresDate(), DATETIME_PROTOCOL.RFC1123).toString()
 				);
-		
+		assertEquals(lang,res.getObject().getObjectMetadata().getMeta("Content-Language"));
 		client.clearBucket(bucketName);
 	}
 	@Test
