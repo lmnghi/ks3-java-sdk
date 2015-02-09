@@ -139,6 +139,10 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 	@Before
 	public void initBucket() {
 		client.createBucket(bucketName);
+		tests.put("unknow", "application/octet-stream");
+		tests.put("unknow", "application/octet-stream");
+		tests.put("unknow", "application/octet-stream");
+		
 		tests.put("ez", "application/andrew-inset");
 		tests.put("atom", "application/atom+xml");
 		tests.put("hqx", "application/mac-binhex40");

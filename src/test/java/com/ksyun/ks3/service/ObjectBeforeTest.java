@@ -64,8 +64,8 @@ public class ObjectBeforeTest {
 		//测试时需进行的配置：
 		//若为线上环境需要将bucket,bucketOther设为test1-zzy,test2-zzy
 		//若为测试环境则需要将bucket,bucketOther设为test3-zzy,test4-zzy
-		bucket = "test3-zzy";
-		bucketOther = "test4-zzy";
+		bucket = "test1-zzy";
+		bucketOther = "test2-zzy";
 		
 		//若第一次运行测试用例需要将initFile配置为 true，运行后改为false，避免重复上传影响效率
 		Boolean initFile = false;
