@@ -257,4 +257,35 @@ public class Validate extends Ks3ClientTest{
 		client.headObject(bucketName,objectkey);
 		client.deleteObject(bucketName, objectkey);
 	}
+	@Test
+	public void copy(){
+		long part = 10 * 1024 * 1024;
+		String bucket = bucketName;
+		String key = objectkey;
+
+		InitiateMultipartUploadRequest request1 = new InitiateMultipartUploadRequest(
+				bucket, key);
+		request1.setCannedAcl(CannedAccessControlList.PublicRead);
+		InitiateMultipartUploadResult result = client
+				.initiateMultipartUpload(request1);
+		long n = file.length() / part;
+		System.out.println(n);
+		for (int i = 0; i <= n; i++) {
+			UploadPartRequest request = new UploadPartRequest(
+					result.getBucket(), result.getKey(), result.getUploadId(),
+					i + 1, file, part, (long) i * part);
+			PartETag tag = client.uploadPart(request);
+			System.out.println(String.valueOf(i + 1) + "  " + tag + "\n");
+		}
+		// list parts
+		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
+				result.getKey(), result.getUploadId());
+		ListPartsResult tags = client.listParts(requestList);
+		// complete
+		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
+				tags);
+		client.completeMultipartUpload(request);
+		
+		client.copyObject(bucket, key+"copy", bucket, key);
+	}
 }

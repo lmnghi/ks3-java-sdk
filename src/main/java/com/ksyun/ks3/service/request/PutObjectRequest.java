@@ -80,7 +80,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	/**
 	 * 设置callback
 	 */
-	private  CallBackConfiguration callBackConfiguration; 
+	private CallBackConfiguration callBackConfiguration;
 	/**
 	 * 要进行的数据处理任务
 	 */
@@ -125,6 +125,8 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	@Override
 	protected void configHttpRequest() {
 		this.setContentType("binary/octet-stream");
+		if (this.objectMeta == null)
+			this.objectMeta = new ObjectMetadata();
 		/**
 		 * 设置request body meta
 		 */
@@ -147,38 +149,42 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				throw new ClientFileNotFoundException(e);
 			} catch (IOException e) {
 				e.printStackTrace();
-				throw new Ks3ClientException("计算文件的MD5值出错 (" + e
-						+ ")", e);
+				throw new Ks3ClientException("计算文件的MD5值出错 (" + e + ")", e);
 			}
 		}
-		if (this.objectMeta != null) {
-			if (!StringUtils.isBlank(this.objectMeta.getContentType()))
-				this.addHeader(HttpHeaders.ContentType,
-						this.objectMeta.getContentType());
-			if (!StringUtils.isBlank(this.objectMeta.getCacheControl()))
-				this.addHeader(HttpHeaders.CacheControl,
-						this.objectMeta.getCacheControl());
-			if (!StringUtils.isBlank(this.objectMeta.getContentDisposition()))
-				this.addHeader(HttpHeaders.ContentDisposition,
-						this.objectMeta.getContentDisposition());
-			if (!StringUtils.isBlank(this.objectMeta.getContentEncoding()))
-				this.addHeader(HttpHeaders.ContentEncoding,
-						this.objectMeta.getContentEncoding());
-			if (this.objectMeta.getContentLength() > 0)
-				this.addHeader(HttpHeaders.ContentLength,
-						String.valueOf(this.objectMeta.getContentLength()));
-			if (this.objectMeta.getHttpExpiresDate() != null)
-				this.addHeader(HttpHeaders.Expires, DateUtils.convertDate2Str(this.objectMeta
-						.getHttpExpiresDate(), DATETIME_PROTOCOL.RFC1123).toString());
-			if (this.objectMeta.getContentMD5() != null)
-				this.addHeader(HttpHeaders.ContentMD5,
-						this.objectMeta.getContentMD5());
-			// 添加user meta
-			for (Entry<String, String> entry : this.objectMeta.getAllUserMeta()
-					.entrySet()) {
-				if (entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
-					this.addHeader(entry.getKey(), entry.getValue());
-			}
+		// 根据object key匹配content-type
+		if (StringUtils.isBlank(objectMeta.getContentType()))
+			objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
+					super.getObjectkey()));
+		if (!StringUtils.isBlank(this.objectMeta.getContentType()))
+			this.addHeader(HttpHeaders.ContentType,
+					this.objectMeta.getContentType());
+		if (!StringUtils.isBlank(this.objectMeta.getCacheControl()))
+			this.addHeader(HttpHeaders.CacheControl,
+					this.objectMeta.getCacheControl());
+		if (!StringUtils.isBlank(this.objectMeta.getContentDisposition()))
+			this.addHeader(HttpHeaders.ContentDisposition,
+					this.objectMeta.getContentDisposition());
+		if (!StringUtils.isBlank(this.objectMeta.getContentEncoding()))
+			this.addHeader(HttpHeaders.ContentEncoding,
+					this.objectMeta.getContentEncoding());
+		if (this.objectMeta.getContentLength() > 0)
+			this.addHeader(HttpHeaders.ContentLength,
+					String.valueOf(this.objectMeta.getContentLength()));
+		if (this.objectMeta.getHttpExpiresDate() != null)
+			this.addHeader(
+					HttpHeaders.Expires,
+					DateUtils.convertDate2Str(
+							this.objectMeta.getHttpExpiresDate(),
+							DATETIME_PROTOCOL.RFC1123).toString());
+		if (this.objectMeta.getContentMD5() != null)
+			this.addHeader(HttpHeaders.ContentMD5,
+					this.objectMeta.getContentMD5());
+		// 添加user meta
+		for (Entry<String, String> entry : this.objectMeta.getAllUserMeta()
+				.entrySet()) {
+			if (entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
+				this.addHeader(entry.getKey(), entry.getValue());
 		}
 		// acl
 		if (this.cannedAcl != null) {
@@ -192,29 +198,33 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			this.addHeader(HttpHeaders.XKssWebsiteRedirectLocation,
 					this.redirectLocation);
 		}
-		if(this.callBackConfiguration!=null){
-			this.addHeader(HttpHeaders.XKssCallbackUrl, callBackConfiguration.getCallBackUrl());
+		if (this.callBackConfiguration != null) {
+			this.addHeader(HttpHeaders.XKssCallbackUrl,
+					callBackConfiguration.getCallBackUrl());
 			StringBuffer body = new StringBuffer();
-			if(callBackConfiguration.getBodyMagicVariables()!=null){
-				for(Entry<String,MagicVariables> mvs : callBackConfiguration.getBodyMagicVariables().entrySet()){
-					body.append(mvs.getKey()+"=${"+mvs.getValue()+"}&");
+			if (callBackConfiguration.getBodyMagicVariables() != null) {
+				for (Entry<String, MagicVariables> mvs : callBackConfiguration
+						.getBodyMagicVariables().entrySet()) {
+					body.append(mvs.getKey() + "=${" + mvs.getValue() + "}&");
 				}
 			}
-			if(callBackConfiguration.getBodyKssVariables()!=null){
-				for(Entry<String,String> mvs : callBackConfiguration.getBodyKssVariables().entrySet()){
-					body.append(mvs.getKey()+"=${kss-"+mvs.getKey()+"}&");
-					this.addHeader("kss-"+mvs.getKey(), mvs.getValue());
+			if (callBackConfiguration.getBodyKssVariables() != null) {
+				for (Entry<String, String> mvs : callBackConfiguration
+						.getBodyKssVariables().entrySet()) {
+					body.append(mvs.getKey() + "=${kss-" + mvs.getKey() + "}&");
+					this.addHeader("kss-" + mvs.getKey(), mvs.getValue());
 				}
 			}
-			String bodyString  = body.toString();
-			if(bodyString.endsWith("&")){
-				bodyString = bodyString.substring(0,bodyString.length()-1);
+			String bodyString = body.toString();
+			if (bodyString.endsWith("&")) {
+				bodyString = bodyString.substring(0, bodyString.length() - 1);
 			}
-			this.addHeader(HttpHeaders.XKssCallbackBody,bodyString);
+			this.addHeader(HttpHeaders.XKssCallbackBody, bodyString);
 		}
-		if(this.fops!=null&&fops.size()>0){
-			this.addHeader(HttpHeaders.Fops, URLEncoder.encode(HttpUtils.convertFops2String(fops)));
-			if(!StringUtils.isBlank(notifyURL))
+		if (this.fops != null && fops.size() > 0) {
+			this.addHeader(HttpHeaders.Fops,
+					URLEncoder.encode(HttpUtils.convertFops2String(fops)));
+			if (!StringUtils.isBlank(notifyURL))
 				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
 		}
 		this.setHttpMethod(HttpMethod.PUT);
@@ -248,19 +258,20 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 						String.valueOf(0),
 						String.valueOf(Constants.maxSingleUpload));
 		}
-		if(this.callBackConfiguration!=null){
-			if(StringUtils.isBlank(this.callBackConfiguration.getCallBackUrl())){
+		if (this.callBackConfiguration != null) {
+			if (StringUtils
+					.isBlank(this.callBackConfiguration.getCallBackUrl())) {
 				throw notNull("callBackConfiguration.callBackUrl");
 			}
 		}
-		if(fops!=null&&fops.size()>0){
-			for(Fop fop : fops){
-				if(StringUtils.isBlank(fop.getCommand())){
-					throw notNullInCondition("fops.command","fops不为空");
+		if (fops != null && fops.size() > 0) {
+			for (Fop fop : fops) {
+				if (StringUtils.isBlank(fop.getCommand())) {
+					throw notNullInCondition("fops.command", "fops不为空");
 				}
 			}
-			if(StringUtils.isBlank(notifyURL))
-				throw notNullInCondition("notifyURL","fops不为空");
+			if (StringUtils.isBlank(notifyURL))
+				throw notNullInCondition("notifyURL", "fops不为空");
 		}
 	}
 
@@ -308,10 +319,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		return callBackConfiguration;
 	}
 
-	public void setCallBackConfiguration(CallBackConfiguration callBackConfiguration) {
+	public void setCallBackConfiguration(
+			CallBackConfiguration callBackConfiguration) {
 		this.callBackConfiguration = callBackConfiguration;
 	}
-	
+
 	public List<Fop> getFops() {
 		return fops;
 	}

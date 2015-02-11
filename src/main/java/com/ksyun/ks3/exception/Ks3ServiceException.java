@@ -145,7 +145,9 @@ public class Ks3ServiceException extends Ks3ClientException {
 	}
 
 	// 将当前异常转化为com.ksyun.ks3.exception.serviceside.*下的异常
-	public <X extends Ks3ServiceException> RuntimeException convert() {
+	public <X extends Ks3ServiceException> RuntimeException convert(String reqid) {
+		if(!StringUtils.isBlank(reqid))
+			this.setRequestId(reqid);
 		if (StringUtils.isBlank(this.getErrorCode())
 				|| "unknow".equals(this.getErrorCode())) {
 			if (this.statueCode == 403)

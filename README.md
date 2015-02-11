@@ -1,5 +1,9 @@
 # KS3 SDK For Java使用指南 
 ---
+## 注意
+文档中的示例代码仅供参考之用，具体使用的时候请参考KS3 API文档，根据自己的实际情况调节参数。  
+直接使用示例代码中的参数可能会导致最后得到的结果和用户期望的不一致。
+
 ## 1 概述
 此SDK适用于Java 5及以上版本。基于KS3 API 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到金山云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过KS3存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。  
 com.ksyun.ks3:几个在上传时用到的特殊的流  
@@ -579,6 +583,7 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 这个方法不会抛出特殊异常
 #### 5.3.5 HEAD Object
 ##### 5.3.5.1 使用示例
+
 	public HeadObjectResult headObject() {
 		HeadObjectRequest request = new HeadObjectRequest("<bucket名称>",
 				"<object名称>");
@@ -695,8 +700,19 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 
 #### 5.3.7 PUT Object
 ##### 5.3.7.1 使用示例
+注意：使用第二、第三种方法之前请先查看KS3 API文档了解权限、元数据以及callback的作用，如果用户不需要的话请勿设置。否则可能会导致一些无法预料的问题。
+
+    /**
+    *将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
+    */
+    public void putObjectSimple(){
+    	PutObjectRequest request = new PutObjectRequest("<bucket名称>",
+				"<object key>", new File("<filePath>"));
+	    client.putObject(request);
+    }
 	/**
 	 * 将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
+	 * 同时设置权限、元数据和callback
 	 */
 	public void putObjectWithFile() {
 		PutObjectRequest request = new PutObjectRequest("<bucket名称>",
@@ -880,6 +896,7 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 #### 5.3.10 Multipart Upload
 ##### 5.3.10.1 使用示例
 注：中途想停止分块上传的话请调用client.abortMultipartUpload(bucketname, objectkey, uploadId);
+用户可以根据实际情况进行多线程分块上传
 
 
 	public void multipartUploadWithFile(){

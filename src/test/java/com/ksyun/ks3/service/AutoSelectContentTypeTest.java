@@ -27,6 +27,8 @@ import com.ksyun.ks3.service.multipartpost.FormFieldKeyValuePair;
 import com.ksyun.ks3.service.multipartpost.HttpPostEmulator;
 import com.ksyun.ks3.service.multipartpost.UploadFileItem;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
+import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.InitiateMultipartUploadResponse;
 import com.ksyun.ks3.service.response.PutObjectResponse;
@@ -82,6 +84,22 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 		}
 	}
 	@Test
+	public void putObjectTestForSdk(){
+		for(Entry<String,String> entry:tests.entrySet()){
+			//为了节约时间，只做抽查
+			if(new Random().nextInt()%2!=0)
+				continue;
+			String key ="test."+entry.getKey();
+			client.execute(new PutObjectRequest(bucketName,key,new ByteArrayInputStream("123456".getBytes()),null),PutObjectResponse.class);
+			
+			HeadObjectResult result = client.headObject(bucketName, key);
+			assertEquals(entry.getValue(),result.getObjectMetadata().getContentType().split(";")[0]);
+			
+			GetObjectResult gResult = client.getObject(bucketName,key);
+			assertEquals(entry.getValue(),gResult.getObject().getObjectMetadata().getContentType().split(";")[0]);
+		}
+	}
+	@Test
 	public void mulitipartUploadObject() throws Exception{
 		for(Entry<String,String> entry:tests.entrySet()){
 			//为了节约时间，只做抽查
@@ -89,6 +107,30 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 				continue;
 			String key ="test."+entry.getKey();
 			InitiateMultipartUploadResult result = client.execute(new WithOutContentTypeInitMultipartUploadRequest(bucketName,key),InitiateMultipartUploadResponse.class);
+			
+			UploadPartRequest request = new UploadPartRequest(bucketName,key,result.getUploadId(),1,new ByteArrayInputStream("123456".getBytes()),6);
+			client.uploadPart(request);	
+			
+			ListPartsResult parts = client.listParts(bucketName, key, result.getUploadId());
+
+			CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(parts);
+			client.completeMultipartUpload(compRequest);
+			
+			HeadObjectResult result1 = client.headObject(bucketName, key);
+			assertEquals(entry.getValue(),result1.getObjectMetadata().getContentType().split(";")[0]);
+			
+			GetObjectResult gResult = client.getObject(bucketName,key);
+			assertEquals(entry.getValue(),gResult.getObject().getObjectMetadata().getContentType().split(";")[0]);
+		}
+	}
+	@Test
+	public void mulitipartUploadObjectForSdk() throws Exception{
+		for(Entry<String,String> entry:tests.entrySet()){
+			//为了节约时间，只做抽查
+			if(new Random().nextInt()%2!=0)
+				continue;
+			String key ="test."+entry.getKey();
+			InitiateMultipartUploadResult result = client.execute(new InitiateMultipartUploadRequest(bucketName,key),InitiateMultipartUploadResponse.class);
 			
 			UploadPartRequest request = new UploadPartRequest(bucketName,key,result.getUploadId(),1,new ByteArrayInputStream("123456".getBytes()),6);
 			client.uploadPart(request);	

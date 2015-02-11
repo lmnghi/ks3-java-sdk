@@ -127,7 +127,7 @@ public class Ks3CoreController {
 					ksResponse.expectedStatus(), ",")
 					+ "("
 					+ Ks3WebServiceResponse.allStatueCode
-					+ " is all statue codes)").convert();
+					+ " is all statue codes)").convert(ksResponse.getRequestId());
 		}
 		Y result = ksResponse.handleResponse(httpRequest,response);
 		if (ksResponse instanceof Md5CheckAble
