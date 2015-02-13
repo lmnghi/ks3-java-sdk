@@ -2,7 +2,14 @@ package com.ksyun.ks3.service;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,17 +18,24 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.Fop;
 import com.ksyun.ks3.dto.FopInfo;
 import com.ksyun.ks3.dto.FopTask;
+import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.PostObjectFormFields;
 import com.ksyun.ks3.exception.serviceside.QueryTaskFailException;
+import com.ksyun.ks3.http.HttpClientFactory;
 import com.ksyun.ks3.service.multipartpost.FormFieldKeyValuePair;
 import com.ksyun.ks3.service.multipartpost.HttpPostEmulator;
 import com.ksyun.ks3.service.multipartpost.UploadFileItem;
@@ -29,6 +43,7 @@ import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.PutPfopRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
+import com.ksyun.ks3.utils.Md5Utils;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -51,13 +66,6 @@ public class PfopTest extends Ks3ClientTest{
 			client.clearBucket(bucketName);
 		}
 		client.putObject(bucketName, "IMG.jpg", logo);
-	}
-	@After
-	public void deleteBucket(){
-		if(client.bucketExists(bucketName)){
-			client.clearBucket(bucketName);
-			client.deleteBucket(bucketName);
-		}
 	}
 	@Test(timeout=1000*2000)
 	public void testPutPfop() throws InterruptedException{
@@ -120,7 +128,7 @@ public class PfopTest extends Ks3ClientTest{
 		fops.add(fop11);
 		
 		Fop fop12 = new Fop();
-		fop12.setCommand("tag=avm3u8&segtime=10&abr=128k&vbr=1000k&res=1280x720");
+		fop12.setCommand("tag=avm3u8&segtime=10&abr=128k&vbr=1000k&&res=1280x720");
 		fop12.setKey("野生动物-hls切片.m3u8");
 		fops.add(fop12);
 		
@@ -290,5 +298,88 @@ public class PfopTest extends Ks3ClientTest{
 		for(FopInfo info :task.getFopInfos()){
 			assertEquals(true,info.isSuccess());
 		}
+	}
+	@Test
+	public void testM3U8() throws InterruptedException, IOException{
+		client.putObject(bucketName,key,file);
+		PutPfopRequest request = new PutPfopRequest(bucketName,key);
+		List<Fop> fops = new ArrayList<Fop>();
+		Fop fop12 = new Fop();
+		fop12.setCommand("tag=avm3u8&segtime=10&abr=128k&vbr=1000k&&res=1280x720");
+		fop12.setKey("野生动物-hls切片.m3u8");
+		fops.add(fop12);
+		
+		request.setFops(fops);
+		request.setNotifyURL("http://10.4.2.38:19090/");
+		String id = client.putPfopTask(request);
+		FopTask task;
+		while(true){
+			task = client.getPfopTask(id);
+			System.out.println(task);
+			if(task.isProcessFinished()&&task.isNotified())
+				break;
+			Thread.sleep(5000);
+		}
+		assertEquals("3",task.getProcessstatus());
+		assertEquals("1",task.getNotifystatus());
+		for(FopInfo info :task.getFopInfos()){
+			assertEquals(true,info.isSuccess());
+		}
+		client.headObject(bucketName, "野生动物-hls切片.m3u8");
+		client.headObject(bucketName, "野生动物-hls切片.m3u8.ts");
+		
+		getObjectCommon(bucketName,"野生动物-hls切片.m3u8","野生动物-hls切片.m3u8");
+		client.putObjectACL(bucketName, "野生动物-hls切片.m3u8.ts",CannedAccessControlList.PublicRead);
+	    
+	    FileReader reader = new FileReader(new File("D://"
+				+ "野生动物-hls切片.m3u8"));
+		BufferedReader br = new BufferedReader(reader);
+		String line = null;
+		
+		List<String> lines = new ArrayList<String>();
+		HttpClientFactory factory = new HttpClientFactory();
+		HttpClient httpclient = factory.createHttpClient();
+		while((line = br.readLine())!=null){
+			if(StringUtils.isNotBlank(line)&&!line.startsWith("#"))
+			{
+				lines.add("D://"+line);
+				HttpGet get = new HttpGet("http://kss.ksyun.com/"+bucketName+"/"+line);
+				HttpResponse response = httpclient.execute(get);
+				InputStream input = response.getEntity().getContent();
+				putFileCommon(line,input);
+				get.abort();
+			}
+		}
+		MultipartUploadByThreads.mergeFiles("D://"+"野生动物-hls切片.m3u8.ts-Down", lines.toArray());
+		getObjectCommon(bucketName,"野生动物-hls切片.m3u8.ts","野生动物-hls切片.m3u8.ts");
+		assertEquals(Md5Utils.md5AsBase64(new File("D://野生动物-hls切片.m3u8.ts-Down")),
+				Md5Utils.md5AsBase64(new File("D://野生动物-hls切片.m3u8.ts")));
+	}
+	private void getObjectCommon(String bucket,String key,String filename) throws IOException{
+		GetObjectResult result = client.getObject(bucket, key);
+		InputStream content = result.getObject().getObjectContent();
+		
+		putFileCommon(filename,content);
+	}
+	private void putFileCommon(String fileName,InputStream content) throws IOException{
+		File file = new File("D://"+ fileName);
+		if(file.exists())
+			file.delete();
+		OutputStream os = new FileOutputStream(new File("D://"
+				+ fileName));
+		
+		int bytesRead = 0;
+		byte[] buffer = new byte[8192];
+	    try {  
+	        while((bytesRead = content
+					.read(buffer, 0, 8192)) != -1){  
+	        	os.write(buffer, 0, bytesRead);  
+	        }  
+	    } catch (IOException e1) {  
+	        e1.printStackTrace();  
+	    } finally{  
+	    	os.close();
+	    	content.close(); 
+	    }
 	}
 }

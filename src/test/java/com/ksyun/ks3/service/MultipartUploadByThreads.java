@@ -218,7 +218,7 @@ public class MultipartUploadByThreads extends Ks3ClientTest {
 
 	private static final int BUFSIZE = 1024 * 8;
 
-	private void mergeFiles(String outFile, Object[] files) {
+	public static void mergeFiles(String outFile, Object[] files) {
 		new File(outFile).delete();
 		FileChannel outChannel = null;
 		try {

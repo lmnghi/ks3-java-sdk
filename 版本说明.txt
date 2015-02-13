@@ -3,6 +3,8 @@
 2、添加数据处理接口
 2、1 可以通过putPfopTask添加数据处理任务，可以通过getPfopTask查询数据处理状态
 2、2 putObject和completeMultipartUpload时可以配置数据处理任务，为新上传的数据开启一个数据处理任务。
+3、sdk中上传文件和分块上传文件时，如果不设置content-type将根据object key自动匹配
+4、修复了有时返回错误信息，却没有requestid的问题
 
 
 2015年1月15号更新
