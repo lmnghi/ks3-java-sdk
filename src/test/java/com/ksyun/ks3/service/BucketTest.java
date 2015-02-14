@@ -284,33 +284,6 @@ public class BucketTest extends Ks3ClientTest {
 		}
 	}
 
-	@Test(expected=NotThrowException.class)
-	public void testPutBucket_1009() {
-		String thisBucket = "";
-		List<String> added = new ArrayList<String>();
-		List<Bucket> buckets = client1.listBuckets();
-		try {
-			this.ste = true;
-			this.isc = false;
-			try {
-				for (int i = buckets.size(); i < 21; i++) {
-					thisBucket = bucket + ".00" + i + ".dds";
-					if (!this.client1.bucketExists(thisBucket))
-						client1.createBucket(thisBucket);
-					added.add(thisBucket);
-				}
-			} catch (TooManyBucketsException e) {
-				isc = true;
-			}
-			if (!isc)
-				throw new NotThrowException();
-		} finally {
-			for (String s : added) {
-				this.client1.deleteBucket(s);
-			}
-		}
-	}
-
 	@Test
 	public void testGetBucket_1010() {
 		this.ste = true;

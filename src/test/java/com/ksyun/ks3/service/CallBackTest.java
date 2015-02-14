@@ -25,12 +25,16 @@ import com.ksyun.ks3.service.request.UploadPartRequest;
  * @description 
  **/
 public class CallBackTest extends Ks3ClientTest{
-	final String bucketName = "test-"+System.currentTimeMillis();
+	final String bucketName = "test-callback-10101";
 	final File file = new File(this.getClass().getClassLoader().getResource("git.exe").toString().substring(6));
 	CallBackConfiguration config = new CallBackConfiguration();
 	@Before
 	public void createTestBucket(){
-		client.createBucket(bucketName);
+		if(client.bucketExists(bucketName)){
+			client.clearBucket(bucketName);
+		}else{
+			client.createBucket(bucketName);
+		}
 		
 		config.setCallBackUrl("http://10.4.2.38:19090/");
 		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
@@ -91,13 +95,6 @@ public class CallBackTest extends Ks3ClientTest{
 		config.setCallBackUrl("http://10.4.2.38:19090/xx");
 		compRequest.setCallBackConfiguration(config);
 		client.completeMultipartUpload(compRequest);
-	}
-	@After
-	public void deleteBucket(){
-		if(client.bucketExists(bucketName)){
-			client.clearBucket(bucketName);
-			client.deleteBucket(bucketName);
-		}
 	}
 
 }

@@ -683,7 +683,12 @@ public class Ks3Client implements Ks3 {
 				}
 			}
 			conditionList.add(condition.getMatchingType().toString());
-			conditionList.add(condition.getParamA());
+			//表单中的项是忽略大小写的
+			if(condition.getMatchingType()!=MatchingType.contentLengthRange&&!Constants.postFormUnIgnoreCase.contains(condition.getParamA().substring(1))){
+				conditionList.add(condition.getParamA().toLowerCase());
+			}else{
+				conditionList.add(condition.getParamA());
+			}
 			conditionList.add(condition.getParamB());
 			conditions.add(conditionList);
 		}

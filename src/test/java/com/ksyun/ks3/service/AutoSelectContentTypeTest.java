@@ -41,15 +41,8 @@ import com.ksyun.ks3.service.response.PutObjectResponse;
  * @description API根据key自动识别content-type
  **/
 public class AutoSelectContentTypeTest extends Ks3ClientTest {
-	final private String bucketName = "content-type-"
-			+ System.currentTimeMillis();
+	final private String bucketName = "content-type-lijunwei-test";
 	Map<String, String> tests = new HashMap<String, String>();
-
-	@After
-	public void deleteBucket() {
-		client.clearBucket(bucketName);
-		client.deleteBucket(bucketName);
-	}
 
 	@Test
 	public void postObjectTest() throws Exception {
@@ -180,7 +173,11 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 	}
 	@Before
 	public void initBucket() {
-		client.createBucket(bucketName);
+		if(client.bucketExists(bucketName)){
+			client.clearBucket(bucketName);
+		}else{
+			client.createBucket(bucketName);
+		}
 		tests.put("unknow", "application/octet-stream");
 		tests.put("unknow", "application/octet-stream");
 		tests.put("unknow", "application/octet-stream");

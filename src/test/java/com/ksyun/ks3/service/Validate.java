@@ -53,22 +53,15 @@ import com.ksyun.ks3.utils.Md5Utils;
  * @description 对sdk的粗略验证
  **/
 public class Validate extends Ks3ClientTest{
-	final String bucketName = "validate-"+System.currentTimeMillis();
+	final String bucketName = "validate-test-2015";
 	final File file = new File(this.getClass().getClassLoader().getResource("git.exe").toString().substring(6));
 	final String objectkey="测试中文/git.exe";
 	@Before
 	public void createNewBucket(){
 		if(client.bucketExists(bucketName)){
 			client.clearBucket(bucketName);
-			client.deleteBucket(bucketName);
-		}
-		client.createBucket(bucketName);
-	}
-	@After
-	public void deleteNewBucket(){
-		if(client.bucketExists(bucketName)){
-			client.clearBucket(bucketName);
-			client.deleteBucket(bucketName);
+		}else{
+			client.createBucket(bucketName);
 		}
 	}
 	/**

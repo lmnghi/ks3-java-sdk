@@ -53,4 +53,14 @@ public class Constants {
 	}
 	
 	public static List<String> postFormIgnoreFields = Arrays.asList(new String[]{"AWSAccessKeyId","KSSAccessKeyId","signature","policy","submit","file"});
+	public static List<String> postFormUnIgnoreCase = Arrays.asList(new String[] {
+            "Content-Type",
+            "Content-Length",
+            "Cache-Control",
+            "Content-Disposition",
+            "Content-Encoding",
+            "Expires",
+            "AWSAccessKeyId",
+            "KSSAccessKeyId"
+    });
 }
