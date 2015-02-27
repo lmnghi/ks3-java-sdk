@@ -673,11 +673,11 @@ public class Ks3Client implements Ks3 {
 		List<List<String>> conditions = new ArrayList<List<String>>();
 		for(PostPolicyCondition condition : policy.getConditions()){
 			List<String> conditionList = new ArrayList<String>();
-			if(condition.getMatchingType()==MatchingType.startsWith){
+			if(condition.getMatchingType()!=MatchingType.contentLengthRange){
 				if(!condition.getParamA().startsWith("$")){
 					condition.setParamA("$"+condition.getParamA());
 				}
-			}else if(condition.getMatchingType() == MatchingType.contentLengthRange){		
+			}else{	
 				if(!StringUtils.checkLong(condition.getParamA())||!StringUtils.checkLong(condition.getParamB())){
 					throw new ClientIllegalArgumentException("contentLengthRange匹配规则的参数A和参数B都应该是Long型");
 				}
