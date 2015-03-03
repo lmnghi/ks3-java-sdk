@@ -21,7 +21,7 @@ import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CallBackConfiguration;
 import com.ksyun.ks3.dto.CannedAccessControlList;
-import com.ksyun.ks3.dto.Fop;
+import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.CallBackConfiguration.MagicVariables;
 import com.ksyun.ks3.exception.Ks3ClientException;
@@ -68,7 +68,7 @@ public class WithOutContentTypePutObjectRequest extends Ks3WebServiceRequest
 	/**
 	 * 要进行的数据处理任务
 	 */
-	private List<Fop> fops = new ArrayList<Fop>();
+	private List<Adp> fops = new ArrayList<Adp>();
 	/**
 	 * 数据处理任务完成后通知的url
 	 */
@@ -200,8 +200,8 @@ public class WithOutContentTypePutObjectRequest extends Ks3WebServiceRequest
 			this.addHeader(HttpHeaders.XKssCallbackBody, bodyString);
 		}
 		if (this.fops != null && fops.size() > 0) {
-			this.addHeader(HttpHeaders.Fops,
-					URLEncoder.encode(HttpUtils.convertFops2String(fops)));
+			this.addHeader(HttpHeaders.AsynchronousProcessingList,
+					URLEncoder.encode(HttpUtils.convertAdps2String(fops)));
 			if (!StringUtils.isBlank(notifyURL))
 				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
 		}
@@ -243,7 +243,7 @@ public class WithOutContentTypePutObjectRequest extends Ks3WebServiceRequest
 			}
 		}
 		if (fops != null && fops.size() > 0) {
-			for (Fop fop : fops) {
+			for (Adp fop : fops) {
 				if (StringUtils.isBlank(fop.getCommand())) {
 					throw notNullInCondition("fops.command", "fops不为空");
 				}
@@ -302,11 +302,11 @@ public class WithOutContentTypePutObjectRequest extends Ks3WebServiceRequest
 		this.callBackConfiguration = callBackConfiguration;
 	}
 
-	public List<Fop> getFops() {
+	public List<Adp> getFops() {
 		return fops;
 	}
 
-	public void setFops(List<Fop> fops) {
+	public void setFops(List<Adp> fops) {
 		this.fops = fops;
 	}
 

@@ -15,7 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ksyun.ks3.dto.Fop;
+import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.HeadObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;

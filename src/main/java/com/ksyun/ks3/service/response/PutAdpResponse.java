@@ -9,7 +9,7 @@ import com.ksyun.ks3.http.HttpHeaders;
  * 
  * @description 添加处理结果持久化任务结果
  **/
-public class PutPfopResponse extends Ks3WebServiceDefaultResponse<String>{
+public class PutAdpResponse extends Ks3WebServiceDefaultResponse<String>{
 
 	public int[] expectedStatus() {
 		return new int[]{200};

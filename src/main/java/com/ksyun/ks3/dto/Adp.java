@@ -9,7 +9,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @description 云数据处理操作
  **/
-public class Fop {
+public class Adp {
 	/**
 	 * 处理命令，详见KS3 API文档，数据处理
 	 */

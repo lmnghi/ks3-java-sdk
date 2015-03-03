@@ -50,7 +50,6 @@ import com.ksyun.ks3.service.request.GetBucketCorsRequest;
 import com.ksyun.ks3.service.request.GetBucketLocationRequest;
 import com.ksyun.ks3.service.request.GetBucketLoggingRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
-import com.ksyun.ks3.service.request.GetPfopRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
@@ -62,7 +61,7 @@ import com.ksyun.ks3.service.request.ListPartsRequest;
 import com.ksyun.ks3.service.request.PutBucketCorsRequest;
 import com.ksyun.ks3.service.request.PutBucketLoggingRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
-import com.ksyun.ks3.service.request.PutPfopRequest;
+import com.ksyun.ks3.service.request.PutAdpRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.AbortMultipartUploadResponse;
 import com.ksyun.ks3.service.response.CompleteMultipartUploadResponse;
@@ -775,33 +774,33 @@ public class Ks3Client implements Ks3 {
 		return postObject(policy);
 	}
 
-	public String putPfopTask(String bucketName, String objectKey,
-			List<Fop> fops) throws Ks3ClientException, Ks3ServiceException {
-		PutPfopRequest request = new PutPfopRequest(bucketName,objectKey,fops);
-		return putPfopTask(request);
+	public String putAdpTask(String bucketName, String objectKey,
+			List<Adp> adps) throws Ks3ClientException, Ks3ServiceException {
+		PutAdpRequest request = new PutAdpRequest(bucketName,objectKey,adps);
+		return putAdpTask(request);
 	}
 
-	public String putPfopTask(String bucketName, String objectKey,
-			List<Fop> fops, String notifyURL) throws Ks3ClientException,
+	public String putAdpTask(String bucketName, String objectKey,
+			List<Adp> adps, String notifyURL) throws Ks3ClientException,
 			Ks3ServiceException {
-		PutPfopRequest request = new PutPfopRequest(bucketName,objectKey,fops);
+		PutAdpRequest request = new PutAdpRequest(bucketName,objectKey,adps);
 		request.setNotifyURL(notifyURL);
-		return putPfopTask(request);
+		return putAdpTask(request);
 	}
 
-	public String putPfopTask(PutPfopRequest request)
+	public String putAdpTask(PutAdpRequest request)
 			throws Ks3ClientException, Ks3ServiceException {
-		return client.execute(auth, request, PutPfopResponse.class);
+		return client.execute(auth, request, PutAdpResponse.class);
 	}
 
-	public FopTask getPfopTask(String taskid) throws Ks3ClientException,
+	public AdpTask getAdpTask(String taskid) throws Ks3ClientException,
 			Ks3ServiceException {
-		GetPfopRequest request = new GetPfopRequest(taskid);
-		return getPfopTask(request);
+		GetAdpRequest request = new GetAdpRequest(taskid);
+		return getAdpTask(request);
 	}
 
-	public FopTask getPfopTask(GetPfopRequest request)
+	public AdpTask getAdpTask(GetAdpRequest request)
 			throws Ks3ClientException, Ks3ServiceException {
-		return client.execute(auth, request, GetPfopResponse.class);
+		return client.execute(auth, request, GetAdpResponse.class);
 	}
 }

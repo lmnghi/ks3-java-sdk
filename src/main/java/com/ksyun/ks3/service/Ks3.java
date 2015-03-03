@@ -1253,19 +1253,19 @@ public interface Ks3 {
 	 * 
 	 * @param bucketName 要处理的数据所在的bucket
 	 * @param objectKey 要处理的数据的key
-	 * @param fops 一系列的操作指令{@link Fop}
+	 * @param adps 一系列的操作指令{@link Adp}
 	 * @return 任务id(taskid)
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 * 
 	 * <p>添加数据处理任务</p>
 	 */
-	public String putPfopTask(String bucketName,String objectKey,List<Fop> fops) throws Ks3ClientException, Ks3ServiceException;;
+	public String putAdpTask(String bucketName,String objectKey,List<Adp> adps) throws Ks3ClientException, Ks3ServiceException;;
 	/**
 	 * 
 	 * @param bucketName 要处理的数据所在的bucket
 	 * @param objectKey 要处理的数据的key
-	 * @param fops 一系列的操作指令{@link Fop}
+	 * @param adps 一系列的操作指令{@link Adp}
 	 * @param notifyURL 处理完成后KS3将调用该url,以通知用户
 	 * @return 任务id(taskid)
 	 * @throws Ks3ClientException
@@ -1273,32 +1273,32 @@ public interface Ks3 {
 	 * 
 	 * <p>添加数据处理任务</p>
 	 */
-	public String putPfopTask(String bucketName,String objectKey,List<Fop> fops,String notifyURL) throws Ks3ClientException, Ks3ServiceException;
+	public String putAdpTask(String bucketName,String objectKey,List<Adp> adps,String notifyURL) throws Ks3ClientException, Ks3ServiceException;
 	/**
 	 * 
-	 * @param request {@link PutPfopRequest}
+	 * @param request {@link PutAdpRequest}
 	 * @return 任务id(taskid)
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 * 
 	 * <p>添加数据处理任务</p>
 	 */
-	public String putPfopTask(PutPfopRequest request) throws Ks3ClientException, Ks3ServiceException;
+	public String putAdpTask(PutAdpRequest request) throws Ks3ClientException, Ks3ServiceException;
 	/**
 	 * 
 	 * @param taskid 由putpfop，postobject，putobject，complete_mutipart_upload返回的taskid
-	 * @return {@link FopTask}
+	 * @return {@link AdpTask}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 * <p>查询数据处理任务的状态</p>
 	 */
-	public FopTask getPfopTask(String taskid) throws Ks3ClientException, Ks3ServiceException;
+	public AdpTask getAdpTask(String taskid) throws Ks3ClientException, Ks3ServiceException;
 	/**
-	 * @param request {@link GetPfopRequest}
-	 * @return {@link FopTask}
+	 * @param request {@link GetAdpRequest}
+	 * @return {@link AdpTask}
 	 * @throws Ks3ClientException
 	 * @throws Ks3ServiceException
 	 * <p>查询数据处理任务的状态</p>
 	 */
-	public FopTask getPfopTask(GetPfopRequest request) throws Ks3ClientException, Ks3ServiceException;
+	public AdpTask getAdpTask(GetAdpRequest request) throws Ks3ClientException, Ks3ServiceException;
 }

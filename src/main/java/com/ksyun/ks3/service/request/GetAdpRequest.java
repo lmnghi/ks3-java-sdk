@@ -13,18 +13,18 @@ import com.ksyun.ks3.http.HttpMethod;
  * 
  * @description 查询数据处理任务的状态
  **/
-public class GetPfopRequest extends Ks3WebServiceRequest {
+public class GetAdpRequest extends Ks3WebServiceRequest {
 
 	/**
 	 * 由putpfop，postobject，putobject，complete_mutipart_upload返回的taskid
 	 */
 	private String taskid;
-	public GetPfopRequest(String taskid){
+	public GetAdpRequest(String taskid){
 		this.taskid = taskid;
 	}
 	@Override
 	protected void configHttpRequest() {
-		this.addParams("querypfop", "");
+		this.addParams("queryadp", "");
 		this.setPathVariable(taskid);
 		this.setHttpMethod(HttpMethod.GET);
 	}

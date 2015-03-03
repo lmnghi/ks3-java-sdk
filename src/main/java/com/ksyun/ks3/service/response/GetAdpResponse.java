@@ -6,8 +6,8 @@ import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import com.ksyun.ks3.dto.FopInfo;
-import com.ksyun.ks3.dto.FopTask;
+import com.ksyun.ks3.dto.AdpInfo;
+import com.ksyun.ks3.dto.AdpTask;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -16,10 +16,10 @@ import com.ksyun.ks3.dto.FopTask;
  * 
  * @description 
  **/
-public class GetPfopResponse extends Ks3WebServiceXmlResponse<FopTask>{
+public class GetAdpResponse extends Ks3WebServiceXmlResponse<AdpTask>{
 
-	private FopInfo fopInfo;
-	private List<FopInfo> fopInfos ;
+	private AdpInfo adpInfo;
+	private List<AdpInfo> adpInfos ;
 	private List<String> keys;
 	public int[] expectedStatus() {
 		return new int[]{200};
@@ -33,15 +33,15 @@ public class GetPfopResponse extends Ks3WebServiceXmlResponse<FopTask>{
 
 	@Override
 	public void startDocument() throws SAXException {
-		result = new FopTask();
-		fopInfos = new ArrayList<FopInfo>();
+		result = new AdpTask();
+		adpInfos = new ArrayList<AdpInfo>();
 	}
 
 	@Override
 	public void startEle(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
 		if("pfopinfo".equals(getTag())){
-			fopInfo = new FopInfo();
+			adpInfo = new AdpInfo();
 		}else if("keys".equals(getTag())){
 			keys = new ArrayList<String>();
 		}
@@ -51,12 +51,12 @@ public class GetPfopResponse extends Ks3WebServiceXmlResponse<FopTask>{
 	public void endEle(String uri, String localName, String qName)
 			throws SAXException {
 		if("Task".equals(getTag())){
-			result.setFopInfos(fopInfos);
+			result.setAdpInfos(adpInfos);
 		}
 		else if("pfopinfo".equals(getTag())){
-			fopInfos.add(fopInfo);
+			adpInfos.add(adpInfo);
 		}else if("keys".equals(getTag())){
-			fopInfo.setKeys(keys);
+			adpInfo.setKeys(keys);
 		}
 	}
 
@@ -73,11 +73,11 @@ public class GetPfopResponse extends Ks3WebServiceXmlResponse<FopTask>{
 		}else if("notifydesc".equals(getTag())){
 			result.setNotifydesc(s);
 		}else if("cmd".equals(getTag())){
-			fopInfo.setCommand(s);
+			adpInfo.setCommand(s);
 		}else if("error".equals(getTag())){
-			fopInfo.setDesc(s);
+			adpInfo.setDesc(s);
 		}else if("desc".equals(getTag())){
-			fopInfo.setSuccess("success".equalsIgnoreCase(s));
+			adpInfo.setSuccess("success".equalsIgnoreCase(s));
 		}else if("value".equals(getTag())){
 			keys.add(s);
 		}

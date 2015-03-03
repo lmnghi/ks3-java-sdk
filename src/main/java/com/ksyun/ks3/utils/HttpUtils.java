@@ -25,7 +25,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.AccessControlPolicy;
-import com.ksyun.ks3.dto.Fop;
+import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.Permission;
 import com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator;
@@ -113,9 +113,9 @@ public class HttpUtils {
 		}
 		return headers;
 	}
-	public static String convertFops2String(List<Fop> fops){
+	public static String convertAdps2String(List<Adp> fops){
 		StringBuffer fopStringBuffer = new StringBuffer();
-		for(Fop fop : fops){
+		for(Adp fop : fops){
 			fopStringBuffer.append(fop.getCommand());
 			if(!(StringUtils.isBlank(fop.getBucket())&&StringUtils.isBlank(fop.getKey()))){
 				if(StringUtils.isBlank(fop.getBucket())){

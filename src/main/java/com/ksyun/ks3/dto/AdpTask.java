@@ -12,7 +12,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @description 查询数据处理任务返回结果
  **/
-public class FopTask {
+public class AdpTask {
 	/**
 	 * taskid
 	 */
@@ -30,7 +30,7 @@ public class FopTask {
 	/**
 	 * 每条命令的具体处理结果
 	 */
-	private List<FopInfo> fopInfos = new ArrayList<FopInfo>();
+	private List<AdpInfo> adpInfos = new ArrayList<AdpInfo>();
 	public String toString()
 	{
 		return StringUtils.object2string(this);
@@ -77,11 +77,11 @@ public class FopTask {
 	public void setNotifydesc(String notifydesc) {
 		this.notifydesc = notifydesc;
 	}
-	public List<FopInfo> getFopInfos() {
-		return fopInfos;
+	public List<AdpInfo> getAdpInfos() {
+		return adpInfos;
 	}
-	public void setFopInfos(List<FopInfo> fopInfos) {
-		this.fopInfos = fopInfos;
+	public void setAdpInfos(List<AdpInfo> adpInfos) {
+		this.adpInfos = adpInfos;
 	}
 	
 }

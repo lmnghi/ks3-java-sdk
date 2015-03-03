@@ -10,9 +10,9 @@ import com.ksyun.ks3.utils.StringUtils;
  * 
  * @date 2015年2月2日 下午5:44:53
  * 
- * @description 查询数据处理任务返回结果{@link FopTask}中单条命令的具体处理结果
+ * @description 查询数据处理任务返回结果{@link AdpTask}中单条命令的具体处理结果
  **/
-public class FopInfo {
+public class AdpInfo {
 	/**
 	 * 数据处理命令
 	 */

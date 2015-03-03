@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.dto.CallBackConfiguration;
-import com.ksyun.ks3.dto.Fop;
+import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.Part;
 import com.ksyun.ks3.dto.PartETag;
@@ -48,7 +48,7 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	/**
 	 * 要进行的数据处理任务
 	 */
-	private List<Fop> fops = new ArrayList<Fop>();
+	private List<Adp> adps = new ArrayList<Adp>();
 	/**
 	 * 数据处理任务完成后通知的url
 	 */
@@ -138,8 +138,8 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 			}
 			this.addHeader(HttpHeaders.XKssCallbackBody,bodyString);
 		}
-		if(this.fops!=null&&fops.size()>0){
-			this.addHeader(HttpHeaders.Fops, URLEncoder.encode(HttpUtils.convertFops2String(fops)));
+		if(this.adps!=null&&adps.size()>0){
+			this.addHeader(HttpHeaders.AsynchronousProcessingList, URLEncoder.encode(HttpUtils.convertAdps2String(adps)));
 			if(!StringUtils.isBlank(notifyURL))
 				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
 		}
@@ -160,14 +160,14 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 				throw notNull("callBackConfiguration.callBackUrl");
 			}
 		}
-		if(fops!=null&&fops.size()>0){
-			for(Fop fop : fops){
-				if(StringUtils.isBlank(fop.getCommand())){
-					throw notNullInCondition("fops.command","fops不为空");
+		if(adps!=null&&adps.size()>0){
+			for(Adp adp : adps){
+				if(StringUtils.isBlank(adp.getCommand())){
+					throw notNullInCondition("adps.command","adps不为空");
 				}
 			}
 			if(StringUtils.isBlank(notifyURL))
-				throw notNullInCondition("notifyURL","fops不为空");
+				throw notNullInCondition("notifyURL","adps不为空");
 		}
 	}
 	/**
@@ -200,11 +200,11 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	public void setCallBackConfiguration(CallBackConfiguration callBackConfiguration) {
 		this.callBackConfiguration = callBackConfiguration;
 	}
-	public List<Fop> getFops() {
-		return fops;
+	public List<Adp> getAdps() {
+		return adps;
 	}
-	public void setFops(List<Fop> fops) {
-		this.fops = fops;
+	public void setAdps(List<Adp> adps) {
+		this.adps = adps;
 	}
 	public String getNotifyURL() {
 		return notifyURL;
