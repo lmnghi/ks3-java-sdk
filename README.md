@@ -33,6 +33,7 @@ com.ksyun.ks3.utils:工具包
     
 ## 3 初始化
 ### 3.1 配置参数
+用户可以跳过参数配置，一般情况下默认配置可以满足大部分的需求。
 #### 3.1.1 配置方法一
 
 	ClientConfig config = ClientConfig.getConfig();
@@ -87,7 +88,18 @@ com.ksyun.ks3.utils:工具包
 
 	ClientConfig.addConfigLoader(new DemoConfigLoader());
 ### 3.2 配置日志
-该SDK使用log4j，请用户自行配置log4j.properties
+该SDK使用log4j，请用户自行配置log4j.properties  
+示例配置:
+
+		log4j.logger.com.ksyun.ks3=DEBUG,stdout
+		log4j.logger.org.apache.http=DEBUG,stdout
+		log4j.logger.org.apache.http.wire=ERROR,stdout
+
+		log4j.addivity.org.apache=true
+		log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+		log4j.appender.stdout.Target=System.out
+		log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+		log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss SSS} %-5p [%t]%C{1}.%M(%L) - %m%n
 ### 3.3 获取秘钥
 1、开通KS3服务，[http://www.ksyun.com/user/register](http://www.ksyun.com/user/register) 注册账号  
 2、进入控制台, [http://ks3.ksyun.com/console.html#/setting](http://ks3.ksyun.com/console.html#/setting) 获取AccessKeyID 、AccessKeySecret
@@ -122,17 +134,29 @@ com.ksyun.ks3.utils:工具包
 ### 5.1 Service接口
 
 #### 5.1.1 GET Service(List Buckets)
+罗列当前账户下拥有的bucket
 ##### 5.1.1.1 使用示例
 列出当前用户的所有bucket,可以查看每个bucket的名称、创建时间以及所有者
 
 	public List<Bucket> listBuckets(){
 		List<Bucket> buckets = client.listBuckets();
+
+		for(Bucket bucket:buckets){
+			//获取bucket的创建时间
+			bucket.getCreationDate();
+			//获取bucket的名称
+			bucket.getName();
+			//获取bucket的拥有者（用户ID base64后的值）
+			bucket.getOwner();
+		}
+		
 		return buckets;
 	}
 ##### 5.1.1.2 特殊异常
 该方法不会抛出特殊异常
 ### 5.2 Bucket接口
 #### 5.2.1 DELETE Bucket
+删除bucket
 ##### 5.2.1.1 使用示例
 删除一个Bucket
 
@@ -145,6 +169,7 @@ com.ksyun.ks3.utils:工具包
 | :-------- | :--------|
 |BucketNotEmptyException|这个bucket不为空，无法删除，需要用户先调用client.clearBucket(bucket)方法清空bucket|
 #### 5.2.2 DELETE Bucket cors
+删除跨域配置
 ##### 5.2.2.1 使用示例
 
 删除bucket的跨域资源共享规则
@@ -156,6 +181,7 @@ com.ksyun.ks3.utils:工具包
 ##### 5.2.2.2 特殊异常
 该方法不会抛出特殊异常
 #### 5.2.3 GET Bucket(List Objects)
+罗列bucket下的文件
 ##### 5.2.3.1 使用示例
 
 	/**
@@ -207,6 +233,7 @@ com.ksyun.ks3.utils:工具包
 该方法不会抛出特殊异常
 
 #### 5.2.4 GET Bucket acl
+获取访问权限
 ##### 5.2.4.1 使用示例
 
 	public AccessControlPolicy getBucketAcl(){
@@ -218,6 +245,7 @@ com.ksyun.ks3.utils:工具包
 ##### 5.2.4.2 特殊异常
 该方法不会抛出特殊异常
 #### 5.2.5 GET Bucket cors
+获取跨域配置
 ##### 5.2.5.1 使用示例
 获取bucket的跨域资源共享配置
 
@@ -242,6 +270,7 @@ com.ksyun.ks3.utils:工具包
 ##### 5.2.5.2 特殊异常
 该方法不会抛出特殊异常
 #### 5.2.6 GET Bucket location
+获取bucket存储的地点
 ##### 5.2.6.1 使用示例
 获取bucket的存储地点
 
@@ -253,6 +282,7 @@ com.ksyun.ks3.utils:工具包
 ##### 5.2.6.2 特殊异常
 该方法不会抛出特殊异常
 #### 5.2.7 GET Bucket logging
+获取bucket的日志配置
 ##### 5.2.7.1 使用示例
 获取bucket的日志配置
 
@@ -288,6 +318,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 该方法不会抛出特殊异常
 
 #### 5.2.9 List Multipart Uploads
+罗列没有完成的分块上传
 ##### 5.2.9.1 使用示例
 列出当前正在执行的分块上传
 
@@ -349,6 +380,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 ##### 5.2.9.2 特殊异常
 该方法不会抛出特殊异常
 #### 5.2.10 PUT Bucket
+新建bucket
 ##### 5.2.10.1 使用示例
 
 	/**
@@ -380,6 +412,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 |TooManyBucketsException|用户的bucket数超过了最大限制|
 
 #### 5.2.11 PUT Bucket acl
+设置访问权限
 ##### 5.2.11.1 使用示例
 设置bucket的访问权限
 
@@ -422,6 +455,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 | :-------- | :--------|
 |InvalidArgumentException|用户没有设置CannedAccessControlList和AccessControlList|
 #### 5.2.12 PUT Bucket cors
+设置跨域规则
 ##### 5.2.12.1 使用示例
 设置bucket的跨域资源共享规则 
 
@@ -485,6 +519,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 |BadDigestException|body的MD5编码值出错，正常使用时不会抛出|
 |InvalidArgumentException|用户设置的规则有误,具体规则请参看KS3 API文档|
 #### 5.2.13 PUT Bucket logging
+设置空间的日志配置
 ##### 5.2.13.1 使用示例
 设置bucket的日志配置
 
@@ -510,6 +545,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 
 ### 5.3 Object接口
 #### 5.3.1 DELETE Object
+删除文件
 ##### 5.3.1.1 使用示例
 删除一个object
 
@@ -523,6 +559,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 ##### 5.3.1.2 特殊异常
 该方法不会返回特殊异常
 #### 5.3.2 DELETE Multiple Objects
+删除多个文件
 ##### 5.3.2.1使用示例
 批量删除object。返回结果将显示各个object的删除情况（是否成功，失败原因）
 
@@ -539,6 +576,7 @@ HEAD Bucket可以用来判断一个bucket是否存在
 
 注:request body中为一段xml，注明要删除哪些object
 #### 5.3.3 GET Object
+获取文件（下载文件）
 ##### 5.3.3.1 使用示例
 GET Object为用户提供了object的下载，用户可以通过控制Range实现分块多线程下载，可以调节ResponseHeaderOverrides控制返回的header
 
@@ -571,6 +609,7 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 |InvalidRangeException|Range设置格式错误，Range正确格式：bytes=x-y,x、y为long型，且y>=x|
 
 #### 5.3.4 GET Object acl
+获取文件的访问权限
 ##### 5.3.4.1 使用示例
 
 	public AccessControlPolicy getObjectAcl(){
@@ -701,8 +740,9 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 	}
 
 #### 5.3.7 PUT Object
+使用PUT方式上传文件
 ##### 5.3.7.1 使用示例
-注意：使用第二、第三种方法之前请先查看KS3 API文档了解权限、元数据以及callback的作用，如果用户不需要的话请勿设置。否则可能会导致一些无法预料的问题。
+注意：使用第二、第三种方法之前请先查看KS3 API文档了解权限、元数据、callback、异步数据处理任务（ADP）的作用，如果用户不需要的话请勿设置。否则可能会导致一些无法预料的问题。
 
     /**
     *将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
@@ -753,6 +793,17 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		kssVariables.put("time", "20150222");
 		kssVariables.put("location", "beijing");
 		request.setCallBackConfiguration(config);
+
+
+		//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
+		List<Adp> adps= new ArrayList<Adp>();
+		Adp adp= new Adp();
+		adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
+		adp.setKey("野生动物-转码.3gp");
+		adps.add(adp);
+		request.setAdps(adps);
+		request.setNotifyURL("http://10.4.2.38:19090/");
+		
 		client.putObject(request);
 	}
 
@@ -812,6 +863,16 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		kssVariables.put("location", "beijing");
 		request.setCallBackConfiguration(config);
 
+
+		//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
+		List<Adp> adps= new ArrayList<Adp>();
+		Adp adp= new Adp();
+		adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
+		adp.setKey("野生动物-转码.3gp");
+		adps.add(adp);
+		request.setAdps(adps);
+		request.setNotifyURL("http://10.4.2.38:19090/");
+
 		client.putObject(request);
 	}
 ##### 5.3.7.2 特殊异常
@@ -828,6 +889,7 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 |CallbackTimeoutException|KS3服务端回调用户提供的callbackurl超时|
 
 #### 5.3.8 PUT Object acl
+设置文件的访问权限
 ##### 5.3.8.1 使用示例
 修改object的权限控制
 
@@ -869,6 +931,7 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 这个方法不会抛出特殊异常
 
 #### 5.3.9 PUT Object - Copy
+拷贝文件
 ##### 5.3.9.1 使用示例
 
 	public void copyObject(){
@@ -895,8 +958,64 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 |InvalidArgumentException|没有提供sourceBucket或sourceKey,正常使用SDK时不应该抛出|
 |InvalidKeyException|目标object已经存在，无法copy|
 
-#### 5.3.10 Multipart Upload
-##### 5.3.10.1 使用示例
+####5.3.10 PUT Adp
+添加异步数据处理任务
+
+#####5.3.10.1 使用示例
+
+	// 添加异步数据处理任务,该任务的作用是将指定的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/
+	// 。具体参考API文档，异步数据处理。
+	public String putAdp() {
+		PutAdpRequest request = new PutAdpRequest("<您的bucket名称>",
+				"<要处理的数据的object key>");
+		List<Adp> adps = new ArrayList<Adp>();
+
+		Adp adp = new Adp();
+		//处理命令，具体查看API文档，异步数据处理
+		adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
+		//处理完成后存储的key
+		adp.setKey("野生动物-转码.3gp");
+		adps.add(adp);
+
+		request.setAdps(adps);
+		//处理结果接受服务，具体查看API文档，异步数据处理
+		request.setNotifyURL("http://10.4.2.38:19090/");
+		//任务id,用于查询任务处理状态
+		String id = client.putAdpTask(request);
+		return id;
+	}
+
+#####5.3.10.2 特殊异常
+
+该方法不会返回特殊异常
+
+#### 5.3.11 GET Adp
+
+查询异步数据处理任务
+
+##### 5.3.11.1 使用示例
+
+	public AdpTask getAdp(){
+		AdpTask task = client.getAdpTask("<TaskID>");
+		//0,"task is create fail"、1,"task is create success"、2,"task is processing"、3,"task is process success"、4,"task is process fail"
+		task.getProcessstatus();
+		//0,"task is not notify"、1,"task is notify success"、2,"task is notify fail"
+		task.getNotifystatus();
+		
+		//查询每条命令的具体执行结果，包括是否执行成功，以及执行成功后存储的key
+		task.getAdpInfos();
+		
+		return task;
+	}
+
+##### 5.3.11.2 特殊异常
+
+|异常|说明|
+| :-------- | :--------|
+|QueryTaskFail|查询失败，很可能是因为提供的TaskID不存在|
+
+#### 5.3.12 Multipart Upload
+##### 5.3.12.1 使用示例
 注：中途想停止分块上传的话请调用client.abortMultipartUpload(bucketname, objectkey, uploadId);
 用户可以根据实际情况进行多线程分块上传
 
@@ -1034,8 +1153,10 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 			//可以指定内容的MD5值，否则程序只会在客户端进行MD5校验。如果指定的话会在服务端进行MD5校验
 			//request.setContentMD5("52D04DC20036DBD8");
 			client.uploadPart(request);
-		}
+		}  
+		
 		//***********************列出分块上传以上传的块*****************************************
+		
 		ListPartsRequest requestList = new ListPartsRequest(result.getBucket(),
 				result.getKey(), result.getUploadId());
 		ListPartsResult tags = client.listParts(requestList);
@@ -1063,9 +1184,20 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		kssVariables.put("time", "20150222");
 		kssVariables.put("location", "beijing");
 		request.setCallBackConfiguration(config);
+
+
+		//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
+		List<Adp> adps= new ArrayList<Adp>();
+		Adp adp= new Adp();
+		adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
+		adp.setKey("野生动物-转码.3gp");
+		adps.add(adp);
+		request.setAdps(adps);
+		request.setNotifyURL("http://10.4.2.38:19090/");
+		
 		client.completeMultipartUpload(request);
 	}
-##### 5.3.10.2 特殊异常
+##### 5.3.12.2 特殊异常
 Init Multipart Upload
 
 |异常|说明|
