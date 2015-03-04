@@ -82,8 +82,8 @@ public enum HttpHeaders {
 	 */
 	XKssCallbackUrl("x-kss-callbackurl"),
 	XKssCallbackBody("x-kss-callbackbody"),
-	AsynchronousProcessingList("AsynchronousProcessingList"),
-	NotifyURL("NotifyURL"),
+	AsynchronousProcessingList("kss-async-process"),
+	NotifyURL("kss-notifyurl"),
 	TaskId("TaskID")
 	;
 	private String value;

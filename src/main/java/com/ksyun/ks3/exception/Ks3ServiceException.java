@@ -150,7 +150,9 @@ public class Ks3ServiceException extends Ks3ClientException {
 			this.setRequestId(reqid);
 		if (StringUtils.isBlank(this.getErrorCode())
 				|| "unknow".equals(this.getErrorCode())) {
-			if (this.statueCode == 403)
+			if(this.statueCode == 400)
+				this.setErrorCode("InvalidArgument");
+			else if (this.statueCode == 403)
 				this.setErrorCode("AccessDenied");
 			else if(this.statueCode == 404)
 				this.setErrorCode("NotFound");
