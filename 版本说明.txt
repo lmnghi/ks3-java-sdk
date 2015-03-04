@@ -1,3 +1,4 @@
+2015年3月4好更新
 0.3.0-SNAPSHOT
 1、添加callback的支持,可以在put object和complete mulitipart upload时调用request.setCallBackConfiguration(config);设置callback参数
 2、添加数据处理接口
