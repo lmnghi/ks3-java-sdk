@@ -23,8 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 
-import net.sf.json.JSONObject;
-
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.*;
@@ -692,40 +690,10 @@ public class Ks3Client implements Ks3 {
 			conditions.add(conditionList);
 		}
 		policyMap.put("conditions", conditions);
-		String policyJson = JSONObject.fromObject(policyMap).toString();
-		byte backslash = 92;
-		byte dollar = 36;
+		String policyJson = StringUtils.object2json(policyMap);
 		String policyBase64 = "";
 		try {
-			// \\$的特殊处理
-			byte[] bytes = policyJson.getBytes("UTF-8");
-			int length = 0;
-			for(int i = 0;i < bytes.length;i++){
-				byte pre = 0;
-				if(i>0)
-					pre = bytes[i-1];
-				byte cur = bytes[i];
-				if(cur==dollar&&pre==backslash){
-					length++;
-				}
-			}
-			byte[] escape = new byte[bytes.length+length];
-			int j = 0;
-			for(int i = 0;i < bytes.length;i++){
-				byte pre = 0;
-				if(i>0)
-					pre = bytes[i-1];
-				byte cur = bytes[i];
-				if(cur==dollar&&pre==backslash){
-					escape[j] = backslash;
-					j++;
-					escape[j] = bytes[i];
-				}else{
-					escape[j] = bytes[i];
-				}
-				j++;
-			}
-			policyBase64 = new String(Base64.encodeBase64(escape),"UTF-8");
+			policyBase64 = new String(Base64.encodeBase64(policyJson.getBytes()),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			//unexpected
 		}

@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -45,6 +44,7 @@ import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.PutAdpRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.utils.Md5Utils;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -341,7 +341,7 @@ public class AdpTest extends Ks3ClientTest{
 		HttpClientFactory factory = new HttpClientFactory();
 		HttpClient httpclient = factory.createHttpClient();
 		while((line = br.readLine())!=null){
-			if(StringUtils.isNotBlank(line)&&!line.startsWith("#"))
+			if(!StringUtils.isBlank(line)&&!line.startsWith("#"))
 			{
 				lines.add("D://"+line);
 				HttpGet get = new HttpGet("http://kss.ksyun.com/"+bucketName+"/"+line);

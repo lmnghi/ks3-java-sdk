@@ -4,13 +4,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.Base64;
 import com.ksyun.ks3.utils.HttpUtils;
+import com.ksyun.ks3.utils.StringUtils;
 
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 

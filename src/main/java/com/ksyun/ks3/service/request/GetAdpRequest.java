@@ -2,9 +2,8 @@ package com.ksyun.ks3.service.request;
 
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  

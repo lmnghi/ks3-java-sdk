@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -42,7 +40,7 @@ public class PostObjectTest extends Ks3ClientTest{
 		postData.put("Content-Disposition","file;xx");
 		postData.put("Content-Encoding","gzip");
 		postData.put("Expires","Thu, 01 Dec 1994 16:00:00 GMT");
-		postData.put("key","\\$20150115/中文\\ta$\"l\"\\$;66/${filename}");
+		postData.put("key","\\!@#$%^&*()_+-={}[]$20150115/中文\\ta$\"l\"';:><?/\\$\r;66/${filename}");
 		postData.put("success_action_status","204");
 		
 		postData.put("x-kss-meta-xx6", "xx6");
