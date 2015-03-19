@@ -428,7 +428,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 */
 	@Test(expected = NoSuchBucketException.class)
 	public void getObjectACLTest3003(){
-		String tempbucket = "abc";
+		String tempbucket = "notexists"+System.currentTimeMillis();
 		AccessControlPolicy object = client.getObjectACL(tempbucket, "host.txt");
 		System.out.println(object);
 	}

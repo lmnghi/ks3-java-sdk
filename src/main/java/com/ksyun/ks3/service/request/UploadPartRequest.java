@@ -82,7 +82,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * @param partNumber
 	 * @param file
 	 * @param partsize
-	 *            注意类型为long,块的大小，除最后一块外需要给准确数字。必须提供,最大为5G,除最后一块最小为5M
+	 *            注意类型为long,块的大小，除最后一块外需要给准确数字。必须提供,最大为5G,除最后一块最小为5M。当总大小小于5M，每块的最小值为100K
 	 * @param fileoffset
 	 *            注意类型为long，文件中已被读取的量
 	 */
@@ -107,7 +107,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * @param content
 	 *            要上传的块的inputstream,(已经切分好的块)
 	 * @param partSize
-	 *            content的长度,必须提供,最大为5G,除最后一块最小为5M
+	 *            content的长度,必须提供,最大为5G,除最后一块最小为5M。当总大小小于5M，每块的最小值为100K
 	 */
 	public UploadPartRequest(String bucketname, String objectkey,
 			String uploadId, int partNumber, InputStream content, long partSize) {

@@ -90,7 +90,8 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	 */
 	private String notifyURL;
 	private String redirectLocation;
-
+	
+	private String serverSideEncryption;
 	/**
 	 * 
 	 * @param bucketname
@@ -227,6 +228,8 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			if (!StringUtils.isBlank(notifyURL))
 				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
 		}
+		if(!StringUtils.isBlank(this.serverSideEncryption))
+			this.addHeader(HttpHeaders.ServerSideEncryption, this.serverSideEncryption);
 		this.setHttpMethod(HttpMethod.PUT);
 	}
 
@@ -347,5 +350,13 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			return com.ksyun.ks3.utils.Base64
 					.encodeAsString(((MD5DigestCalculatingInputStream) super
 							.getRequestBody()).getMd5Digest());
+	}
+
+	public String getServerSideEncryption() {
+		return serverSideEncryption;
+	}
+
+	public void setServerSideEncryption(String serverSideEncryption) {
+		this.serverSideEncryption = serverSideEncryption;
 	}
 }

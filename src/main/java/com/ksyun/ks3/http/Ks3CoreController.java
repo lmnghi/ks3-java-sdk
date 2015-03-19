@@ -48,36 +48,35 @@ public class Ks3CoreController {
 
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
-		if(request==null)
+		if (request == null)
 			throw new Ks3ClientException("request不能为空");
-		log.info("Ks3WebServiceRequest:"+request.getClass()+";Ks3WebServiceResponse:"+clazz);
+		log.info("Ks3WebServiceRequest:" + request.getClass()
+				+ ";Ks3WebServiceResponse:" + clazz);
 		Y result = null;
 		try {
 			if (auth == null || StringUtils.isBlank(auth.getAccessKeyId())
 					|| StringUtils.isBlank(auth.getAccessKeySecret()))
-				throw new Ks3ClientException(
-						"请先设置AccessKeyId和AccessKeySecret");
+				throw new Ks3ClientException("请先设置AccessKeyId和AccessKeySecret");
 			if (request == null || clazz == null)
 				throw new IllegalArgumentException();
 			result = doExecute(auth, request, clazz);
 			return result;
-		}
-		catch (RuntimeException e) {
-			if(e instanceof Ks3ClientException){
-				
-			}else{
-				if(e instanceof IllegalArgumentException){
-					ClientIllegalArgumentException ce = new ClientIllegalArgumentException(e.getMessage());
+		} catch (RuntimeException e) {
+			if (e instanceof Ks3ClientException) {
+
+			} else {
+				if (e instanceof IllegalArgumentException) {
+					ClientIllegalArgumentException ce = new ClientIllegalArgumentException(
+							e.getMessage());
 					ce.setStackTrace(e.getStackTrace());
 					e = ce;
-				}else
-			    	e = new Ks3ClientException(e);
+				} else
+					e = new Ks3ClientException(e);
 			}
 			log.error(e);
 			e.printStackTrace();
 			throw e;
-		} 
-		finally {
+		} finally {
 			System.out.println();
 		}
 	}
@@ -95,15 +94,13 @@ public class Ks3CoreController {
 			httpRequest.addHeader(HttpHeaders.Authorization.toString(),
 					signer.calculate(auth, request));
 		} catch (Exception e) {
-			throw new Ks3ClientException(
-					"计算签名时发生了一个异常 ("
-							+ e + ")", e);
+			throw new Ks3ClientException("计算签名时发生了一个异常 (" + e + ")", e);
 		}
 		try {
 			log.info(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
 			log.info(response.getStatusLine());
-			//TODO 307retry
+			// TODO 307retry
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
@@ -113,11 +110,11 @@ public class Ks3CoreController {
 		try {
 			ksResponse = clazz.newInstance();
 		} catch (InstantiationException e) {
-			//正常情况不会抛出
+			// 正常情况不会抛出
 			throw new Ks3ClientException("to instantiate " + clazz
 					+ " has occured an exception:(" + e + ")", e);
 		} catch (IllegalAccessException e) {
-			//正常情况不会抛出
+			// 正常情况不会抛出
 			throw new Ks3ClientException("to instantiate " + clazz
 					+ " has occured an exception:(" + e + ")", e);
 		}
@@ -127,14 +124,18 @@ public class Ks3CoreController {
 					ksResponse.expectedStatus(), ",")
 					+ "("
 					+ Ks3WebServiceResponse.allStatueCode
-					+ " is all statue codes)").convert(response.getFirstHeader(HttpHeaders.RequestId.toString()).getValue());
+					+ " is all statue codes)")
+					.convert(response.getFirstHeader(HttpHeaders.RequestId
+							.toString()) == null ? "" : response
+							.getFirstHeader(HttpHeaders.RequestId.toString())
+							.getValue());
 		}
-		Y result = ksResponse.handleResponse(httpRequest,response);
+		Y result = ksResponse.handleResponse(httpRequest, response);
 		if (ksResponse instanceof Md5CheckAble
 				&& request instanceof MD5CalculateAble) {
 			String ETag = ((Md5CheckAble) ksResponse).getETag();
 			String MD5 = ((MD5CalculateAble) request).getMd5();
-			log.info("returned etag is:"+ETag);
+			log.info("returned etag is:" + ETag);
 			if (!ETag.equals(Converter.MD52ETag(MD5))) {
 				throw new ClientInvalidDigestException(
 						"客户端MD5校验失败，数据在传输过程可能有所丢失，建议重新上传");

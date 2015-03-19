@@ -48,7 +48,7 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 	public void postObjectTest() throws Exception {
 		for(Entry<String,String> entry:tests.entrySet()){
 			//为了节约时间，只做抽查
-			if(new Random().nextInt()%2!=0)
+			if(new Random().nextInt()%9!=0)
 				continue;
 			String key ="test."+entry.getKey();
 			this.postObjectCommon(key);
@@ -64,7 +64,7 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 	public void putObjectTest() throws Exception {
 		for(Entry<String,String> entry:tests.entrySet()){
 			//为了节约时间，只做抽查
-			if(new Random().nextInt()%2!=0)
+			if(new Random().nextInt()%9!=0)
 				continue;
 			String key ="test."+entry.getKey();
 			client.execute(new WithOutContentTypePutObjectRequest(bucketName,key,new ByteArrayInputStream("123456".getBytes()),null),PutObjectResponse.class);
@@ -80,7 +80,7 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 	public void putObjectTestForSdk(){
 		for(Entry<String,String> entry:tests.entrySet()){
 			//为了节约时间，只做抽查
-			if(new Random().nextInt()%2!=0)
+			if(new Random().nextInt()%9!=0)
 				continue;
 			String key ="test."+entry.getKey();
 			client.execute(new PutObjectRequest(bucketName,key,new ByteArrayInputStream("123456".getBytes()),null),PutObjectResponse.class);
@@ -96,7 +96,7 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 	public void mulitipartUploadObject() throws Exception{
 		for(Entry<String,String> entry:tests.entrySet()){
 			//为了节约时间，只做抽查
-			if(new Random().nextInt()%2!=0)
+			if(new Random().nextInt()%9!=0)
 				continue;
 			String key ="test."+entry.getKey();
 			InitiateMultipartUploadResult result = client.execute(new WithOutContentTypeInitMultipartUploadRequest(bucketName,key),InitiateMultipartUploadResponse.class);
@@ -120,7 +120,7 @@ public class AutoSelectContentTypeTest extends Ks3ClientTest {
 	public void mulitipartUploadObjectForSdk() throws Exception{
 		for(Entry<String,String> entry:tests.entrySet()){
 			//为了节约时间，只做抽查
-			if(new Random().nextInt()%2!=0)
+			if(new Random().nextInt()%9!=0)
 				continue;
 			String key ="test."+entry.getKey();
 			InitiateMultipartUploadResult result = client.execute(new InitiateMultipartUploadRequest(bucketName,key),InitiateMultipartUploadResponse.class);

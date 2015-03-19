@@ -132,13 +132,13 @@ public class AuthUtils {
         
         if (!StringUtils.isBlank(objectKey)) {
         	String encodedPath = HttpUtils.urlEncode(objectKey, true);
-            if (escapeDoubleSlash) {
-                encodedPath = encodedPath.replace("//", "/%2F");
-            }
             buffer.append(encodedPath);
         }
         
         String resource = buffer.toString();
+        if (escapeDoubleSlash) {
+        	resource = resource.replace("//", "/%2F");
+        }
 
         String queryParams = encodeParams(request.getParams());
         if (queryParams != null && !queryParams.equals(""))
