@@ -188,10 +188,6 @@ public class MultipartUploadWithSmallFileTest extends Ks3ClientTest {
 		writer.close();
 		uploadAndDownloadByMutiThreads(part, 10);
 	}
-	@Test
-	public void test1(){
-		System.out.println(client1.listParts("afiles", "file", "c98ebf4f66584f01b936b3f132aa5932"));
-	}
 
 	public void uploadAndDownloadByMutiThreads(final long part, int maxThreads)
 			throws FileNotFoundException, IOException, Exception {

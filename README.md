@@ -766,13 +766,13 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 
 		ObjectMetadata meta = new ObjectMetadata();
 		// 设置将要上传的object的用户元数据
-		meta.setUserMeta("x-kss-meta-example", "example");
+		//meta.setUserMeta("x-kss-meta-example", "example");
 		// 设置将要上传的object的元数据
-		meta.setContentType("text/html");
-		meta.setContentEncoding("gzip");
-		meta.setCacheControl("no-cache");
-		meta.setHttpExpiresDate(new Date());
-		meta.setContentDisposition("attachment; filename=fname.ext");
+		//meta.setContentType("text/html");
+		//meta.setContentEncoding("gzip");
+		//meta.setCacheControl("no-cache");
+		//meta.setHttpExpiresDate(new Date());
+		//meta.setContentDisposition("attachment; filename=fname.ext");
 
 		request.setObjectMeta(meta);
 		//设置callBack
@@ -812,13 +812,13 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 	public void putObjectWithInputStream() {
 		ObjectMetadata meta = new ObjectMetadata();
 		// 设置将要上传的object的用户元数据
-		meta.setUserMeta("x-kss-meta-example", "example");
+		//meta.setUserMeta("x-kss-meta-example", "example");
 		// 设置将要上传的object的元数据
-		meta.setContentType("text/html");
-		meta.setContentEncoding("gzip");
-		meta.setCacheControl("no-cache");
-		meta.setHttpExpiresDate(new Date());
-		meta.setContentDisposition("attachment; filename=fname.ext");
+		//meta.setContentType("text/html");
+		//meta.setContentEncoding("gzip");
+		//meta.setCacheControl("no-cache");
+		//meta.setHttpExpiresDate(new Date());
+		//meta.setContentDisposition("attachment; filename=fname.ext");
 
 		PutObjectRequest request = new PutObjectRequest("<bucket名称>",
 				"<object key>", new ByteArrayInputStream("1234".getBytes()),
@@ -827,7 +827,7 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		// 可以指定内容的长度，否则程序会把整个输入流缓存起来，可能导致jvm内存溢出
 		meta.setContentLength(4);
 		// 可以指定内容的md5摘要，程序将在ks3服务端进行md5值校验，否则程序只会在客户端进行md5值校验
-		meta.setContentMD5("gdyb21LQTcIANtvYMT7QVQ==");
+		//meta.setContentMD5("gdyb21LQTcIANtvYMT7QVQ==");
 
 		AccessControlList acl = new AccessControlList();
 		// 设置用户id为12345678的用户对object的读权限
@@ -841,7 +841,7 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		grant2.setPermission(Permission.FullControl);
 		acl.addGrant(grant2);
 
-		// 设置acl
+		// 设置acl.(也可以通过CannedAccessControlList设置)
 		request.setAcl(acl);
 
 		//设置callBack
@@ -1040,13 +1040,13 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		request1.setCannedAcl(CannedAccessControlList.PublicRead);
 		ObjectMetadata meta = new ObjectMetadata();
 		//设置将要上传的object的用户元数据
-		meta.setUserMeta("x-kss-meta-example", "example");
+		//meta.setUserMeta("x-kss-meta-example", "example");
 		//设置将要上传的object的元数据
-		meta.setContentType("text/html");
-		meta.setContentEncoding("gzip");
-		meta.setCacheControl("no-cache");
-		meta.setHttpExpiresDate(new Date());
-		meta.setContentDisposition("attachment; filename=fname.ext");
+		//meta.setContentType("text/html");
+		//meta.setContentEncoding("gzip");
+		//meta.setCacheControl("no-cache");
+		//meta.setHttpExpiresDate(new Date());
+		//meta.setContentDisposition("attachment; filename=fname.ext");
 		//设置元数据
 		request1.setObjectMeta(meta);
 		
@@ -1118,13 +1118,13 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		request1.setCannedAcl(CannedAccessControlList.PublicRead);
 		ObjectMetadata meta = new ObjectMetadata();
 		//设置将要上传的object的用户元数据
-		meta.setUserMeta("x-kss-meta-example", "example");
+		//meta.setUserMeta("x-kss-meta-example", "example");
 		//设置将要上传的object的元数据
-		meta.setContentType("text/html");
-		meta.setContentEncoding("gzip");
-		meta.setCacheControl("no-cache");
-		meta.setHttpExpiresDate(new Date());
-		meta.setContentDisposition("attachment; filename=fname.ext");
+		//meta.setContentType("text/html");
+		//meta.setContentEncoding("gzip");
+		//meta.setCacheControl("no-cache");
+		//meta.setHttpExpiresDate(new Date());
+		//meta.setContentDisposition("attachment; filename=fname.ext");
 		//设置元数据
 		request1.setObjectMeta(meta);
 		

@@ -725,7 +725,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 * @Test 客户端向非本用户bucket添加文件
 	 * @Then 
 	 */
-	@Test(expected=SignatureDoesNotMatchException.class)
+	@Test
 	public void putObjectTest5013() throws FileNotFoundException{
 		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest1.txt", new File(filePath + "/putObjectTest.txt"));
 //		request.setCannedAcl(CannedAccessControlList.Private);
