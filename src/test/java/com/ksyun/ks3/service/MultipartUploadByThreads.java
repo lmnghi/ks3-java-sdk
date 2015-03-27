@@ -41,7 +41,7 @@ import com.ksyun.ks3.utils.Md5Utils;
  **/
 public class MultipartUploadByThreads extends Ks3ClientTest {
 	long part = 5 * 1024 * 1024;
-	String bucketName = "afiles";
+	String bucketName = "test1-zzy-jr";
 	File file = null;
 	String filename = "file";
 	String dir = "D://multithread/";

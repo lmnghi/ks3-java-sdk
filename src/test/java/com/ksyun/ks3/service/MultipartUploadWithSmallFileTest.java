@@ -43,7 +43,7 @@ import com.ksyun.ks3.utils.Md5Utils;
  **/
 public class MultipartUploadWithSmallFileTest extends Ks3ClientTest {
 	Log log = LogFactory.getLog(MultipartUploadWithSmallFileTest.class);
-	String bucketName = "afiles";
+	String bucketName = "test1-zzy-jr";
 	File file = null;
 	String filename = "file";
 	String dir = "D://multithread_small/";

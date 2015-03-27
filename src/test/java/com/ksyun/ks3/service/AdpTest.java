@@ -1,6 +1,7 @@
 package com.ksyun.ks3.service;
 
 import static org.junit.Assert.*;
+import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,8 +24,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.dto.AdpInfo;
@@ -33,6 +36,7 @@ import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.PostObjectFormFields;
+import com.ksyun.ks3.exception.serviceside.AccessDeniedException;
 import com.ksyun.ks3.exception.serviceside.QueryTaskFailException;
 import com.ksyun.ks3.http.HttpClientFactory;
 import com.ksyun.ks3.http.HttpHeaders;
@@ -40,11 +44,13 @@ import com.ksyun.ks3.service.multipartpost.FormFieldKeyValuePair;
 import com.ksyun.ks3.service.multipartpost.HttpPostEmulator;
 import com.ksyun.ks3.service.multipartpost.UploadFileItem;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.PutAdpRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.utils.Md5Utils;
 import com.ksyun.ks3.utils.StringUtils;
+import com.ksyun.ks3.exception.Ks3ClientException;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -59,18 +65,36 @@ public class AdpTest extends Ks3ClientTest{
 	final File file = new File("D://"+key);
 	final File filePut = new File(this.getClass().getClassLoader().getResource("git.exe").toString().substring(6));
 	final File logo = new File(this.getClass().getClassLoader().getResource("IMG.jpg").toString().substring(6));
+	private static boolean hasUpload = false;
 	@Before
 	public void createTestBucket(){
-		if(!client.bucketExists(bucketName)){
-			client.createBucket(bucketName);
-		}else{
-			client.clearBucket(bucketName);
+		ClientConfig.getConfig().set(ClientConfig.MAX_RETRY,"0");
+		
+		if(!hasUpload){
+			hasUpload = true;
+			if(!client.bucketExists(bucketName)){
+				client.createBucket(bucketName);
+			}else{
+				client.clearBucket(bucketName);
+			}
+			client.putObject(bucketName, "IMG.jpg", logo);
+			client.putObject(bucketName,key,file);
 		}
-		client.putObject(bucketName, "IMG.jpg", logo);
 	}
 	@Test(timeout=1000*2000)
 	public void testPutPfop() throws InterruptedException{
-		client.putObject(bucketName,key,file);
+		testPutPfop(client);
+	}
+	@Test(timeout=1000*2000,expected=Ks3ClientException.class)
+	public void testPutPfopOtherClient() throws InterruptedException{
+		try{
+			client.putObjectACL(bucketName,key,CannedAccessControlList.PublicRead);
+			testPutPfop(client1);
+		}finally{
+			client.putObjectACL(bucketName,key,CannedAccessControlList.Private);
+		}
+	}
+	private void testPutPfop(Ks3 client) throws InterruptedException{
 		PutAdpRequest request = new PutAdpRequest(bucketName,key);
 		List<Adp> fops = new ArrayList<Adp>();
 		
@@ -152,7 +176,6 @@ public class AdpTest extends Ks3ClientTest{
 	}
 	@Test(timeout=1000*600)
 	public void testPutPfopWithErrorCommand() throws InterruptedException{
-		client.putObject(bucketName,key,file);
 		PutAdpRequest request = new PutAdpRequest(bucketName,key);
 		List<Adp> fops = new ArrayList<Adp>();
 		
@@ -184,6 +207,18 @@ public class AdpTest extends Ks3ClientTest{
 	}
 	@Test(timeout=1000*600)
 	public void putObjectWithPfop() throws InterruptedException{
+		putObjectWithPfop(client);
+	}
+	@Test(timeout=1000*600,expected=Ks3ClientException.class)
+	public void putObjectWithPfopOtherClient() throws InterruptedException{
+		try{
+			client.putBucketACL(bucketName, CannedAccessControlList.PublicReadWrite);
+			putObjectWithPfop(client1);
+		}finally{
+			client.putBucketACL(bucketName, CannedAccessControlList.Private);
+		}
+	}
+	private void putObjectWithPfop(Ks3 client) throws InterruptedException{
 		PutObjectRequest request = new PutObjectRequest(bucketName,key,file);
 		
 		
@@ -216,12 +251,26 @@ public class AdpTest extends Ks3ClientTest{
 	}
 	@Test(timeout=1000*600)
 	public void mulitipartUploadWithPfop() throws InterruptedException{
-		InitiateMultipartUploadResult result = client.initiateMultipartUpload(bucketName,key);
+		mulitipartUploadWithPfop(client);
+	}
+	@Test(timeout=1000*600,expected=Ks3ClientException.class)
+	public void mulitipartUploadWithPfopOtherClient() throws InterruptedException{
+		try{
+			client.putBucketACL(bucketName, CannedAccessControlList.PublicReadWrite);
+			mulitipartUploadWithPfop(client1);
+		}finally{
+			client.putBucketACL(bucketName, CannedAccessControlList.Private);
+		}
+	}
+	private void mulitipartUploadWithPfop(Ks3 client) throws InterruptedException{
+		InitiateMultipartUploadRequest initr = new InitiateMultipartUploadRequest(bucketName,key);
+		initr.setCannedAcl(CannedAccessControlList.PublicRead);
+		InitiateMultipartUploadResult result = client.initiateMultipartUpload(initr);
 		
 		UploadPartRequest request = new UploadPartRequest(result.getBucket(),result.getKey(),result.getUploadId(),1,file,file.length(),0);
 		client.uploadPart(request);	
 		
-		ListPartsResult parts = client.listParts(bucketName, result.getKey(), result.getUploadId());
+		ListPartsResult parts = super.client.listParts(bucketName, result.getKey(), result.getUploadId());
 
 		CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(parts);
 		
@@ -252,7 +301,7 @@ public class AdpTest extends Ks3ClientTest{
 			assertEquals(true,info.isSuccess());
 		}
 	}
-	@Test
+	@Test(expected=IOException.class)
 	public void postObjectPfop() throws Exception{
 		Map<String,String> postData = new HashMap<String,String>();
 
@@ -302,7 +351,6 @@ public class AdpTest extends Ks3ClientTest{
 	}
 	@Test
 	public void testM3U8() throws InterruptedException, IOException{
-		client.putObject(bucketName,key,file);
 		PutAdpRequest request = new PutAdpRequest(bucketName,key);
 		List<Adp> fops = new ArrayList<Adp>();
 		Adp fop12 = new Adp();

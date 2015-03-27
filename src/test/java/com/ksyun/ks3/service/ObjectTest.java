@@ -516,7 +516,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 * @Test 客户端删除非本用户文件---公开文件
 	 * @Then 
 	 */
-	@Test()
+	@Test(expected=AccessDeniedException.class)
 	public void deleteObjectTest4004(){
 		client.putObjectACL(bucket, "deleteTestP.txt", CannedAccessControlList.PublicReadWrite);
 		clientOther.deleteObject(bucket, "deleteTestP.txt");
@@ -608,10 +608,10 @@ public class ObjectTest extends ObjectBeforeTest{
 	
 	/**
 	 * @tag 功能测试	 PUT Object
-	 * @Test 正确的bucket，文件名为"."  上传文件
-	 * @Then {@value BucketAlreadyExistsException 异常}
+	 * @Test 正确的bucket，文件名为"."  上传文件.直接点是创建bucket
+	 * @Then {@value SignatureDoesNotMatchException 异常}
 	 */
-	@Test(expected=BucketAlreadyExistsException.class)
+	@Test(expected=SignatureDoesNotMatchException.class)
 	public void putObjectTest5005(){
 		PutObjectResult result = client.putObject(bucket, ".",new File(filePath + "/putObjectTest.txt"));
 		System.out.println(result);
@@ -725,7 +725,7 @@ public class ObjectTest extends ObjectBeforeTest{
 	 * @Test 客户端向非本用户bucket添加文件
 	 * @Then 
 	 */
-	@Test
+	@Test(expected=AccessDeniedException.class)
 	public void putObjectTest5013() throws FileNotFoundException{
 		PutObjectRequest request = new PutObjectRequest(bucket, "/putObjectTest1.txt", new File(filePath + "/putObjectTest.txt"));
 //		request.setCannedAcl(CannedAccessControlList.Private);

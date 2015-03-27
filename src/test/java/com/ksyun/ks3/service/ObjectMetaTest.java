@@ -78,9 +78,9 @@ public class ObjectMetaTest extends Ks3ClientTest{
 		overrides.setContentLanguage(lang);
 		request.setOverrides(overrides);
 		GetObjectResult res = client.getObject(request);
-		assertEquals(cache,res.getObject().getObjectMetadata().getCacheControl());
-		assertEquals(disposition,res.getObject().getObjectMetadata().getContentDisposition());
-		assertEquals(encoding,res.getObject().getObjectMetadata().getContentEncoding());
+		assertEquals(null,res.getObject().getObjectMetadata().getCacheControl());
+		assertEquals(null,res.getObject().getObjectMetadata().getContentDisposition());
+		assertEquals(null,res.getObject().getObjectMetadata().getContentEncoding());
 		assertEquals(type,res.getObject().getObjectMetadata().getContentType());
 		assertEquals(
 				DateUtils.convertDate2Str(expire, DATETIME_PROTOCOL.RFC1123).toString(),
