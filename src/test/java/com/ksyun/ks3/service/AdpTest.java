@@ -70,7 +70,7 @@ public class AdpTest extends Ks3ClientTest{
 	final File file = new File("D://野生动物.3gp");
 	final File filePut = new File(this.getClass().getClassLoader().getResource("git.exe").toString().substring(6));
 	final File logo = new File(this.getClass().getClassLoader().getResource("IMG.jpg").toString().substring(6));
-	private static boolean hasUpload = false;
+	private static boolean hasUpload = true;
 	@Before
 	public void createTestBucket(){
 		ClientConfig.getConfig().set(ClientConfig.MAX_RETRY,"0");
@@ -410,7 +410,7 @@ public class AdpTest extends Ks3ClientTest{
 				Md5Utils.md5AsBase64(new File("D://野生动物-hls切片.m3u8.ts")));
 	}
 	@Test
-	public void testBatchUpdateAcl() throws InterruptedException{
+	public void testBatchOperation() throws InterruptedException{
 		PutAdpRequest request = new PutAdpRequest(bucketName,key);
 		List<Adp> fops = new ArrayList<Adp>();
 		Adp fop12 = new Adp();
@@ -467,6 +467,66 @@ public class AdpTest extends Ks3ClientTest{
 		for(Ks3ObjectSummary obj :list1.getObjectSummaries()){
 			AccessControlPolicy policy = client.getObjectACL(bucketName, obj.getKey());
 			assertTrue(1==policy.getAccessControlList().getGrants().size());
+		}
+	}
+	@Test
+	public void testBatchDelete() throws InterruptedException{
+		client.putObject(bucketName, "testdelete/IMG.jpg", logo);
+		ObjectListing list = client.listObjects(bucketName, "testdelete/");
+		assertTrue(list.getObjectSummaries().size()>0);
+		
+		PutAdpRequest request = new PutAdpRequest(bucketName,key);
+		List<Adp> fops = new ArrayList<Adp>();
+		Adp fop12 = new Adp();
+		fop12.setCommand("tag=batchoperate&objectkey="+Base64.encodeBase64String("testdelete/".getBytes())+"&operation=del");
+		fops.add(fop12);
+		
+		request.setAdps(fops);
+		request.setNotifyURL("http://10.4.2.38:19090/");
+		String taskId = client.putAdpTask(request);
+		assertNotNull(taskId);
+		AdpTask task;
+		while(true){
+			task = client.getAdpTask(taskId);
+			System.out.println(task);
+			if(task.isProcessFinished()&&task.isNotified())
+				break;
+			Thread.sleep(5000);
+		}
+		assertEquals("3",task.getProcessstatus());
+		assertEquals("1",task.getNotifystatus());
+		for(AdpInfo info :task.getAdpInfos()){
+			assertEquals(true,info.isSuccess());
+		}
+		list = client.listObjects(bucketName, "testdelete/");
+		assertTrue(0==list.getObjectSummaries().size());
+	}
+	@Test
+	public void testBatchRefresh() throws InterruptedException{
+		client.putObject(bucketName, "testdelete/IMG.jpg", logo);
+		
+		PutAdpRequest request = new PutAdpRequest(bucketName,key);
+		List<Adp> fops = new ArrayList<Adp>();
+		Adp fop12 = new Adp();
+		fop12.setCommand("tag=batchoperate&objectkey="+Base64.encodeBase64String("testdelete/".getBytes())+"&operation=refresh");
+		fops.add(fop12);
+		
+		request.setAdps(fops);
+		request.setNotifyURL("http://10.4.2.38:19090/");
+		String taskId = client.putAdpTask(request);
+		assertNotNull(taskId);
+		AdpTask task;
+		while(true){
+			task = client.getAdpTask(taskId);
+			System.out.println(task);
+			if(task.isProcessFinished()&&task.isNotified())
+				break;
+			Thread.sleep(5000);
+		}
+		assertEquals("3",task.getProcessstatus());
+		assertEquals("1",task.getNotifystatus());
+		for(AdpInfo info :task.getAdpInfos()){
+			assertEquals(true,info.isSuccess());
 		}
 	}
 	private void getObjectCommon(String bucket,String key,String filename) throws IOException{

@@ -1,3 +1,8 @@
+0.4.0
+1、添加getBucketCannedACL和getObjectCannedACL接口
+2、移除0.2.0-SNAPSHOT中添加的json-lib的依赖
+
+
 2015年3月4号更新
 0.3.0-SNAPSHOT
 1、添加callback的支持,可以在put object和complete mulitipart upload时调用request.setCallBackConfiguration(config);设置callback参数
