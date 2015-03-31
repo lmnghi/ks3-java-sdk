@@ -1,6 +1,7 @@
 package com.ksyun.ks3.service;
 
 import static org.junit.Assert.*;
+
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 
 import java.io.BufferedReader;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -28,13 +30,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.ksyun.ks3.config.ClientConfig;
+import com.ksyun.ks3.dto.AccessControlPolicy;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.dto.AdpInfo;
 import com.ksyun.ks3.dto.AdpTask;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
+import com.ksyun.ks3.dto.Ks3ObjectSummary;
 import com.ksyun.ks3.dto.ListPartsResult;
+import com.ksyun.ks3.dto.ObjectListing;
 import com.ksyun.ks3.dto.PostObjectFormFields;
 import com.ksyun.ks3.exception.serviceside.AccessDeniedException;
 import com.ksyun.ks3.exception.serviceside.QueryTaskFailException;
@@ -61,8 +66,8 @@ import com.ksyun.ks3.exception.Ks3ClientException;
  **/
 public class AdpTest extends Ks3ClientTest{
 	final String bucketName = "aaaaaaaavideo";
-	final String key = "野生动物.3gp";
-	final File file = new File("D://"+key);
+	final String key = "adpdir/野生动物.3gp";
+	final File file = new File("D://野生动物.3gp");
 	final File filePut = new File(this.getClass().getClassLoader().getResource("git.exe").toString().substring(6));
 	final File logo = new File(this.getClass().getClassLoader().getResource("IMG.jpg").toString().substring(6));
 	private static boolean hasUpload = false;
@@ -148,7 +153,7 @@ public class AdpTest extends Ks3ClientTest{
 		fops.add(fop10);
 		
 		Adp fop11 = new Adp();
-		fop11.setCommand("tag=avconcat&f=flv&mode=2&file=YWFhYWFhYWF2aWRlbzrph47nlJ/liqjniakuM2dw&loglevel=error");
+		fop11.setCommand("tag=avconcat&f=flv&mode=2&file=YWFhYWFhYWF2aWRlbzphZHBkaXIv6YeO55Sf5Yqo54mpLjNncA==&loglevel=error");
 		fop11.setKey("野生动物-视频拼接.3gp");
 		fops.add(fop11);
 		
@@ -403,6 +408,66 @@ public class AdpTest extends Ks3ClientTest{
 		getObjectCommon(bucketName,"野生动物-hls切片.m3u8.ts","野生动物-hls切片.m3u8.ts");
 		assertEquals(Md5Utils.md5AsBase64(new File("D://野生动物-hls切片.m3u8.ts-Down")),
 				Md5Utils.md5AsBase64(new File("D://野生动物-hls切片.m3u8.ts")));
+	}
+	@Test
+	public void testBatchUpdateAcl() throws InterruptedException{
+		PutAdpRequest request = new PutAdpRequest(bucketName,key);
+		List<Adp> fops = new ArrayList<Adp>();
+		Adp fop12 = new Adp();
+		fop12.setCommand("tag=batchoperate&objectkey="+Base64.encodeBase64String("adpdir/".getBytes())+"&acl=public&operation=putobjectacl");
+		fops.add(fop12);
+		
+		request.setAdps(fops);
+		request.setNotifyURL("http://10.4.2.38:19090/");
+		String taskId = client.putAdpTask(request);
+		assertNotNull(taskId);
+		AdpTask task;
+		while(true){
+			task = client.getAdpTask(taskId);
+			System.out.println(task);
+			if(task.isProcessFinished()&&task.isNotified())
+				break;
+			Thread.sleep(5000);
+		}
+		assertEquals("3",task.getProcessstatus());
+		assertEquals("1",task.getNotifystatus());
+		for(AdpInfo info :task.getAdpInfos()){
+			assertEquals(true,info.isSuccess());
+		}
+		ObjectListing list = client.listObjects(bucketName, "adpdir/");
+		for(Ks3ObjectSummary obj :list.getObjectSummaries()){
+			AccessControlPolicy policy = client.getObjectACL(bucketName, obj.getKey());
+			assertTrue(2==policy.getAccessControlList().getGrants().size());
+		}
+		//再设置成私有的
+		PutAdpRequest request1 = new PutAdpRequest(bucketName,key);
+		List<Adp> fops1 = new ArrayList<Adp>();
+		Adp fop121 = new Adp();
+		fop121.setCommand("tag=batchoperate&objectkey="+Base64.encodeBase64String("adpdir/".getBytes())+"&acl=private&operation=putobjectacl");
+		fops1.add(fop121);
+		
+		request1.setAdps(fops1);
+		request1.setNotifyURL("http://10.4.2.38:19090/");
+		String taskId1 = client.putAdpTask(request1);
+		assertNotNull(taskId1);
+		AdpTask task1;
+		while(true){
+			task1 = client.getAdpTask(taskId1);
+			System.out.println(task1);
+			if(task1.isProcessFinished()&&task1.isNotified())
+				break;
+			Thread.sleep(5000);
+		}
+		assertEquals("3",task1.getProcessstatus());
+		assertEquals("1",task1.getNotifystatus());
+		for(AdpInfo info :task1.getAdpInfos()){
+			assertEquals(true,info.isSuccess());
+		}
+		ObjectListing list1 = client.listObjects(bucketName, "adpdir/");
+		for(Ks3ObjectSummary obj :list1.getObjectSummaries()){
+			AccessControlPolicy policy = client.getObjectACL(bucketName, obj.getKey());
+			assertTrue(1==policy.getAccessControlList().getGrants().size());
+		}
 	}
 	private void getObjectCommon(String bucket,String key,String filename) throws IOException{
 		GetObjectResult result = client.getObject(bucket, key);

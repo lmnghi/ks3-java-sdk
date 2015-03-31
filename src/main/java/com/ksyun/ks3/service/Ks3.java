@@ -214,6 +214,35 @@ public interface Ks3 {
 			throws Ks3ClientException, Ks3ServiceException;
 
 	/**
+	 * GET BUCKET acl
+	 * 
+	 * @param bucketName
+	 *            bucket名称
+	 * @return {@link CannedAccessControlList}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 *             <p>
+	 *             获取bucket的acl
+	 *             </p>
+	 */
+	public CannedAccessControlList getBucketCannedACL(String bucketName)
+			throws Ks3ClientException, Ks3ServiceException;
+
+	/**
+	 * GET Bucket acl
+	 * 
+	 * @param request
+	 *            {@link GetBucketACLRequest}
+	 * @return {@link CannedAccessControlList}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 *             <p>
+	 *             获取bucket的acl
+	 *             </p>
+	 */
+	public CannedAccessControlList getBucketCannedACL(GetBucketACLRequest request)
+			throws Ks3ClientException, Ks3ServiceException;
+	/**
 	 * PUT Bucket acl
 	 * 
 	 * @param bucketName
@@ -345,6 +374,38 @@ public interface Ks3 {
 	 *             </p>
 	 */
 	public AccessControlPolicy getObjectACL(GetObjectACLRequest request)
+			throws Ks3ClientException, Ks3ServiceException;
+	
+	/**
+	 * Get Object acl
+	 * 
+	 * @param bucketName
+	 *            bucket名称
+	 * @param ObjectName
+	 *            object名称
+	 * @return {@link CannedAccessControlList}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 *             <p>
+	 *             获取object的acl
+	 *             </p>
+	 */
+	public CannedAccessControlList getObjectCannedACL(String bucketName, String ObjectName)
+			throws Ks3ClientException, Ks3ServiceException;
+
+	/**
+	 * Get Object acl
+	 * 
+	 * @param request
+	 *            {@link GetObjectACLRequest}
+	 * @return {@link CannedAccessControlList}
+	 * @throws Ks3ClientException
+	 * @throws Ks3ServiceException
+	 *             <p>
+	 *             获取object的acl
+	 *             </p>
+	 */
+	public CannedAccessControlList getObjectCannedACL(GetObjectACLRequest request)
 			throws Ks3ClientException, Ks3ServiceException;
 
 	/**

@@ -1,6 +1,8 @@
 package com.ksyun.ks3.dto;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,5 +44,26 @@ public class AccessControlPolicy {
     public String toString()
     {
     	return StringUtils.object2string(this);
+    }
+    /**
+     * 从AccessControlPolicy中提取CannedAccessControlList
+     * @return {@link CannedAccessControlList}
+     */
+    public CannedAccessControlList getCannedAccessControlList(){
+		final Collection<Permission> allUsersPermissions = new LinkedHashSet<Permission>();
+		for (final Grant grant : this.getGrants()) {
+			if (GranteeUri.AllUsers.equals(grant.getGrantee())) {
+				allUsersPermissions.add(grant.getPermission());
+			}
+		}
+		final boolean read = allUsersPermissions.contains(Permission.Read);
+		final boolean write = allUsersPermissions.contains(Permission.Write);
+		if (read && write) {
+			return CannedAccessControlList.PublicReadWrite;
+		} else if (read) {
+			return CannedAccessControlList.PublicRead;
+		} else {
+			return CannedAccessControlList.Private;
+		}
     }
 }

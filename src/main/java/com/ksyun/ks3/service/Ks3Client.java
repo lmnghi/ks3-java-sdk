@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
  
 
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,9 +45,11 @@ import com.ksyun.ks3.service.request.DeleteBucketCorsRequest;
 import com.ksyun.ks3.service.request.DeleteBucketRequest;
 import com.ksyun.ks3.service.request.DeleteMultipleObjectsRequest;
 import com.ksyun.ks3.service.request.DeleteObjectRequest;
+import com.ksyun.ks3.service.request.GetBucketACLRequest;
 import com.ksyun.ks3.service.request.GetBucketCorsRequest;
 import com.ksyun.ks3.service.request.GetBucketLocationRequest;
 import com.ksyun.ks3.service.request.GetBucketLoggingRequest;
+import com.ksyun.ks3.service.request.GetObjectACLRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
 import com.ksyun.ks3.service.request.HeadBucketRequest;
 import com.ksyun.ks3.service.request.HeadObjectRequest;
@@ -177,7 +180,16 @@ public class Ks3Client implements Ks3 {
 			throws Ks3ClientException, Ks3ServiceException {
 		return getBucketACL(new GetBucketACLRequest(bucketName));
 	}
+	public CannedAccessControlList getBucketCannedACL(String bucketName)
+			throws Ks3ClientException, Ks3ServiceException {
+		return this.getBucketACL(bucketName).getCannedAccessControlList();
+	}
 
+	public CannedAccessControlList getBucketCannedACL(
+			GetBucketACLRequest request) throws Ks3ClientException,
+			Ks3ServiceException {
+		return this.getBucketACL(request).getCannedAccessControlList();
+	}
 	public AccessControlPolicy getBucketACL(GetBucketACLRequest request)
 			throws Ks3ClientException, Ks3ServiceException {
 		return client.execute(auth, request, GetBucketACLResponse.class);
@@ -210,7 +222,17 @@ public class Ks3Client implements Ks3 {
 			throws Ks3ClientException, Ks3ServiceException {
 		return getObjectACL(new GetObjectACLRequest(bucketName, objectName));
 	}
+	
+	public CannedAccessControlList getObjectCannedACL(String bucketName,
+			String ObjectName) throws Ks3ClientException, Ks3ServiceException {
+		return this.getObjectACL(bucketName, ObjectName).getCannedAccessControlList();
+	}
 
+	public CannedAccessControlList getObjectCannedACL(
+			GetObjectACLRequest request) throws Ks3ClientException,
+			Ks3ServiceException {
+		return this.getObjectACL(request).getCannedAccessControlList();
+	}
 	public AccessControlPolicy getObjectACL(GetObjectACLRequest request)
 			throws Ks3ClientException, Ks3ServiceException {
 		return client.execute(auth, request, GetObjectACLResponse.class);
@@ -237,7 +259,7 @@ public class Ks3Client implements Ks3 {
 	public void makeDir(String bucketName, String dir)
 			throws Ks3ClientException, Ks3ServiceException {
 		if (!dir.endsWith("/"))
-			throw new IllegalArgumentException("dir should be end with /");
+			throw ClientIllegalArgumentExceptionGenerator.notCorrect("dir", dir,"以/结尾");
 		PutObjectRequest request = new PutObjectRequest(bucketName, dir,
 				new ByteArrayInputStream(new byte[] {}), null);
 		this.putObject(request);
@@ -246,8 +268,7 @@ public class Ks3Client implements Ks3 {
 	public void removeDir(String bucketName, String dir)
 			throws Ks3ClientException, Ks3ServiceException {
 		if (dir != null && !dir.endsWith("/") && !StringUtils.isBlank(dir))
-			throw new IllegalArgumentException(
-					"dir should be end with / or null(clear bucket)");
+			throw ClientIllegalArgumentExceptionGenerator.notCorrect("dir", dir,"以/结尾或空");
 		String marker = null;
 		ObjectListing list = null;
 		do {
@@ -255,11 +276,10 @@ public class Ks3Client implements Ks3 {
 			request.setPrefix(dir);
 			request.setMarker(marker);
 			list = this.listObjects(request);
-			marker = list.getNextMarker();
-
 			List<String> keys = new ArrayList<String>();
 			for (Ks3ObjectSummary obj : list.getObjectSummaries()) {
 				keys.add(obj.getKey());
+				marker = obj.getKey();
 			}
 			if (keys.size() > 0)
 				this.deleteObjects(keys, bucketName);
