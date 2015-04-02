@@ -40,4 +40,11 @@ public class AutoAbortInputStream extends FilterInputStream{
 			((HttpRequestBase) request).abort();
 		}
 	}
+	public HttpRequest getRequest() {
+		return request;
+	}
+	public void setRequest(HttpRequest request) {
+		this.request = request;
+	}
+	
 }

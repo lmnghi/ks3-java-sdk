@@ -10,11 +10,11 @@ import com.ksyun.ks3.exception.client.ClientIllegalArgumentException.Reason;
  * @description 
  **/
 public class ClientIllegalArgumentExceptionGenerator {
-	private static String notNull = "参数 %s 不能为空";
-	private static String notBothNull = "参数 %s和%s 不能全为空";
-	private static String notNullInCondition = "参数 %s在%s 情况下不能为空";
-	private static String notCorrect = "参数 %s(%s) 格式错误,正确格式为:%s";
-	private static String between = "参数 %s(%s) 应该在%s-%s这个范围内";
+	private static String notNull = "param  %s can't be null";
+	private static String notBothNull = "param %s and %s can't both be null";
+	private static String notNullInCondition = "param %s can't be null in condition %s";
+	private static String notCorrect = "param %s(%s) format error,correct format is :%s";
+	private static String between = "param %s(%s) should between %s and %s";
 	public static ClientIllegalArgumentException notNull(String paramName){
 		ClientIllegalArgumentException e = new ClientIllegalArgumentException(String.format(notNull, paramName));
 		e.setReason(Reason.notNull);

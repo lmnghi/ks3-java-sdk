@@ -49,14 +49,14 @@ public class Ks3CoreController {
 	public <X extends Ks3WebServiceResponse<Y>, Y> Y execute(
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
 		if (request == null)
-			throw new Ks3ClientException("request不能为空");
+			throw new Ks3ClientException("request can not be null");
 		log.info("Ks3WebServiceRequest:" + request.getClass()
 				+ ";Ks3WebServiceResponse:" + clazz);
 		Y result = null;
 		try {
 			if (auth == null || StringUtils.isBlank(auth.getAccessKeyId())
 					|| StringUtils.isBlank(auth.getAccessKeySecret()))
-				throw new Ks3ClientException("请先设置AccessKeyId和AccessKeySecret");
+				throw new Ks3ClientException("AccessKeyId or AccessKeySecret can't be null");
 			if (request == null || clazz == null)
 				throw new IllegalArgumentException();
 			result = doExecute(auth, request, clazz);

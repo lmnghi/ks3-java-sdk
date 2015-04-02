@@ -1,8 +1,11 @@
-package com.ksyun.ks3.encryption;
+package com.ksyun.ks3.encryption.materials;
 
 import java.security.KeyPair;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.SecretKey;
+
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -32,4 +35,10 @@ public class EncryptionMaterials {
 	public SecretKey getSymmetricKey() {
 		return symmetricKey;
 	}
+    public Map<String, String> getMaterialsDescription() {
+        return new HashMap<String, String>();
+    }
+    public EncryptionMaterialsAccessor getAccessor() {
+        return null;
+    }
 }

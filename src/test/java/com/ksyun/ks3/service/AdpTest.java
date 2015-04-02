@@ -70,7 +70,7 @@ public class AdpTest extends Ks3ClientTest{
 	final File file = new File("D://野生动物.3gp");
 	final File filePut = new File(this.getClass().getClassLoader().getResource("git.exe").toString().substring(6));
 	final File logo = new File(this.getClass().getClassLoader().getResource("IMG.jpg").toString().substring(6));
-	private static boolean hasUpload = true;
+	private static boolean hasUpload = false;
 	@Before
 	public void createTestBucket(){
 		ClientConfig.getConfig().set(ClientConfig.MAX_RETRY,"0");

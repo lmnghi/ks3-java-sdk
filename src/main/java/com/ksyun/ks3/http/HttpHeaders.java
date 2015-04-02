@@ -84,7 +84,16 @@ public enum HttpHeaders {
 	XKssCallbackBody("x-kss-callbackbody"),
 	AsynchronousProcessingList("kss-async-process"),
 	NotifyURL("kss-notifyurl"),
-	TaskId("TaskID")
+	TaskId("TaskID"),
+	/**
+	 * 客户端加密
+	 */
+	CRYPTO_KEY("x-kss-meta-key"),
+	CRYPTO_IV("x-kss-meta-iv"),
+	MATERIALS_DESCRIPTION("x-kss-meta-matdesc"),
+	UNENCRYPTED_CONTENT_MD5("x-kss-meta-unencrypted-content-md5"),
+	UNENCRYPTED_CONTENT_LENGTH("x-kss-meta-unencrypted-content-length"),
+	CRYPTO_INSTRUCTION_FILE("x-kss-meta-crypto-instr-file")
 	;
 	private String value;
 	

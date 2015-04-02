@@ -141,7 +141,9 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
 						file));
 			long length = file.length();
-			objectMeta.setContentLength(length);
+			long lengthInmeta = objectMeta.getContentLength();
+			if(lengthInmeta==0l||lengthInmeta>length)
+				objectMeta.setContentLength(length);
 			try {
 				String contentMd5_b64 = Md5Utils.md5AsBase64(file);
 				this.objectMeta.setContentMD5(contentMd5_b64);
@@ -246,11 +248,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 					&& !this.redirectLocation.startsWith("http://")
 					&& !this.redirectLocation.startsWith("https://"))
 				throw notCorrect("redirectLocation", this.redirectLocation,
-						"以/ http:// 或 https://开头");
+						"starts with / http:// or  https://");
 		}
 		if (file != null) {
 			if (file.length() > Constants.maxSingleUpload)
-				throw between("上传文件的大小", String.valueOf(file.length()),
+				throw between("file length ", String.valueOf(file.length()),
 						String.valueOf(0),
 						String.valueOf(Constants.maxSingleUpload));
 		} else {
@@ -270,20 +272,30 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		if (adps != null && adps.size() > 0) {
 			for (Adp adp : adps) {
 				if (StringUtils.isBlank(adp.getCommand())) {
-					throw notNullInCondition("adps.command", "adps不为空");
+					throw notNullInCondition("adps.command", "adps is not null");
 				}
 			}
 			if (StringUtils.isBlank(notifyURL))
-				throw notNullInCondition("notifyURL", "adps不为空");
+				throw notNullInCondition("notifyURL", "adps is not null");
 		}
 	}
-
+	public void setBucketName(String bucket){
+		super.setBucketname(bucket);
+	}
+	public void setObjectKey(String key){
+		super.setObjectkey(key);
+	}
 	public File getFile() {
 		return file;
 	}
 
-	private void setFile(File file) {
+	public void setFile(File file) {
 		this.file = file;
+	}
+	
+	public void setInputStream(InputStream inputStream){
+		this.setRequestBody(new RepeatableInputStream(inputStream,
+				Constants.DEFAULT_STREAM_BUFFER_SIZE));
 	}
 
 	public ObjectMetadata getObjectMeta() {
