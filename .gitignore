@@ -1,9 +1,6 @@
 /target/
-
 /.settings/
 .classpath
 .project
 log4j.properties
-/test/resources/
-Ks3ClientTest.java
 .README.md.html
