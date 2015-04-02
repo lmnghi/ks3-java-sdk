@@ -74,7 +74,6 @@ public class Ks3CoreController {
 					e = new Ks3ClientException(e);
 			}
 			log.error(e);
-			e.printStackTrace();
 			throw e;
 		} finally {
 			System.out.println();
@@ -138,7 +137,9 @@ public class Ks3CoreController {
 			log.info("returned etag is:" + ETag);
 			if (!ETag.equals(Converter.MD52ETag(MD5))) {
 				throw new ClientInvalidDigestException(
-						"客户端MD5校验失败，数据在传输过程可能有所丢失，建议重新上传");
+						"Unable to verify integrity of data upload.  " +
+                        "Client calculated content hash didn't match hash calculated by KS3.  " +
+                        "You may need to delete the data stored in KS3.");
 			}
 		}
 		log.info("finished handle response : " + Timer.end());

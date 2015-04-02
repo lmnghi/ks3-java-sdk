@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 public class DefaultConfigLoader implements ConfigLoader{
 	public ClientConfig load(ClientConfig config) {
 		config.set(ClientConfig.CONNECTION_TIMEOUT, "50000");
-		config.set(ClientConfig.SOCKET_TIMEOUT,String.valueOf(Integer.MAX_VALUE));
+		config.set(ClientConfig.SOCKET_TIMEOUT,"50000");
 		config.set(ClientConfig.SOCKET_SEND_BUFFER_SIZE_HINT,"8192");
 		config.set(ClientConfig.SOCKET_RECEIVE_BUFFER_SIZE_HINT,"8192");
 		config.set(ClientConfig.MAX_RETRY,"5");
