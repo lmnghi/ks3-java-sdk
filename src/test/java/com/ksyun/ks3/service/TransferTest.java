@@ -1,6 +1,8 @@
 package com.ksyun.ks3.service;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,15 +20,14 @@ public class TransferTest extends Ks3ClientTest{
 	Ks3UploadClient upClient = null;
 	@Before
 	public void initupClient(){
-		upClient = new Ks3UploadClient(super.client1,5,20);
+		upClient = new Ks3UploadClient(super.client1,5,20,40);
 	}
 	String bucket = "test-transfer-client";
 	@Test
 	public void uploadDir(){
-		System.out.println(upClient.uploadDir(bucket,"",new File("D://work\\workspace/.metadata")));
-	}
-	@Test
-	public void mutipartUpload(){
-		upClient.mutipartUploadByThreads(bucket,"test", new File("D://work\\workspace/.metadata/.bak_0.log"));
+		Map<String, File> result = upClient.uploadDir(bucket,"windows/",new File("D:\\Program Files"));
+		List<String>  error = upClient.checkDir(bucket, "windows/", new File("D:\\Program Files"));
+		System.out.println(result);
+		System.out.println(error);
 	}
 }

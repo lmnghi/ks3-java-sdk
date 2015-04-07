@@ -20,6 +20,7 @@ import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.PartETag;
 import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.exception.client.ClientFileNotFoundException;
 import com.ksyun.ks3.exception.serviceside.NotFoundException;
 import com.ksyun.ks3.service.Ks3;
@@ -42,6 +43,8 @@ public class Ks3UploadClient {
 	private int multipartMaxThread = 5;
 	// 批量上传时最多启动的线程数(注：批量上传时，实际启动的线程数为multipartMaxThread*batchUploadThread)
 	private int batchUploadThread = 10;
+	// 批量校验是否存在时最多启动的线程数
+	private int batchCheckThread = 30;
 	private static final Log log = LogFactory.getLog(Ks3UploadClient.class);
 	Ks3 client = null;
 
@@ -56,23 +59,87 @@ public class Ks3UploadClient {
 	 *            上传单个文件时最多启动的线程数
 	 * @param batchUploadThread
 	 *            批量上传时最多启动的线程数
+	 * @param batchCheckThread
+	 *            批量校验时最多启动的线程数
 	 */
 	public Ks3UploadClient(Ks3 client, int multipartMaxThread,
-			int batchUploadThread) {
+			int batchUploadThread, int batchCheckThread) {
 		this.client = client;
 		this.multipartMaxThread = multipartMaxThread;
 		this.batchUploadThread = batchUploadThread;
+		this.batchCheckThread = batchCheckThread;
 	}
 
 	/**
-	 * 上传上去的文件的访问权限
-	 * 
 	 * @param client
 	 * @param acl
+	 *            上传上去的文件的访问权限
 	 */
 	public Ks3UploadClient(Ks3 client, CannedAccessControlList acl) {
 		this.client = client;
 		this.acl = acl;
+	}
+
+	/**
+	 * 
+	 * @param client
+	 * @param multipartMaxThread
+	 *            上传单个文件时最多启动的线程数
+	 * @param batchUploadThread
+	 *            批量上传时最多启动的线程数
+	 * @param batchCheckThread
+	 *            批量校验时最多启动的线程数
+	 * @param acl
+	 *            上传上去的文件的访问权限
+	 */
+	public Ks3UploadClient(Ks3 client, int multipartMaxThread,
+			int batchUploadThread, int batchCheckThread,
+			CannedAccessControlList acl) {
+		this.client = client;
+		this.multipartMaxThread = multipartMaxThread;
+		this.batchUploadThread = batchUploadThread;
+		this.batchCheckThread = batchCheckThread;
+		this.acl = acl;
+	}
+
+	public CannedAccessControlList getAcl() {
+		return acl;
+	}
+
+	public void setAcl(CannedAccessControlList acl) {
+		this.acl = acl;
+	}
+
+	public int getMultipartMaxThread() {
+		return multipartMaxThread;
+	}
+
+	public void setMultipartMaxThread(int multipartMaxThread) {
+		this.multipartMaxThread = multipartMaxThread;
+	}
+
+	public int getBatchUploadThread() {
+		return batchUploadThread;
+	}
+
+	public void setBatchUploadThread(int batchUploadThread) {
+		this.batchUploadThread = batchUploadThread;
+	}
+
+	public int getBatchCheckThread() {
+		return batchCheckThread;
+	}
+
+	public void setBatchCheckThread(int batchCheckThread) {
+		this.batchCheckThread = batchCheckThread;
+	}
+
+	public Ks3 getClient() {
+		return client;
+	}
+
+	public void setClient(Ks3 client) {
+		this.client = client;
 	}
 
 	/**
@@ -83,7 +150,8 @@ public class Ks3UploadClient {
 	 * @param file
 	 */
 	public void uploadFile(String bucket, String key, File file) {
-		log.info(String.format("upload file %s to bucket %s key %s ",
+		log.info(String.format(
+				"UPLOAD_FILE:upload file %s to bucket %s key %s ",
 				file.getAbsolutePath(), bucket, key));
 		long length = file.length();
 		if (length <= 100 * Constants.KB) {
@@ -124,10 +192,24 @@ public class Ks3UploadClient {
 	 */
 	public Map<String, File> uploadDir(String bucket, String destDir,
 			File sourceDir, boolean check) {
+		int maxTry = 3;
 		// 上传失败的文件列表
 		Map<String, File> toUpload = new ConcurrentHashMap<String, File>();
 		generate(toUpload, destDir, sourceDir);
-		return this.batchUpload(bucket, toUpload, check);
+
+		Map<String, File> error = toUpload;
+		int i = 0;
+		do {
+			log.info("UPLOAD_DIR_BATCH_START:batch upload rand " + i
+					+ ",bucket " + bucket + ",destDir " + destDir
+					+ ",sourceDir " + sourceDir + ",count:" + error.size());
+			error = this.batchUpload(bucket, error, check);
+			log.info("UPLOAD_DIR_BATCH_END:batch upload rand " + i + ",bucket "
+					+ bucket + ",destDir " + destDir + ",sourceDir "
+					+ sourceDir + ",count:" + error.size());
+			i++;
+		} while (error.size() > 0 && i < maxTry);
+		return error;
 	}
 
 	private void generate(Map<String, File> toUpload, String destDir,
@@ -141,18 +223,20 @@ public class Ks3UploadClient {
 			File[] files = sourceDir.listFiles();
 			if (files != null) {
 				for (File file : files) {
-					String key = baseKey + "/" + StringUtils.getFileName(file);
 					if (file.isDirectory()) {
-						key += "/";
 						generate(toUpload, baseKey + "/", file);
 					} else {
-						log.info("to upload key :" + key);
+						String key = baseKey + "/"
+								+ StringUtils.getFileName(file);
+						if (StringUtils.isBlank(baseKey))
+							key = StringUtils.getFileName(file);
+						log.info("found key :" + key);
 						toUpload.put(key, file);
 					}
 				}
 			}
 		} else {
-			log.info("to upload key :" + baseKey);
+			log.info("found key :" + baseKey);
 			toUpload.put(baseKey, sourceDir);
 		}
 	}
@@ -237,23 +321,23 @@ public class Ks3UploadClient {
 						try {
 							client.headObject(bucket, enrty.getKey());
 							exists = true;
-						} catch (NotFoundException e) {
+						} catch (Exception e) {
 							exists = false;
 						}
 					}
 					if (!exists) {
 						try {
 							uploadFile(bucket, enrty.getKey(), enrty.getValue());
-						} catch (Ks3ClientException e) {
+						} catch (Exception e) {
 							log.error(String
-									.format("upload file %s to bucket %s key %s error %s",
+									.format("UPLOAD_FILE_ERROR:upload file %s to bucket %s key %s error %s",
 											enrty.getValue().getAbsolutePath(),
 											bucket, enrty.getKey(), e));
 							faild.put(enrty.getKey(), enrty.getValue());
 						}
 					} else
 						log.info(String
-								.format("upload file %s to bucket %s key %s skipped as it exists",
+								.format("UPLOAD_FILE_SKIPPED:upload file %s to bucket %s key %s skipped as it exists",
 										enrty.getValue().getAbsolutePath(),
 										bucket, enrty.getKey()));
 				}
@@ -271,6 +355,113 @@ public class Ks3UploadClient {
 			}
 		}
 		return faild;
+	}
+
+	/**
+	 * 
+	 * 校验keys是否在服务器上存在
+	 * 
+	 * @param bucket
+	 * @param keys
+	 *            要校验的key列表
+	 * @return 不存在的key
+	 */
+	public List<String> batchCheck(final String bucket, List<String> keys) {
+		return batchCheck(bucket, keys, this.batchCheckThread);
+	}
+
+	/**
+	 * 校验keys是否在服务器上存在
+	 * 
+	 * @param bucket
+	 * @param keys
+	 *            要校验的key列表
+	 * @param maxThreads
+	 *            最大启动的线程数
+	 * @return 不存在的key
+	 */
+	public List<String> batchCheck(final String bucket, List<String> keys,
+			int maxThreads) {
+		final int maxRetry = 3;
+		final List<String> notFound = new ArrayList<String>();
+		int total = keys.size();
+		if (total < maxThreads)
+			maxThreads = total;
+		if (total == 0) {
+			return notFound;
+		}
+		ExecutorService pool = Executors.newFixedThreadPool(maxThreads);
+
+		for (final String key : keys) {
+			Thread t = new Thread() {
+				@Override
+				public void run() {
+					int faild = 0;
+					try {
+						log.info(String
+								.format("CHECK_EXISTS:check key %s , bucket %s,times %s",
+										key, bucket, faild));
+						client.headObject(bucket, key);
+					} catch (NotFoundException e) {
+						notFound.add(key);
+					} catch (Exception e) {
+						faild++;
+						if (faild <= maxRetry) {
+							run();
+						} else {
+							// 连续多次出现异常则认为不存在
+							notFound.add(key);
+						}
+					}
+				}
+			};
+			pool.execute(t);
+		}
+		pool.shutdown();
+		for (;;) {
+			if (pool.isTerminated())
+				break;
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return notFound;
+	}
+
+	/**
+	 * 检验目录中的文件是否已经都上传到服务器上
+	 * 
+	 * @param bucket
+	 * @param destDir
+	 *            目标目录,如果是直接往bucket下上传，则设置为空
+	 * @param sourceDir
+	 *            本地目录
+	 * @return 不存在的key
+	 */
+	public List<String> checkDir(String bucket, String destDir, File sourceDir) {
+		return checkDir(bucket, destDir, sourceDir, this.batchCheckThread);
+	}
+
+	/**
+	 * 检验目录中的文件是否已经都上传到服务器上
+	 * 
+	 * @param bucket
+	 * @param destDir
+	 *            目标目录,如果是直接往bucket下上传，则设置为空
+	 * @param sourceDir
+	 *            本地目录
+	 * @param maxThreads
+	 *            最多启动的线程数
+	 * @return 不存在的key
+	 */
+	public List<String> checkDir(String bucket, String destDir, File sourceDir,
+			int maxThreads) {
+		Map<String, File> toUpload = new ConcurrentHashMap<String, File>();
+		generate(toUpload, destDir, sourceDir);
+		return batchCheck(bucket, new ArrayList<String>(toUpload.keySet()),
+				maxThreads);
 	}
 
 	/**
@@ -325,7 +516,7 @@ public class Ks3UploadClient {
 	public void mutipartUploadByThreads(final String bucket, final String key,
 			final File file, final long partSize, int threads) {
 		long length = file.length();
-		final int maxRetry = 5;
+		final int maxRetry = 3;
 		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
 				bucket, key);
 		request.setCannedAcl(acl);
@@ -333,10 +524,12 @@ public class Ks3UploadClient {
 				.initiateMultipartUpload(request);
 		final List<PartETag> partEtags = new ArrayList<PartETag>();
 
-		int partnums = (int) (length / partSize) + (length % partSize == 0 ? 0
-				: 1);
+		int partnums = (int) (length / partSize)
+				+ (length % partSize == 0 ? 0 : 1);
 
-		ExecutorService pool = Executors.newFixedThreadPool(threads);
+		final ExecutorService pool = Executors.newFixedThreadPool(threads);
+		final Map<String, Object> shouldComplete = new ConcurrentHashMap<String, Object>();
+		shouldComplete.put("flag", true);
 
 		// 上传块的线程
 		for (int i = 0; i < partnums; i++) {
@@ -352,19 +545,21 @@ public class Ks3UploadClient {
 								partNum + 1, file, partSize, partSize * partNum);
 						PartETag upResult = client.uploadPart(upRequest);
 						partEtags.add(upResult);
-					} catch (Ks3ClientException e) {
+					} catch (RuntimeException e) {
 						failed++;
 						if (failed <= maxRetry)
 							run();
 						else {
 							String errorMsg = String
-									.format("multipart upload:bucket %s key %s file %s uploadid %s partNumber %s upload fail after %s retrys",
+									.format("MULTIPART_UPLOAD:bucket %s key %s file %s uploadid %s partNumber %s upload fail after %s retrys",
 											bucket, key,
 											file.getAbsolutePath(),
 											initResult.getUploadId(),
 											partNum + 1, maxRetry);
 							log.error(errorMsg);
-							throw e;
+							shouldComplete.put("flag", false);
+							shouldComplete.put("cause", e);
+							pool.shutdownNow();
 						}
 
 					}
@@ -382,7 +577,11 @@ public class Ks3UploadClient {
 				e.printStackTrace();
 			}
 		}
-		client.completeMultipartUpload(bucket, key, initResult.getUploadId(),
-				partEtags);
+		if ((Boolean) shouldComplete.get("flag")) {
+			client.completeMultipartUpload(bucket, key,
+					initResult.getUploadId(), partEtags);
+		} else {
+			throw (RuntimeException) shouldComplete.get("cause");
+		}
 	}
 }
