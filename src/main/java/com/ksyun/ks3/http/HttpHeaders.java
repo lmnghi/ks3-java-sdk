@@ -88,12 +88,16 @@ public enum HttpHeaders {
 	/**
 	 * 客户端加密
 	 */
-	CRYPTO_KEY("x-kss-meta-key"),
-	CRYPTO_IV("x-kss-meta-iv"),
-	MATERIALS_DESCRIPTION("x-kss-meta-matdesc"),
-	UNENCRYPTED_CONTENT_MD5("x-kss-meta-unencrypted-content-md5"),
-	UNENCRYPTED_CONTENT_LENGTH("x-kss-meta-unencrypted-content-length"),
-	CRYPTO_INSTRUCTION_FILE("x-kss-meta-crypto-instr-file")
+	CRYPTO_KEY("x-kss-key"),
+	CRYPTO_KEY_V2("x-kss-key-v2"),
+	CRYPTO_IV("x-kss-iv"),
+	MATERIALS_DESCRIPTION("x-kss-matdesc"),
+	UNENCRYPTED_CONTENT_MD5("x-kss-unencrypted-content-md5"),
+	UNENCRYPTED_CONTENT_LENGTH("x-kss-unencrypted-content-length"),
+	CRYPTO_INSTRUCTION_FILE("x-kss-crypto-instr-file"),
+	CRYPTO_CEK_ALGORITHM("x-kss-wrap-alg"),
+	CRYPTO_TAG_LENGTH("x-kss-tag-len"),
+	CRYPTO_KEYWRAP_ALGORITHM("x-amz-wrap-alg")
 	;
 	private String value;
 	

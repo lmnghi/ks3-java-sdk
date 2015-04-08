@@ -33,11 +33,11 @@ public class ObjectMetadata {
 	
 	public void setUserMeta(String key,String value)
 	{
-		this.userMetadata.put(key.startsWith(Constants.KS3_USER_META_PREFIX)?key:Constants.KS3_USER_META_PREFIX+key, value);
+		this.userMetadata.put(key.startsWith(Constants.KS3_USER_META_PREFIX)?key:(Constants.KS3_USER_META_PREFIX+key), value);
 	}
 	public String getUserMeta(String key)
 	{
-		return userMetadata.get(key.startsWith(Constants.KS3_USER_META_PREFIX)?key:Constants.KS3_USER_META_PREFIX+key);
+		return userMetadata.get(key.startsWith(Constants.KS3_USER_META_PREFIX)?key:(Constants.KS3_USER_META_PREFIX+key));
 	}
 	public Map<String, String> getAllUserMeta()
 	{
