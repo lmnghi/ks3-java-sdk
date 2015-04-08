@@ -14,44 +14,12 @@
  */
 package com.ksyun.ks3.service.encryption.internal;
 
-import static com.amazonaws.services.s3.AmazonS3EncryptionClient.USER_AGENT;
-import static com.amazonaws.services.s3.internal.crypto.EncryptionUtils.createSymmetricCipher;
-import static com.amazonaws.services.s3.internal.crypto.EncryptionUtils.encryptRequestUsingInstruction;
-import static com.amazonaws.services.s3.internal.crypto.EncryptionUtils.generateInstruction;
-import static com.amazonaws.services.s3.internal.crypto.EncryptionUtils.generateOneTimeUseSymmetricKey;
-import static com.amazonaws.services.s3.internal.crypto.EncryptionUtils.getEncryptedSymmetricKey;
 
 import java.io.File;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.AmazonWebServiceRequest;
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.services.s3.internal.S3Direct;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
-import com.amazonaws.services.s3.model.CopyPartRequest;
-import com.amazonaws.services.s3.model.CopyPartResult;
-import com.amazonaws.services.s3.model.CryptoConfiguration;
-import com.amazonaws.services.s3.model.CryptoStorageMode;
-import com.amazonaws.services.s3.model.EncryptedInitiateMultipartUploadRequest;
-import com.amazonaws.services.s3.model.EncryptionMaterials;
-import com.amazonaws.services.s3.model.EncryptionMaterialsProvider;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
-import com.amazonaws.services.s3.model.MaterialsDescriptionProvider;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.UploadPartRequest;
-import com.amazonaws.services.s3.model.UploadPartResult;
 
 /**
  * Encryption only (EO) cryptographic module for the S3 encryption client.

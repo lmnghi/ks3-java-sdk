@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ksyun.ks3.dto.ObjectMetadata;
+import com.ksyun.ks3.service.request.PutObjectRequest;
+
 /**
  * <p>
  * This class is an extension of {@link PutObjectRequest} to allow additional encryption material description
@@ -42,15 +45,10 @@ public class EncryptedPutObjectRequest extends PutObjectRequest implements Mater
         super(bucketName, key, file);
     }
 
-    public EncryptedPutObjectRequest(String bucketName, String key, String redirectLocation) {
-        super(bucketName, key, redirectLocation);
-    }
-
     public EncryptedPutObjectRequest(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
         super(bucketName, key, input, metadata);
     }
     
-    @Override
     public Map<String, String> getMaterialsDescription() {
         return materialsDescription;
     }

@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ksyun.ks3.dto.ObjectMetadata;
+import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
+
 /** 
  * <p>
  * This class is an extension of {@link InitiateMultipartUploadRequest} to allow additional 
@@ -45,7 +48,6 @@ public class EncryptedInitiateMultipartUploadRequest extends InitiateMultipartUp
         super(bucketName, key, objectMetadata);
     }
     
-    @Override
     public Map<String, String> getMaterialsDescription() {
         return materialsDescription;
     }

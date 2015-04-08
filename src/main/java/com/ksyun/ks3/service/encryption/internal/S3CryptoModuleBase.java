@@ -14,10 +14,6 @@
  */
 package com.ksyun.ks3.service.encryption.internal;
 
-import static com.amazonaws.services.s3.internal.crypto.EncryptionUtils.INSTRUCTION_SUFFIX;
-import static com.amazonaws.util.LengthCheckInputStream.EXCLUDE_SKIPPED_BYTES;
-import static com.amazonaws.util.StringUtils.UTF8;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -35,22 +31,20 @@ import javax.crypto.SecretKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonWebServiceRequest;
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.s3.Headers;
-import com.amazonaws.services.s3.internal.Mimetypes;
-import com.amazonaws.services.s3.internal.RepeatableFileInputStream;
-import com.amazonaws.services.s3.internal.S3Direct;
-import com.amazonaws.services.s3.model.AbortMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CryptoConfiguration;
-import com.amazonaws.services.s3.model.EncryptionMaterials;
-import com.amazonaws.services.s3.model.EncryptionMaterialsProvider;
-import com.amazonaws.services.s3.model.MaterialsDescriptionProvider;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.util.LengthCheckInputStream;
+import com.ksyun.ks3.LengthCheckInputStream;
+import com.ksyun.ks3.RepeatableFileInputStream;
+import com.ksyun.ks3.dto.ObjectMetadata;
+import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.http.HttpHeaders;
+import com.ksyun.ks3.http.Mimetypes;
+import com.ksyun.ks3.service.encryption.S3Direct;
+import com.ksyun.ks3.service.encryption.model.CryptoConfiguration;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterials;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsProvider;
+import com.ksyun.ks3.service.encryption.model.MaterialsDescriptionProvider;
+import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
+import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
+import com.ksyun.ks3.service.request.PutObjectRequest;
 
 /**
  * Common implementation for different S3 cryptographic modules.
@@ -71,9 +65,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
     protected final S3Direct s3;
     
     protected S3CryptoModuleBase(S3Direct s3,
-            AWSCredentialsProvider credentialsProvider,
             EncryptionMaterialsProvider kekMaterialsProvider,
-            ClientConfiguration clientConfig,
             CryptoConfiguration cryptoConfig,
             S3CryptoScheme cryptoScheme) {
         this.kekMaterialsProvider = kekMaterialsProvider;
@@ -111,7 +103,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
         return instruction.toObjectMetadata(metadata);
     }
     
-    protected final ContentCryptoMaterial createContentCryptoMaterial(AmazonWebServiceRequest req) {
+    protected final ContentCryptoMaterial createContentCryptoMaterial(Ks3WebServiceRequest req) {
         if (req instanceof MaterialsDescriptionProvider) {
             return newContentCryptoMaterial(this.kekMaterialsProvider, 
                     ((MaterialsDescriptionProvider) req).getMaterialsDescription(), 
@@ -171,7 +163,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
                     cryptoScheme.getSecureRandom());
             return generator.generateKey();
         } catch (NoSuchAlgorithmException e) {
-            throw new AmazonClientException(
+            throw new Ks3ClientException(
                     "Unable to generate envelope symmetric key:"
                             + e.getMessage(), e);
         }
@@ -211,7 +203,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
             cipher.init(Cipher.ENCRYPT_MODE, kek);
             return new SecuredCEK(cipher.doFinal(toBeEncryptedBytes), null);
         } catch (Exception e) {
-            throw new AmazonClientException("Unable to encrypt symmetric key: " + e.getMessage(), e);
+            throw new Ks3ClientException("Unable to encrypt symmetric key: " + e.getMessage(), e);
         }
     }
 
@@ -239,14 +231,14 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
     protected final PutObjectRequest wrapWithCipher(
             PutObjectRequest request, ContentCryptoMaterial cekMaterial) {
         // Create a new metadata object if there is no metadata already.
-        ObjectMetadata metadata = request.getMetadata();
+        ObjectMetadata metadata = request.getObjectMeta();
         if (metadata == null) {
             metadata = new ObjectMetadata();
         }
 
         // Record the original Content MD5, if present, for the unencrypted data
         if (metadata.getContentMD5() != null) {
-            metadata.addUserMetadata(Headers.UNENCRYPTED_CONTENT_MD5,
+            metadata.setUserMeta(HttpHeaders.UNENCRYPTED_CONTENT_MD5.toString(),
                     metadata.getContentMD5());
         }
 
@@ -257,12 +249,12 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
         // later
         final long plaintextLength = plaintextLength(request, metadata);
         if (plaintextLength >= 0) {
-            metadata.addUserMetadata(Headers.UNENCRYPTED_CONTENT_LENGTH,
+            metadata.setUserMeta(HttpHeaders.UNENCRYPTED_CONTENT_LENGTH.toString(),
                     Long.toString(plaintextLength));
             // Put the ciphertext length in the metadata
             metadata.setContentLength(ciphertextLength(plaintextLength));
         }
-        request.setMetadata(metadata);
+        request.setObjectMeta(metadata);
         request.setInputStream(newS3CipherLiteInputStream(
             request, cekMaterial, plaintextLength));
         // Treat all encryption requests as input stream upload requests, not as
@@ -275,7 +267,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
             PutObjectRequest req, ContentCryptoMaterial cekMaterial,
             long plaintextLength) {
         try {
-            InputStream is = req.getInputStream();
+            InputStream is = req.getRequestBody();
             if (req.getFile() != null)
                 is = new RepeatableFileInputStream(req.getFile());
             if (plaintextLength > -1) {
@@ -286,13 +278,13 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
                 // This ensures the plain-text read from the underlying data
                 // stream has the same length as the expected total.
                 is = new LengthCheckInputStream(is, plaintextLength,
-                        EXCLUDE_SKIPPED_BYTES);
+                		LengthCheckInputStream.EXCLUDE_SKIPPED_BYTES);
             }
             return new CipherLiteInputStream(is,
                     cekMaterial.getCipherLite(),
                     DEFAULT_BUFFER_SIZE);
         } catch (Exception e) {
-            throw new AmazonClientException(
+            throw new Ks3ClientException(
                     "Unable to create cipher input stream: " + e.getMessage(),
                     e);
         }

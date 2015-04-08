@@ -48,6 +48,11 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest {
 		this.setBucketname(bucketname);
 		this.setObjectkey(objectkey);
 	}
+	public InitiateMultipartUploadRequest(String bucketname,String objectkey,ObjectMetadata metadata){
+		this.setBucketname(bucketname);
+		this.setObjectkey(objectkey);
+		this.objectMeta = metadata;
+	}
 
 	@Override
 	protected void configHttpRequest() {
