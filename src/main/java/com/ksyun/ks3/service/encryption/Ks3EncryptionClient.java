@@ -16,6 +16,7 @@ import com.ksyun.ks3.dto.PartETag;
 import com.ksyun.ks3.dto.PutObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.exception.serviceside.NoSuchKeyException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.service.Ks3Client;
 import com.ksyun.ks3.service.encryption.internal.CryptoModuleDispatcher;
@@ -123,7 +124,11 @@ public class Ks3EncryptionClient extends Ks3Client{
         // If it exists, delete the instruction file.
         DeleteObjectRequest instructionDeleteRequest = EncryptionUtils
                 .createInstructionDeleteObjectRequest(req);
-        super.deleteObject(instructionDeleteRequest);
+        try{
+        	super.deleteObject(instructionDeleteRequest);
+        }catch(NoSuchKeyException e){
+        	//可能不存在
+        }
     }
     @Override
     public void deleteObject(String bucket,String key) {
