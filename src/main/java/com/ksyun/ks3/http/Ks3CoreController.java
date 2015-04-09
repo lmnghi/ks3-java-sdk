@@ -2,6 +2,7 @@ package com.ksyun.ks3.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,6 +10,8 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
@@ -99,7 +102,17 @@ public class Ks3CoreController {
 			log.info(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
 			log.info(response.getStatusLine());
-			// TODO 307retry
+			if(response.getStatusLine().getStatusCode()==307&&response.containsHeader("Location")){
+				String location = response.getHeaders("Location")[0].getValue();
+				log.info("returned 307,retry request to "+location);
+				if(httpRequest instanceof HttpPut){
+					((HttpPut) httpRequest).getEntity().getContent().reset();
+				}else if(httpRequest instanceof HttpPost){
+					((HttpPost) httpRequest).getEntity().getContent().reset();
+				}
+				httpRequest.setURI(new URI(location));
+				response = client.execute(httpRequest);
+			}
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
