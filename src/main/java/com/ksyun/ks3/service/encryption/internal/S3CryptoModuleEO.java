@@ -18,12 +18,14 @@ package com.ksyun.ks3.service.encryption.internal;
 import java.io.File;
 
 
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
 import com.ksyun.ks3.dto.CopyResult;
+import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -45,6 +47,7 @@ import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
+
 import static com.ksyun.ks3.service.encryption.internal.EncryptionUtils.*;
 
 
@@ -74,7 +77,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
     }
 
     @Override
-    public Ks3Object getObjectSecurely(GetObjectRequest getObjectRequest)
+    public GetObjectResult getObjectSecurely(GetObjectRequest getObjectRequest)
             throws Ks3ClientException,Ks3ServiceException {
         // Should never get here, as S3 object encrypted in either EO or AE
         // format should all be handled by the AE module.

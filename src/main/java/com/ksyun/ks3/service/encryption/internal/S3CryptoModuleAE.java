@@ -31,6 +31,7 @@ import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
 import com.ksyun.ks3.dto.CopyResult;
+import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -112,7 +113,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
     }
 
     @Override
-    public Ks3Object getObjectSecurely(GetObjectRequest req)
+    public GetObjectResult getObjectSecurely(GetObjectRequest req)
             throws Ks3ClientException, Ks3ServiceException {
         appendUserAgent(req,Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
         // Adjust the crypto range to retrieve all of the cipher blocks needed to contain the user's desired
@@ -124,13 +125,21 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
         if (adjustedCryptoRange != null)
             req.setRange(adjustedCryptoRange[0], adjustedCryptoRange[1]);
         // Get the object from S3
-        Ks3Object retrieved = s3.getObject(req);
+        GetObjectResult retrievedRet = s3.getObject(req);
+        Ks3Object retrieved = null;
+        if(!retrievedRet.hasContent())
+        	return retrievedRet;
+        else
+        	retrieved = retrievedRet.getObject();
         // If the caller has specified constraints, it's possible that super.getObject(...)
         // would return null, so we simply return null as well.
         if (retrieved == null)
             return null;
         try {
-            return decipher(req, desiredRange, adjustedCryptoRange, retrieved);
+            Ks3Object oj = decipher(req, desiredRange, adjustedCryptoRange, retrieved);
+            GetObjectResult result = new GetObjectResult();
+            result.setObject(oj);
+            return result;
         } catch (RuntimeException rc) {
             // If we're unable to set up the decryption, make sure we close the
             // HTTP connection
@@ -294,16 +303,15 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
         assertParameterNotNull(destinationFile,
         "The destination file parameter must be specified when downloading an object directly to a file");
 
-        Ks3Object s3Object = getObjectSecurely(getObjectRequest);
-        // getObject can return null if constraints were specified but not met
-        if (s3Object == null) return null;
-
+        GetObjectResult s3ObjectResult = getObjectSecurely(getObjectRequest);
+        if(!s3ObjectResult.hasContent())
+        	return s3ObjectResult.getObject().getObjectMetadata();
         OutputStream outputStream = null;
         try {
             outputStream = new BufferedOutputStream(new FileOutputStream(destinationFile));
             byte[] buffer = new byte[1024*10];
             int bytesRead;
-            while ((bytesRead = s3Object.getObjectContent().read(buffer)) > -1) {
+            while ((bytesRead = s3ObjectResult.getObject().getObjectContent().read(buffer)) > -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
@@ -311,7 +319,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
                     "Unable to store object contents to disk: " + e.getMessage(), e);
         } finally {
             try {outputStream.close();} catch (Exception e) { log.debug(e.getMessage());}
-            try {s3Object.getObjectContent().close();} catch (Exception e) {log.debug(e.getMessage());}
+            try {s3ObjectResult.getObject().getObjectContent().close();} catch (Exception e) {log.debug(e.getMessage());}
         }
 
         /*
@@ -320,7 +328,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
          * S3, the stored contents are encrypted, and locally, the retrieved contents are decrypted.
          */
 
-        return s3Object.getObjectMetadata();
+        return s3ObjectResult.getObject().getObjectMetadata();
     }
 
     @Override
@@ -533,7 +541,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
      */
     private S3ObjectWrapper fetchInstructionFile(GetObjectRequest getObjectRequest) {
         try {
-            Ks3Object o = s3.getObject(EncryptionUtils.createInstructionGetRequest(getObjectRequest));
+            Ks3Object o = s3.getObject(EncryptionUtils.createInstructionGetRequest(getObjectRequest)).getObject();
             return o == null ? null : new S3ObjectWrapper(o);
         } catch (Ks3ServiceException e) {
             // If no instruction file is found, log a debug message, and return null.

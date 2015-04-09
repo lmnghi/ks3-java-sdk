@@ -18,6 +18,7 @@ import java.io.File;
 
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
 import com.ksyun.ks3.dto.CopyResult;
+import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -39,7 +40,7 @@ import com.ksyun.ks3.service.request.UploadPartRequest;
 public abstract class S3CryptoModule<T extends MultipartUploadContext> {
     public abstract PutObjectResult putObjectSecurely(PutObjectRequest req);
 
-    public abstract Ks3Object getObjectSecurely(GetObjectRequest req);
+    public abstract GetObjectResult getObjectSecurely(GetObjectRequest req);
 
     public abstract ObjectMetadata getObjectSecurely(GetObjectRequest req,
             File dest);

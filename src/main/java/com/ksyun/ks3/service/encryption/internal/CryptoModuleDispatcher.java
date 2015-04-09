@@ -18,6 +18,7 @@ import java.io.File;
 
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
 import com.ksyun.ks3.dto.CopyResult;
+import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -83,7 +84,7 @@ public class CryptoModuleDispatcher extends S3CryptoModule<MultipartUploadContex
     }
 
     @Override
-    public Ks3Object getObjectSecurely(GetObjectRequest req)
+    public GetObjectResult getObjectSecurely(GetObjectRequest req)
             throws Ks3ClientException, Ks3ServiceException {
         // AE module can handle S3 objects encrypted in either AE or OE format
         return ae.getObjectSecurely(req);

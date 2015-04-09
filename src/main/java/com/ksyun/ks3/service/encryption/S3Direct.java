@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
 import com.ksyun.ks3.dto.CopyResult;
+import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -24,9 +25,7 @@ import com.ksyun.ks3.service.request.UploadPartRequest;
 public abstract class S3Direct {
     public abstract PutObjectResult putObject(PutObjectRequest req);
 
-    public abstract Ks3Object getObject(GetObjectRequest req);
-
-    public abstract ObjectMetadata getObject(GetObjectRequest req, File dest);
+    public abstract GetObjectResult getObject(GetObjectRequest req);
 
     public abstract CompleteMultipartUploadResult completeMultipartUpload(
             CompleteMultipartUploadRequest req);
