@@ -95,9 +95,9 @@ public enum HttpHeaders {
 	UNENCRYPTED_CONTENT_MD5("x-kss-unencrypted-content-md5"),
 	UNENCRYPTED_CONTENT_LENGTH("x-kss-unencrypted-content-length"),
 	CRYPTO_INSTRUCTION_FILE("x-kss-crypto-instr-file"),
-	CRYPTO_CEK_ALGORITHM("x-kss-wrap-alg"),
+	CRYPTO_CEK_ALGORITHM("x-kss-cek-alg"),
 	CRYPTO_TAG_LENGTH("x-kss-tag-len"),
-	CRYPTO_KEYWRAP_ALGORITHM("x-amz-wrap-alg")
+	CRYPTO_KEYWRAP_ALGORITHM("x-kss-wrap-alg")
 	;
 	private String value;
 	

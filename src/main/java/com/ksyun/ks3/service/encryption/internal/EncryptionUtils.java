@@ -850,7 +850,8 @@ public class EncryptionUtils {
     private static JSONObject convertInstructionToJSONObject(EncryptionInstruction instruction) {
         JSONObject instructionJSON = new JSONObject();
             instructionJSON.put(HttpHeaders.MATERIALS_DESCRIPTION.toString(),
-            		instruction.getMaterialsDescription());
+            		//要先转化成String再put的原因详见ContentCryptoMaterial 314行
+            		Jackson.toJsonString(instruction.getMaterialsDescription()));
             instructionJSON.put(HttpHeaders.CRYPTO_KEY.toString(), 
                 Base64.encodeAsString(instruction.getEncryptedSymmetricKey()));
             byte[] iv = instruction.getSymmetricCipher().getIV();

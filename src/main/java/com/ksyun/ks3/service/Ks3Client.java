@@ -494,6 +494,15 @@ public class Ks3Client implements Ks3 {
 			throws Ks3ClientException, Ks3ServiceException {
 		return client.execute(auth, request, HeadObjectResponse.class);
 	}
+	
+	public boolean objectExists(String bucket,String key){
+		try{
+			this.headObject(bucket, key);
+		}catch(NotFoundException e){
+			return false;
+		}
+		return true;
+	}
 
 	public InitiateMultipartUploadResult initiateMultipartUpload(
 			String bucketname, String objectkey) throws Ks3ClientException,

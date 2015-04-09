@@ -919,6 +919,13 @@ public interface Ks3 {
 			throws Ks3ClientException, Ks3ServiceException;
 
 	/**
+	 * 判断object是否存在
+	 * @param bucket
+	 * @param key
+	 * @return boolean
+	 */
+	public boolean objectExists(String bucket,String key);
+	/**
 	 * Initiate Multipart Upload
 	 * 
 	 * @param bucketname
