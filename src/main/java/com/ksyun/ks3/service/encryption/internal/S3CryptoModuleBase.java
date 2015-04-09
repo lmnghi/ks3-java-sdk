@@ -17,6 +17,7 @@ package com.ksyun.ks3.service.encryption.internal;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
@@ -255,7 +256,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
             metadata.setContentLength(ciphertextLength(plaintextLength));
         }
         request.setObjectMeta(metadata);
-        request.setInputStream(newS3CipherLiteInputStream(
+        request.setRequestBody(newS3CipherLiteInputStream(
             request, cekMaterial, plaintextLength));
         // Treat all encryption requests as input stream upload requests, not as
         // file upload requests.
@@ -296,12 +297,19 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
      */
     protected final long plaintextLength(PutObjectRequest request,
             ObjectMetadata metadata) {
-        if (request.getFile() != null) {
-            return request.getFile().length();
-        } else if (request.getInputStream() != null
-                && metadata.getRawMetadataValue(Headers.CONTENT_LENGTH) != null) {
-            return metadata.getContentLength();
+    	long fileLength = -1;
+    	long lengthInMeta = request.getObjectMeta().getContentLength();
+    	if (request.getFile() != null) {
+    		fileLength = request.getFile().length();
         }
+    	if(fileLength>=0){
+    		if(lengthInMeta > 0 && lengthInMeta < fileLength)
+    			return lengthInMeta;
+    		else
+    			return fileLength;
+    	}else if(lengthInMeta > 0&&request.getRequestBody()!=null){
+    		return lengthInMeta;
+    	}
         return -1;
     }
 
@@ -321,33 +329,34 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
      */
     protected final PutObjectRequest upateInstructionPutRequest(
             PutObjectRequest request, ContentCryptoMaterial cekMaterial) {
-        byte[] bytes = cekMaterial.toJsonString().getBytes(UTF8);
+        byte[] bytes = cekMaterial.toJsonString().getBytes(Charset.forName("UTF-8"));
         InputStream is = new ByteArrayInputStream(bytes);
-        ObjectMetadata metadata = request.getMetadata();
+        ObjectMetadata metadata = request.getObjectMeta();
         if (metadata == null) {
             metadata = new ObjectMetadata();
-            request.setMetadata(metadata);
+            request.setObjectMeta(metadata);
         }
         // Set the content-length of the upload
         metadata.setContentLength(bytes.length);
         // Set the crypto instruction file header
-        metadata.addUserMetadata(Headers.CRYPTO_INSTRUCTION_FILE, "");
+        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getObjectkey() + EncryptionUtils.INSTRUCTION_SUFFIX);
         // Update the instruction request
-        request.setKey(request.getKey() + INSTRUCTION_SUFFIX);
-        request.setMetadata(metadata);
-        request.setInputStream(is);
+        request.setObjectKey(request.getObjectkey() + EncryptionUtils.INSTRUCTION_SUFFIX);
+        request.setObjectMeta(metadata);
+        request.setRequestBody(is);
         request.setFile(null);
         return request;
     }
 
     protected final PutObjectRequest createInstructionPutRequest(
             String bucketName, String key, ContentCryptoMaterial cekMaterial) {
-        byte[] bytes = cekMaterial.toJsonString().getBytes(UTF8);
+        byte[] bytes = cekMaterial.toJsonString().getBytes(Charset.forName("UTF-8"));
         InputStream is = new ByteArrayInputStream(bytes);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(bytes.length);
-        metadata.addUserMetadata(Headers.CRYPTO_INSTRUCTION_FILE, "");
-        return new PutObjectRequest(bucketName, key + INSTRUCTION_SUFFIX,
+        //亚马逊是空的，但是由于签名问题，加了个值
+        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(),key + EncryptionUtils.INSTRUCTION_SUFFIX);
+        return new PutObjectRequest(bucketName, key + EncryptionUtils.INSTRUCTION_SUFFIX,
                 is, metadata);
     }
 
@@ -355,9 +364,9 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
      * Appends a user agent to the request's USER_AGENT client marker.
      * This method is intended only for internal use by the AWS SDK. 
      */
-    final <X extends AmazonWebServiceRequest> X appendUserAgent(
+    final <X extends Ks3WebServiceRequest> X appendUserAgent(
             X request, String userAgent) {
-        request.getRequestClientOptions().appendUserAgent(userAgent);
+        request.getHeader().put(HttpHeaders.UserAgent.toString(), userAgent);
         return request;
     }
 }

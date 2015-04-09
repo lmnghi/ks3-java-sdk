@@ -17,8 +17,35 @@ package com.ksyun.ks3.service.encryption.internal;
 
 import java.io.File;
 
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+
+import com.ksyun.ks3.config.Constants;
+import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
+import com.ksyun.ks3.dto.CopyResult;
+import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
+import com.ksyun.ks3.dto.Ks3Object;
+import com.ksyun.ks3.dto.ObjectMetadata;
+import com.ksyun.ks3.dto.PartETag;
+import com.ksyun.ks3.dto.PutObjectResult;
+import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.service.encryption.S3Direct;
+import com.ksyun.ks3.service.encryption.model.CryptoConfiguration;
+import com.ksyun.ks3.service.encryption.model.CryptoStorageMode;
+import com.ksyun.ks3.service.encryption.model.EncryptedInitiateMultipartUploadRequest;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterials;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsProvider;
+import com.ksyun.ks3.service.encryption.model.MaterialsDescriptionProvider;
+import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.CopyPartRequest;
+import com.ksyun.ks3.service.request.GetObjectRequest;
+import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
+import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
+import com.ksyun.ks3.service.request.PutObjectRequest;
+import com.ksyun.ks3.service.request.UploadPartRequest;
+import static com.ksyun.ks3.service.encryption.internal.EncryptionUtils.*;
 
 
 /**
@@ -26,29 +53,18 @@ import javax.crypto.SecretKey;
  */
 class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
     S3CryptoModuleEO(S3Direct s3,
-            AWSCredentialsProvider credentialsProvider,
             EncryptionMaterialsProvider encryptionMaterialsProvider,
-            ClientConfiguration clientConfig, CryptoConfiguration cryptoConfig) {
-        super(s3, credentialsProvider, encryptionMaterialsProvider,
-                clientConfig, cryptoConfig,
+            CryptoConfiguration cryptoConfig) {
+        super(s3, encryptionMaterialsProvider,
+               cryptoConfig,
                 new S3CryptoScheme(ContentCryptoScheme.AES_CBC));
     }
 
-    /**
-     * Used for testing purposes only.
-     */
-    S3CryptoModuleEO(S3Direct s3,
-            EncryptionMaterialsProvider encryptionMaterialsProvider,
-            CryptoConfiguration cryptoConfig) {
-        this(s3, new DefaultAWSCredentialsProviderChain(),
-                encryptionMaterialsProvider, new ClientConfiguration(),
-                cryptoConfig);
-    }
 
     @Override
     public PutObjectResult putObjectSecurely(PutObjectRequest putObjectRequest)
-            throws AmazonClientException, AmazonServiceException {
-        appendUserAgent(putObjectRequest, USER_AGENT);
+            throws Ks3ClientException,Ks3ServiceException {
+        appendUserAgent(putObjectRequest,Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
 
         if (this.cryptoConfig.getStorageMode() == CryptoStorageMode.InstructionFile) {
             return putObjectUsingInstructionFile(putObjectRequest);
@@ -58,8 +74,8 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
     }
 
     @Override
-    public S3Object getObjectSecurely(GetObjectRequest getObjectRequest)
-            throws AmazonClientException, AmazonServiceException {
+    public Ks3Object getObjectSecurely(GetObjectRequest getObjectRequest)
+            throws Ks3ClientException,Ks3ServiceException {
         // Should never get here, as S3 object encrypted in either EO or AE
         // format should all be handled by the AE module.
         throw new IllegalStateException();
@@ -67,7 +83,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
 
     @Override
     public ObjectMetadata getObjectSecurely(GetObjectRequest getObjectRequest, File destinationFile)
-            throws AmazonClientException, AmazonServiceException {
+            throws Ks3ClientException,Ks3ServiceException {
         // Should never get here, as S3 object encrypted in either EO or AE
         // format should all be handled by the AE module.
         throw new IllegalStateException();
@@ -77,14 +93,14 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
     @Override
     public CompleteMultipartUploadResult completeMultipartUploadSecurely(
             CompleteMultipartUploadRequest completeMultipartUploadRequest)
-                    throws AmazonClientException, AmazonServiceException {
-        appendUserAgent(completeMultipartUploadRequest, USER_AGENT);
+                    throws Ks3ClientException,Ks3ServiceException {
+        appendUserAgent(completeMultipartUploadRequest, Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
 
         String uploadId = completeMultipartUploadRequest.getUploadId();
         EncryptedUploadContext encryptedUploadContext = multipartUploadContexts.get(uploadId);
 
         if (encryptedUploadContext.hasFinalPartBeenSeen() == false) {
-            throw new AmazonClientException("Unable to complete an encrypted multipart upload without being told which part was the last.  " +
+            throw new Ks3ClientException("Unable to complete an encrypted multipart upload without being told which part was the last.  " +
                     "Without knowing which part was the last, the encrypted data in Amazon S3 is incomplete and corrupt.");
         }
 
@@ -119,8 +135,8 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
     @Override
     public InitiateMultipartUploadResult initiateMultipartUploadSecurely(
             InitiateMultipartUploadRequest initiateMultipartUploadRequest)
-                    throws AmazonClientException, AmazonServiceException {
-        appendUserAgent(initiateMultipartUploadRequest, USER_AGENT);
+                    throws Ks3ClientException, Ks3ServiceException {
+        appendUserAgent(initiateMultipartUploadRequest, Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
 
         // Generate a one-time use symmetric key and initialize a cipher to encrypt object data
         SecretKey envelopeSymmetricKey = generateOneTimeUseSymmetricKey();
@@ -140,11 +156,11 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
             ObjectMetadata metadata = EncryptionUtils.updateMetadataWithEncryptionInfo(initiateMultipartUploadRequest, encryptedEnvelopeSymmetricKey, symmetricCipher, encryptionMaterials.getMaterialsDescription());
 
             // Update the request's metadata to the updated metadata
-            initiateMultipartUploadRequest.setObjectMetadata(metadata);
+            initiateMultipartUploadRequest.setObjectMeta(metadata);
         }
 
         InitiateMultipartUploadResult result = s3.initiateMultipartUpload(initiateMultipartUploadRequest);
-        EncryptedUploadContext encryptedUploadContext = new EncryptedUploadContext(initiateMultipartUploadRequest.getBucketName(), initiateMultipartUploadRequest.getKey(), envelopeSymmetricKey);
+        EncryptedUploadContext encryptedUploadContext = new EncryptedUploadContext(initiateMultipartUploadRequest.getBucketname(), initiateMultipartUploadRequest.getObjectkey(), envelopeSymmetricKey);
         encryptedUploadContext.setNextInitializationVector(symmetricCipher.getIV());
         encryptedUploadContext.setFirstInitializationVector(symmetricCipher.getIV());
         if (initiateMultipartUploadRequest instanceof EncryptedInitiateMultipartUploadRequest) {
@@ -166,24 +182,24 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
      * context isn't available to use when encrypting the current part.
      */
     @Override
-    public UploadPartResult uploadPartSecurely(UploadPartRequest uploadPartRequest)
-        throws AmazonClientException, AmazonServiceException {
+    public PartETag uploadPartSecurely(UploadPartRequest uploadPartRequest)
+        throws Ks3ClientException, Ks3ServiceException {
 
-        appendUserAgent(uploadPartRequest, USER_AGENT);
+        appendUserAgent(uploadPartRequest, Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
 
         boolean isLastPart = uploadPartRequest.isLastPart();
         String uploadId = uploadPartRequest.getUploadId();
 
         boolean partSizeMultipleOfCipherBlockSize = uploadPartRequest.getPartSize() % JceEncryptionConstants.SYMMETRIC_CIPHER_BLOCK_SIZE == 0;
         if (!isLastPart && !partSizeMultipleOfCipherBlockSize) {
-            throw new AmazonClientException("Invalid part size: part sizes for encrypted multipart uploads must be multiples " +
+            throw new Ks3ClientException("Invalid part size: part sizes for encrypted multipart uploads must be multiples " +
                     "of the cipher block size (" + JceEncryptionConstants.SYMMETRIC_CIPHER_BLOCK_SIZE + ") with the exception of the last part.  " +
                     "Otherwise encryption adds extra padding that will corrupt the final object.");
         }
 
         // Generate the envelope symmetric key and initialize a cipher to encrypt the object's data
         EncryptedUploadContext encryptedUploadContext = multipartUploadContexts.get(uploadId);
-        if (encryptedUploadContext == null) throw new AmazonClientException("No client-side information available on upload ID " + uploadId);
+        if (encryptedUploadContext == null) throw new Ks3ClientException("No client-side information available on upload ID " + uploadId);
 
         SecretKey envelopeSymmetricKey = encryptedUploadContext.getEnvelopeEncryptionKey();
         byte[] iv = encryptedUploadContext.getNextInitializationVector();
@@ -191,7 +207,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
 
         // Create encrypted input stream
         ByteRangeCapturingInputStream encryptedInputStream = EncryptionUtils.getEncryptedInputStream(uploadPartRequest, cipherFactory);
-        uploadPartRequest.setInputStream(encryptedInputStream);
+        uploadPartRequest.setRequestBody(encryptedInputStream);
 
         // The last part of the multipart upload will contain extra padding from the encryption process
         if (uploadPartRequest.isLastPart()) {
@@ -200,7 +216,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
             if (cryptoContentLength > 0) uploadPartRequest.setPartSize(cryptoContentLength);
 
             if (encryptedUploadContext.hasFinalPartBeenSeen()) {
-                throw new AmazonClientException("This part was specified as the last part in a multipart upload, but a previous part was already marked as the last part.  " +
+                throw new Ks3ClientException("This part was specified as the last part in a multipart upload, but a previous part was already marked as the last part.  " +
                         "Only the last part of the upload should be marked as the last part, otherwise it will cause the encrypted data to be corrupted.");
             }
 
@@ -209,15 +225,15 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
 
         // Treat all encryption requests as input stream upload requests, not as file upload requests.
         uploadPartRequest.setFile(null);
-        uploadPartRequest.setFileOffset(0);
+        uploadPartRequest.setFileoffset(0);
 
-        UploadPartResult result = s3.uploadPart(uploadPartRequest);
+        PartETag result = s3.uploadPart(uploadPartRequest);
         encryptedUploadContext.setNextInitializationVector(encryptedInputStream.getBlock());
         return result;
     }
 
     @Override
-    public CopyPartResult copyPartSecurely(CopyPartRequest copyPartRequest) {
+    public CopyResult copyPartSecurely(CopyPartRequest copyPartRequest) {
         String uploadId = copyPartRequest.getUploadId();
         EncryptedUploadContext encryptedUploadContext = multipartUploadContexts.get(uploadId);
 
@@ -241,15 +257,15 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
      * @return
      *      A {@link PutObjectResult} object containing the information
      *      returned by Amazon S3 for the new, created object.
-     * @throws AmazonClientException
+     * @throws Ks3ClientException
      *      If any errors are encountered on the client while making the
      *      request or handling the response.
-     * @throws AmazonServiceException
+     * @throws Ks3ServiceException
      *      If any errors occurred in Amazon S3 while processing the
      *      request.
      */
     private PutObjectResult putObjectUsingMetadata(PutObjectRequest putObjectRequest)
-            throws AmazonClientException, AmazonServiceException {
+            throws Ks3ClientException, Ks3ServiceException {
         // Create instruction
         EncryptionInstruction instruction = encryptionInstructionOf(putObjectRequest);
         
@@ -272,15 +288,15 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
      * @return
      *      A {@link PutObjectResult} object containing the information
      *      returned by Amazon S3 for the new, created object.
-     * @throws AmazonClientException
+     * @throws Ks3ClientException
      *      If any errors are encountered on the client while making the
      *      request or handling the response.
-     * @throws AmazonServiceException
+     * @throws Ks3ServiceException
      *      If any errors occurred in Amazon S3 while processing the
      *      request.
      */
     private PutObjectResult putObjectUsingInstructionFile(PutObjectRequest putObjectRequest)
-            throws AmazonClientException, AmazonServiceException {
+            throws Ks3ClientException, Ks3ServiceException {
         // Create instruction
         EncryptionInstruction instruction = encryptionInstructionOf(putObjectRequest);
         
@@ -299,7 +315,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
     }
     
     private EncryptionInstruction encryptionInstructionOf(
-            AmazonWebServiceRequest req) {
+            Ks3WebServiceRequest req) {
         EncryptionInstruction instruction;
         if (req instanceof MaterialsDescriptionProvider) {
             MaterialsDescriptionProvider p = (MaterialsDescriptionProvider)req;

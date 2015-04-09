@@ -27,7 +27,7 @@ import com.ksyun.ks3.utils.StringUtils;
  * <p>支持重写返回的http headers,通过修改overrides实现</p>
  **/
 public class GetObjectRequest extends Ks3WebServiceRequest {
-	private String range = null;
+	private long [] range = null;
 	/**
 	 * object的etag能匹配到则返回，否则返回结果的ifPreconditionSuccess为false，object为空
 	 */
@@ -61,8 +61,8 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 	@Override
 	protected void configHttpRequest() {
 		this.setHttpMethod(HttpMethod.GET);
-		if(!StringUtils.isBlank(range))
-			this.addHeader(HttpHeaders.Range,range);
+		if(range!=null&&range.length==2)
+			this.addHeader(HttpHeaders.Range,"bytes="+range[0]+"-"+range[1]);
 		if(matchingETagConstraints.size()>0)
 			this.addHeader(HttpHeaders.IfMatch, StringUtils.join(matchingETagConstraints, ","));
 		if(nonmatchingEtagConstraints.size()>0)
@@ -80,17 +80,12 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 			throw notNull("bucketname");
 		if(StringUtils.isBlank(this.getObjectkey()))
 			throw notNull("objectkey");
-		if(!StringUtils.isBlank(range))
-		{
-			if(!range.startsWith("bytes="))
-				throw notCorrect("Range",range," bytes=x-y,y>=x");
-		}
 	}
-	public String getRange() {
+	public long [] getRange() {
 		return range;
 	}
 	public void setRange(long start,long end) {
-		this.range = "bytes="+start+"-"+end;
+		this.range = new long[]{start,end};
 	}
 	/**
 	 * object的etag能匹配到则返回，否则返回结果的ifPreconditionSuccess为false，object为空

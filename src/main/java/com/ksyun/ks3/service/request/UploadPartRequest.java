@@ -73,7 +73,10 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * 文件的时候，之前已经读取的数据量
 	 */
 	private long fileoffset;
-
+	/**
+	 * 是否为最后一块,客户端数据加密时需要指定该值
+	 */
+	private boolean lastPart = false;
 	/**
 	 * 
 	 * @param bucketname
@@ -94,7 +97,8 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		this.setUploadId(uploadId);
 		this.setPartNumber(partNumber);
 		this.setFile(file);
-		this.setPartSize(partsize);
+		this.setPartSize(file.length() - fileoffset < partsize ? file.length()
+				- fileoffset : partsize);
 		this.setFileoffset(fileoffset);
 	}
 
@@ -127,8 +131,6 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		this.addParams("uploadId", this.uploadId);
 		this.addParams("partNumber", String.valueOf(this.partNumber));
 		if (this.file != null) {
-			this.partSize = file.length() - fileoffset < partSize ? file.length()
-					- fileoffset : partSize;
 			try {
 				this.setRequestBody(new InputSubStream(new RepeatableFileInputStream(
 						this.file), this.fileoffset, partSize, true));
@@ -136,9 +138,6 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 			} catch (FileNotFoundException e) {
 				throw new ClientFileNotFoundException(e);
 			}
-		} else {
-			this.setRequestBody(new RepeatableInputStream(this.getRequestBody(),
-					Constants.DEFAULT_STREAM_BUFFER_SIZE));
 		}
 		this.addHeader(HttpHeaders.ContentLength, String.valueOf(this.partSize));
 	}
@@ -226,5 +225,13 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 
 	public void setContentMD5(String contentMd5) {
 		super.setContentMD5(contentMd5);
+	}
+
+	public boolean isLastPart() {
+		return lastPart;
+	}
+
+	public void setLastPart(boolean lastPart) {
+		this.lastPart = lastPart;
 	}
 }

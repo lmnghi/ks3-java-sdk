@@ -30,6 +30,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.params.CoreProtocolPNames;
 
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
+import com.ksyun.ks3.RepeatableFileInputStream;
+import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.Authorization;
@@ -78,7 +80,7 @@ public abstract class Ks3WebServiceRequest {
 		this.addHeader(key.toString(), value);
 	}
 
-	protected void setRequestBody(InputStream requestBody) {
+	public void setRequestBody(InputStream requestBody) {
 		this.requestBody = requestBody;
 	}
 
@@ -119,6 +121,11 @@ public abstract class Ks3WebServiceRequest {
 	}
 	@SuppressWarnings("deprecation")
 	private void initHttpRequestBase() {
+		if(this.getRequestBody()!=null){
+			if(!(this.requestBody instanceof RepeatableInputStream)&&!(this.requestBody instanceof RepeatableFileInputStream)){
+				this.setRequestBody(new RepeatableInputStream(this.requestBody,Constants.DEFAULT_STREAM_BUFFER_SIZE));
+			}
+		}
 		// 准备计算 md5值
 		if (this instanceof MD5CalculateAble && this.getRequestBody() != null
 				&& StringUtils.isBlank(this.getContentMD5()))
@@ -148,7 +155,6 @@ public abstract class Ks3WebServiceRequest {
 		if (!StringUtils.isBlank(encodedParams))
 			url += "?" + encodedParams;
 		HttpRequestBase httpRequest = null;
-
 		if (this.getHttpMethod() == HttpMethod.POST) {
 			HttpPost postMethod = new HttpPost(url);
 			if (requestBody == null && params != null) {
@@ -253,7 +259,8 @@ public abstract class Ks3WebServiceRequest {
 			url = url.replace("http://", "").replace("https://", "");
 		httpMethod = HttpMethod.POST;
 		this.setContentMD5("");
-		this.addHeader(HttpHeaders.UserAgent, Constants.KS3_SDK_USER_AGENT);
+		if(!this.getHeader().containsKey(HttpHeaders.UserAgent.toString()))
+			this.addHeader(HttpHeaders.UserAgent, Constants.KS3_SDK_USER_AGENT);
 		this.setContentType("text/plain");
 		this.setDate(new Date());
 	}

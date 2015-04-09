@@ -15,6 +15,13 @@
 package com.ksyun.ks3.service.encryption.internal;
 
 import java.io.BufferedReader;
+
+import com.ksyun.ks3.AutoAbortInputStream;
+import com.ksyun.ks3.InputSubStream;
+import com.ksyun.ks3.LengthCheckInputStream;
+import com.ksyun.ks3.RepeatableFileInputStream;
+import com.ksyun.ks3.utils.Base64;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,12 +44,19 @@ import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
+import com.ksyun.ks3.http.Mimetypes;
 import com.ksyun.ks3.service.encryption.model.EncryptionMaterials;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsAccessor;
 import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsProvider;
 import com.ksyun.ks3.service.encryption.model.StaticEncryptionMaterialsProvider;
+import com.ksyun.ks3.service.request.DeleteObjectRequest;
+import com.ksyun.ks3.service.request.GetObjectRequest;
+import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
+import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.utils.JSONObject;
 import com.ksyun.ks3.utils.Jackson;
+import com.ksyun.ks3.utils.StringUtils;
 
 
 /**
@@ -179,11 +193,10 @@ public class EncryptionUtils {
      */
     public static EncryptionInstruction buildInstructionFromInstructionFile(Ks3Object instructionFile, EncryptionMaterialsProvider materialsProvider, Provider cryptoProvider) {
         JSONObject instructionJSON = parseJSONInstruction(instructionFile);
-        try {
             // Get fields from instruction object
             String encryptedSymmetricKeyB64 = instructionJSON.getString(HttpHeaders.CRYPTO_KEY.toString());
-            String ivB64 = instructionJSON.getString(Headers.CRYPTO_IV);
-            String materialsDescriptionString = instructionJSON.tryGetString(Headers.MATERIALS_DESCRIPTION);
+            String ivB64 = instructionJSON.getString(HttpHeaders.CRYPTO_IV.toString());
+            String materialsDescriptionString = instructionJSON.tryGetString(HttpHeaders.MATERIALS_DESCRIPTION.toString());
             Map<String, String> materialsDescription = convertJSONToMap(materialsDescriptionString);
 
             // Decode from Base 64 to standard binary bytes
@@ -192,7 +205,7 @@ public class EncryptionUtils {
 
             if (encryptedSymmetricKey == null || iv == null) {
                 // If necessary encryption info was not found in the instruction file, throw an exception.
-                throw new AmazonClientException(
+                throw new Ks3ClientException(
                         String.format("Necessary encryption info not found in the instruction file '%s' in bucket '%s'",
                                       instructionFile.getKey(), instructionFile.getBucketName()));
             }
@@ -201,7 +214,7 @@ public class EncryptionUtils {
             // If we're unable to retrieve the original encryption materials, we can't decrypt the object, so
             // throw an exception.
             if (materials == null) {
-                throw new AmazonClientException(
+                throw new Ks3ClientException(
                         String.format("Unable to retrieve the encryption materials that originally " +
                                 "encrypted object corresponding to instruction file '%s' in bucket '%s'.",
                                 instructionFile.getKey(), instructionFile.getBucketName()));
@@ -212,9 +225,6 @@ public class EncryptionUtils {
             CipherFactory cipherFactory = new CipherFactory(symmetricKey, Cipher.DECRYPT_MODE, iv, cryptoProvider);
 
             return new EncryptionInstruction(materialsDescription, encryptedSymmetricKey, symmetricKey, cipherFactory);
-        } catch (JSONException e) {
-            throw new AmazonClientException("Unable to parse retrieved instruction file : " + e.getMessage());
-        }
     }
 
     /**
@@ -230,12 +240,12 @@ public class EncryptionUtils {
      * @return
      *      A non-null instruction object containing encryption information
      *
-     * @throws AmazonClientException
+     * @throws Ks3ClientException
      *      if encryption information is missing in the metadata, or the encryption
      *      materials used to encrypt the object are not available via the materials Accessor
      */
     @Deprecated
-    public static EncryptionInstruction buildInstructionFromObjectMetadata(S3Object object, EncryptionMaterials materials, Provider cryptoProvider) {
+    public static EncryptionInstruction buildInstructionFromObjectMetadata(Ks3Object object, EncryptionMaterials materials, Provider cryptoProvider) {
       return buildInstructionFromObjectMetadata(object, new StaticEncryptionMaterialsProvider(materials), cryptoProvider);
     }
 
@@ -252,22 +262,22 @@ public class EncryptionUtils {
      * @return
      *      A non-null instruction object containing encryption information
      *
-     * @throws AmazonClientException
+     * @throws Ks3ClientException
      *      if encryption information is missing in the metadata, or the encryption
      *      materials used to encrypt the object are not available via the materials Accessor
      */
-    public static EncryptionInstruction buildInstructionFromObjectMetadata(S3Object object, EncryptionMaterialsProvider materialsProvider, Provider cryptoProvider) {
+    public static EncryptionInstruction buildInstructionFromObjectMetadata(Ks3Object object, EncryptionMaterialsProvider materialsProvider, Provider cryptoProvider) {
         ObjectMetadata metadata = object.getObjectMetadata();
 
         // Get encryption info from metadata.
-        byte[] encryptedSymmetricKeyBytes = getCryptoBytesFromMetadata(Headers.CRYPTO_KEY, metadata);
-        byte[] initVectorBytes = getCryptoBytesFromMetadata(Headers.CRYPTO_IV, metadata);
-        String materialsDescriptionString = getStringFromMetadata(Headers.MATERIALS_DESCRIPTION, metadata);
+        byte[] encryptedSymmetricKeyBytes = getCryptoBytesFromMetadata(HttpHeaders.CRYPTO_KEY.toString(), metadata);
+        byte[] initVectorBytes = getCryptoBytesFromMetadata(HttpHeaders.CRYPTO_IV.toString(), metadata);
+        String materialsDescriptionString = getStringFromMetadata(HttpHeaders.MATERIALS_DESCRIPTION.toString(), metadata);
         Map<String, String> materialsDescription = convertJSONToMap(materialsDescriptionString);
 
         if (encryptedSymmetricKeyBytes == null || initVectorBytes == null) {
             // If necessary encryption info was not found in the instruction file, throw an exception.
-            throw new AmazonClientException(
+            throw new Ks3ClientException(
                     String.format("Necessary encryption info not found in the headers of file '%s' in bucket '%s'",
                                   object.getKey(), object.getBucketName()));
         }
@@ -276,7 +286,7 @@ public class EncryptionUtils {
         // If we're unable to retrieve the original encryption materials, we can't decrypt the object, so
         // throw an exception.
         if (materials == null) {
-            throw new AmazonClientException(
+            throw new Ks3ClientException(
                     String.format("Unable to retrieve the encryption materials that originally " +
                             "encrypted file '%s' in bucket '%s'.",
                             object.getKey(), object.getBucketName()));
@@ -302,14 +312,14 @@ public class EncryptionUtils {
      */
     public static PutObjectRequest encryptRequestUsingInstruction(PutObjectRequest request, EncryptionInstruction instruction) {
         // Create a new metadata object if there is no metadata already.
-        ObjectMetadata metadata = request.getMetadata();
+        ObjectMetadata metadata = request.getObjectMeta();
         if (metadata == null) {
             metadata = new ObjectMetadata();
         }
 
         // Record the original Content MD5, if present, for the unencrypted data
         if (metadata.getContentMD5() != null) {
-            metadata.addUserMetadata(Headers.UNENCRYPTED_CONTENT_MD5, metadata.getContentMD5());
+            metadata.setUserMeta(HttpHeaders.UNENCRYPTED_CONTENT_MD5.toString(), metadata.getContentMD5());
         }
         
         // Removes the original content MD5 if present from the meta data.
@@ -318,7 +328,7 @@ public class EncryptionUtils {
         // Record the original, unencrypted content-length so it can be accessed later
         final long plaintextLength = getUnencryptedContentLength(request, metadata);
         if (plaintextLength >= 0) {
-            metadata.addUserMetadata(Headers.UNENCRYPTED_CONTENT_LENGTH,
+            metadata.setUserMeta(HttpHeaders.UNENCRYPTED_CONTENT_LENGTH.toString(),
                 Long.toString(plaintextLength));
         }
 
@@ -328,10 +338,10 @@ public class EncryptionUtils {
             metadata.setContentLength(cryptoContentLength);
         }
 
-        request.setMetadata(metadata);
+        request.setObjectMeta(metadata);
 
         // Create encrypted input stream
-        request.setInputStream(getEncryptedInputStream(request, instruction.getCipherFactory(), plaintextLength));
+        request.setRequestBody(getEncryptedInputStream(request, instruction.getCipherFactory(), plaintextLength));
 
         // Treat all encryption requests as input stream upload requests, not as file upload requests.
         request.setFile(null);
@@ -349,11 +359,11 @@ public class EncryptionUtils {
      * @return
      *      The updated object where the object content input stream contains the decrypted contents.
      */
-    public static S3Object decryptObjectUsingInstruction(S3Object object, EncryptionInstruction instruction) {
-        S3ObjectInputStream objectContent = object.getObjectContent();
+    public static Ks3Object decryptObjectUsingInstruction(Ks3Object object, EncryptionInstruction instruction) {
+        AutoAbortInputStream objectContent = object.getObjectContent();
 
         InputStream decryptedInputStream = new RepeatableCipherInputStream(objectContent, instruction.getCipherFactory());
-        object.setObjectContent(new S3ObjectInputStream(decryptedInputStream, objectContent.getHttpRequest()));
+        object.setObjectContent(new AutoAbortInputStream(decryptedInputStream, objectContent.getRequest()));
         return object;
     }
 
@@ -372,18 +382,18 @@ public class EncryptionUtils {
         byte[] instructionBytes = instructionJSON.toString().getBytes();
         InputStream instructionInputStream = new ByteArrayInputStream(instructionBytes);
 
-        ObjectMetadata metadata = request.getMetadata();
+        ObjectMetadata metadata = request.getObjectMeta();
 
         // Set the content-length of the upload
         metadata.setContentLength(instructionBytes.length);
 
         // Set the crypto instruction file header
-        metadata.addUserMetadata(Headers.CRYPTO_INSTRUCTION_FILE, "");
+        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getObjectkey() + INSTRUCTION_SUFFIX);
 
         // Update the instruction request
-        request.setKey(request.getKey() + INSTRUCTION_SUFFIX);
-        request.setMetadata(metadata);
-        request.setInputStream(instructionInputStream);
+        request.setObjectKey(request.getObjectkey() + INSTRUCTION_SUFFIX);
+        request.setObjectMeta(metadata);
+        request.setRequestBody(instructionInputStream);
 
         return request;
     }
@@ -395,7 +405,7 @@ public class EncryptionUtils {
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(instructionBytes.length);
-        metadata.addUserMetadata(Headers.CRYPTO_INSTRUCTION_FILE, "");
+        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), key + INSTRUCTION_SUFFIX);
 
         return new PutObjectRequest(bucketName, key + INSTRUCTION_SUFFIX, instructionInputStream, metadata);
     }
@@ -409,7 +419,7 @@ public class EncryptionUtils {
      *      A get request to retrieve an instruction file from S3.
      */
     public static GetObjectRequest createInstructionGetRequest(GetObjectRequest request) {
-        return new GetObjectRequest(request.getBucketName(), request.getKey() + INSTRUCTION_SUFFIX, request.getVersionId());
+        return new GetObjectRequest(request.getBucketname(), request.getObjectkey() + INSTRUCTION_SUFFIX);
     }
 
     /**
@@ -421,7 +431,7 @@ public class EncryptionUtils {
      *      A delete request to delete an instruction file in S3.
      */
     public static DeleteObjectRequest createInstructionDeleteObjectRequest(DeleteObjectRequest request) {
-        return new DeleteObjectRequest(request.getBucketName(), request.getKey() + INSTRUCTION_SUFFIX);
+        return new DeleteObjectRequest(request.getBucketname(), request.getObjectkey() + INSTRUCTION_SUFFIX);
     }
 
     /**
@@ -434,11 +444,12 @@ public class EncryptionUtils {
      *      True if the specified S3Object contains encryption info in its
      *      metadata, false otherwise.
      */
-    public static boolean isEncryptionInfoInMetadata(S3Object retrievedObject) {
-        Map<String, String> metadata = retrievedObject.getObjectMetadata().getUserMetadata();
-        return metadata != null
-            && metadata.containsKey(Headers.CRYPTO_IV)
-            && metadata.containsKey(Headers.CRYPTO_KEY);
+    public static boolean isEncryptionInfoInMetadata(Ks3Object retrievedObject) {
+    	if(retrievedObject.getObjectMetadata()==null)
+    		retrievedObject.setObjectMetadata(new ObjectMetadata());
+    	String iv = retrievedObject.getObjectMetadata().getUserMeta(HttpHeaders.CRYPTO_IV.toString());
+    	String key = retrievedObject.getObjectMetadata().getUserMeta(HttpHeaders.CRYPTO_KEY.toString());
+        return (!StringUtils.isBlank(iv))&&(!StringUtils.isBlank(key));
     }
 
     /**
@@ -451,15 +462,15 @@ public class EncryptionUtils {
      *      True if the specified S3Object is an instruction file containing
      *      encryption info, false otherwise.
      */
-    public static boolean isEncryptionInfoInInstructionFile(S3Object instructionFile) {
+    public static boolean isEncryptionInfoInInstructionFile(Ks3Object instructionFile) {
         if (instructionFile == null) {
             return false;
         }
-        Map<String, String> metadata = instructionFile.getObjectMetadata().getUserMetadata();
+        ObjectMetadata metadata = instructionFile.getObjectMetadata();
         if (metadata == null) {
             return false;
         }
-        return metadata.containsKey(Headers.CRYPTO_INSTRUCTION_FILE);
+        return metadata.containsUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString());
     }
 
     /**
@@ -503,18 +514,18 @@ public class EncryptionUtils {
      *      The S3Object with adjusted object contents containing only the range desired by the user.
      *      If the range specified is invalid, then the S3Object is returned without any modifications.
      */
-    public static S3Object adjustOutputToDesiredRange(S3Object object, long[] range) {
+    public static Ks3Object adjustOutputToDesiredRange(Ks3Object object, long[] range) {
         if (range == null || range[0] > range[1]) {
             // Make no modifications if range is invalid.
             return object;
         } else {
             try {
-                S3ObjectInputStream objectContent = object.getObjectContent();
+                AutoAbortInputStream objectContent = object.getObjectContent();
                 InputStream adjustedRangeContents = new AdjustedRangeInputStream(objectContent, range[0], range[1]);
-                object.setObjectContent(new S3ObjectInputStream(adjustedRangeContents, objectContent.getHttpRequest()));
+                object.setObjectContent(new AutoAbortInputStream(adjustedRangeContents, objectContent.getRequest()));
                 return object;
             } catch (IOException e) {
-                throw new AmazonClientException("Error adjusting output to desired byte range: " + e.getMessage());
+                throw new Ks3ClientException("Error adjusting output to desired byte range: " + e.getMessage());
             }
         }
     }
@@ -529,7 +540,7 @@ public class EncryptionUtils {
             generator.init(JceEncryptionConstants.SYMMETRIC_KEY_LENGTH, new SecureRandom());
             return generator.generateKey();
         } catch (NoSuchAlgorithmException e) {
-            throw new AmazonClientException("Unable to generate envelope symmetric key:" + e.getMessage(), e);
+            throw new Ks3ClientException("Unable to generate envelope symmetric key:" + e.getMessage(), e);
         }
     }
 
@@ -553,7 +564,7 @@ public class EncryptionUtils {
             }
             return cipher;
         } catch (Exception e) {
-            throw new AmazonClientException("Unable to build cipher: " + e.getMessage() +
+            throw new Ks3ClientException("Unable to build cipher: " + e.getMessage() +
                     "\nMake sure you have the JCE unlimited strength policy files installed and " +
                     "configured for your JVM: http://www.ngs.ac.uk/tools/jcepolicyfiles", e);
         }
@@ -583,7 +594,7 @@ public class EncryptionUtils {
             cipher.init(Cipher.ENCRYPT_MODE, keyToDoEncryption);
             return cipher.doFinal(toBeEncryptedBytes);
         } catch (Exception e) {
-            throw new AmazonClientException("Unable to encrypt symmetric key: " + e.getMessage(), e);
+            throw new Ks3ClientException("Unable to encrypt symmetric key: " + e.getMessage(), e);
         }
     }
 
@@ -611,7 +622,7 @@ public class EncryptionUtils {
             byte[] decryptedSymmetricKeyBytes = cipher.doFinal(encryptedSymmetricKeyBytes);
             return new SecretKeySpec(decryptedSymmetricKeyBytes, JceEncryptionConstants.SYMMETRIC_KEY_ALGORITHM);
         } catch (Exception e) {
-            throw new AmazonClientException("Unable to decrypt symmetric key from object metadata : " + e.getMessage(), e);
+            throw new Ks3ClientException("Unable to decrypt symmetric key from object metadata : " + e.getMessage(), e);
         }
     }
 
@@ -624,7 +635,7 @@ public class EncryptionUtils {
             PutObjectRequest request, CipherFactory cipherFactory,
             long plaintextLength) {
         try {
-            InputStream is = request.getInputStream();
+            InputStream is = request.getRequestBody();
             if (request.getFile() != null) {
                 // Historically file takes precedence over the original input
                 // stream
@@ -634,34 +645,34 @@ public class EncryptionUtils {
                 // This ensures the plain-text read from the underlying data
                 // stream has the same length as the expected total
                 is = new LengthCheckInputStream(is, plaintextLength,
-                        EXCLUDE_SKIPPED_BYTES);
+                		LengthCheckInputStream.EXCLUDE_SKIPPED_BYTES);
             }
             return new RepeatableCipherInputStream(is, cipherFactory);
         } catch (Exception e) {
-            throw new AmazonClientException("Unable to create cipher input stream: " + e.getMessage(), e);
+            throw new Ks3ClientException("Unable to create cipher input stream: " + e.getMessage(), e);
         }
     }
 
     public static ByteRangeCapturingInputStream getEncryptedInputStream(UploadPartRequest request, CipherFactory cipherFactory) {
         try {
-            InputStream originalInputStream = request.getInputStream();
+            InputStream originalInputStream = request.getRequestBody();
             if (request.getFile() != null) {
-                originalInputStream = new InputSubstream(new RepeatableFileInputStream(request.getFile()),
-                        request.getFileOffset(), request.getPartSize(), request.isLastPart());
+                originalInputStream = new InputSubStream(new RepeatableFileInputStream(request.getFile()),
+                        request.getFileoffset(), request.getPartSize(), request.isLastPart());
             }
 
             originalInputStream = new RepeatableCipherInputStream(originalInputStream, cipherFactory);
 
             if (request.isLastPart() == false) {
                 // We want to prevent the final padding from being sent on the stream...
-                originalInputStream = new InputSubstream(originalInputStream, 0, request.getPartSize(), false);
+                originalInputStream = new InputSubStream(originalInputStream, 0, request.getPartSize(), false);
             }
 
             long partSize = request.getPartSize();
             int cipherBlockSize = cipherFactory.createCipher().getBlockSize();
             return new ByteRangeCapturingInputStream(originalInputStream, partSize - cipherBlockSize, partSize);
         } catch (Exception e) {
-            throw new AmazonClientException("Unable to create cipher input stream: " + e.getMessage(), e);
+            throw new Ks3ClientException("Unable to create cipher input stream: " + e.getMessage(), e);
         }
     }
 
@@ -672,12 +683,11 @@ public class EncryptionUtils {
      * Note: The bytes are transported in Base64-encoding, so they are decoded before they are returned.
      */
     private static byte[] getCryptoBytesFromMetadata(String headerName, ObjectMetadata metadata) throws NullPointerException {
-        Map<String, String> userMetadata = metadata.getUserMetadata();
-        if (userMetadata == null || !userMetadata.containsKey(headerName)) {
+        if (metadata == null || !metadata.containsUserMeta(headerName)) {
             return null;
         } else {
             // Convert Base64 bytes to binary data.
-            return Base64.decode(userMetadata.get(headerName));
+            return Base64.decode(metadata.getUserMeta(headerName));
         }
     }
 
@@ -686,11 +696,10 @@ public class EncryptionUtils {
      * found in the metadata.
      */
     private static String getStringFromMetadata(String headerName, ObjectMetadata metadata) throws NullPointerException {
-        Map<String, String> userMetadata = metadata.getUserMetadata();
-        if (userMetadata == null || !userMetadata.containsKey(headerName)) {
+        if (metadata == null || !metadata.containsUserMeta(headerName)) {
             return null;
         } else {
-            return userMetadata.get(headerName);
+            return metadata.getUserMeta(headerName);
         }
     }
 
@@ -702,7 +711,6 @@ public class EncryptionUtils {
         if (descriptionJSONString == null) {
             return null;
         }
-        try {
             JSONObject descriptionJSON = new JSONObject(descriptionJSONString);
             Iterator<String> keysIterator = descriptionJSON.keys();
             Map<String, String> materialsDescription = new HashMap<String, String>();
@@ -711,9 +719,6 @@ public class EncryptionUtils {
                 materialsDescription.put(key, descriptionJSON.getString(key));
             }
             return materialsDescription;
-        } catch (JSONException e) {
-            throw new AmazonClientException("Unable to parse encryption materials description from metadata :" + e.getMessage());
-        }
     }
 
     /**
@@ -729,7 +734,7 @@ public class EncryptionUtils {
         Cipher symmetricCipher = instruction.getSymmetricCipher();
         Map<String, String> materialsDescription = instruction.getMaterialsDescription();
 
-        ObjectMetadata metadata = request.getMetadata();
+        ObjectMetadata metadata = request.getObjectMeta();
         if (metadata == null) metadata = new ObjectMetadata();
 
         if (request.getFile() != null) {
@@ -738,27 +743,27 @@ public class EncryptionUtils {
         }
 
         updateMetadata(metadata, keyBytesToStoreInMetadata, symmetricCipher, materialsDescription);
-        request.setMetadata( metadata );
+        request.setObjectMeta( metadata );
     }
 
     private static void updateMetadata(ObjectMetadata metadata, byte[] keyBytesToStoreInMetadata, Cipher symmetricCipher, Map<String, String> materialsDescription) {
         // If we generated a symmetric key to encrypt the data, store it in the object metadata.
         if (keyBytesToStoreInMetadata != null) {
-            metadata.addUserMetadata(Headers.CRYPTO_KEY,
+            metadata.setUserMeta(HttpHeaders.CRYPTO_KEY.toString(),
                     Base64.encodeAsString(keyBytesToStoreInMetadata));
         }
 
         // Put the cipher initialization vector (IV) into the object metadata
-        metadata.addUserMetadata(Headers.CRYPTO_IV,
+        metadata.setUserMeta(HttpHeaders.CRYPTO_IV.toString(),
                 Base64.encodeAsString(symmetricCipher.getIV()));
 
         // Put the materials description into the object metadata as JSON
         JSONObject descriptionJSON = new JSONObject(materialsDescription);
-        metadata.addUserMetadata(Headers.MATERIALS_DESCRIPTION, descriptionJSON.toString());
+        metadata.setUserMeta(HttpHeaders.MATERIALS_DESCRIPTION.toString(), descriptionJSON.toString());
     }
 
     public static ObjectMetadata updateMetadataWithEncryptionInfo(InitiateMultipartUploadRequest request, byte[] keyBytesToStoreInMetadata, Cipher symmetricCipher, Map<String, String> materialsDescription) {
-        ObjectMetadata metadata = request.getObjectMetadata();
+        ObjectMetadata metadata = request.getObjectMeta();
         if (metadata == null) metadata = new ObjectMetadata();
 
         updateMetadata(metadata, keyBytesToStoreInMetadata, symmetricCipher, materialsDescription);
@@ -800,7 +805,7 @@ public class EncryptionUtils {
         if (request.getFile() != null) {
             if (request.getPartSize() > 0) plaintextLength = request.getPartSize();
             else plaintextLength = request.getFile().length();
-        } else if (request.getInputStream() != null) {
+        } else if (request.getRequestBody() != null) {
             plaintextLength = request.getPartSize();
         } else {
             return -1;
@@ -823,31 +828,33 @@ public class EncryptionUtils {
      *         if it isn't known.
      */
     private static long getUnencryptedContentLength(PutObjectRequest request, ObjectMetadata metadata) {
-        if (request.getFile() != null) {
-            return request.getFile().length();
-        } else if (request.getInputStream() != null
-                   && metadata.getRawMetadataValue(Headers.CONTENT_LENGTH) != null) {
-            return metadata.getContentLength();
+    	long fileLength = -1;
+    	long lengthInMeta = request.getObjectMeta().getContentLength();
+    	if (request.getFile() != null) {
+    		fileLength = request.getFile().length();
         }
-
+    	if(fileLength>=0){
+    		if(lengthInMeta > 0 && lengthInMeta < fileLength)
+    			return lengthInMeta;
+    		else
+    			return fileLength;
+    	}else if(lengthInMeta > 0&&request.getRequestBody()!=null){
+    		return lengthInMeta;
+    	}
         return -1;
     }
 
     /**
      * Returns a JSONObject representation of the instruction object.
      */
-    private static Map convertInstructionToJSONObject(EncryptionInstruction instruction) {
+    private static JSONObject convertInstructionToJSONObject(EncryptionInstruction instruction) {
         JSONObject instructionJSON = new JSONObject();
-        try {
-            JSONObject materialsDescriptionJSON = new JSONObject(
-                    instruction.getMaterialsDescription());
-            instructionJSON.put(Headers.MATERIALS_DESCRIPTION,
-                    materialsDescriptionJSON.toString());
-            instructionJSON.put(Headers.CRYPTO_KEY, 
+            instructionJSON.put(HttpHeaders.MATERIALS_DESCRIPTION.toString(),
+            		instruction.getMaterialsDescription());
+            instructionJSON.put(HttpHeaders.CRYPTO_KEY.toString(), 
                 Base64.encodeAsString(instruction.getEncryptedSymmetricKey()));
             byte[] iv = instruction.getSymmetricCipher().getIV();
-            instructionJSON.put(Headers.CRYPTO_IV, Base64.encodeAsString(iv));
-        } catch (JSONException e) {} // Keys are never null, so JSONException will never be thrown.
+            instructionJSON.put(HttpHeaders.CRYPTO_IV.toString(), Base64.encodeAsString(iv));
         return instructionJSON;
     }
 

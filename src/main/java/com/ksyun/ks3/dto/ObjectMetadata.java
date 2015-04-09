@@ -39,6 +39,9 @@ public class ObjectMetadata {
 	{
 		return userMetadata.get(key.startsWith(Constants.KS3_USER_META_PREFIX)?key:(Constants.KS3_USER_META_PREFIX+key));
 	}
+	public boolean containsUserMeta(String key){
+		return userMetadata.containsKey(key.startsWith(Constants.KS3_USER_META_PREFIX)?key:(Constants.KS3_USER_META_PREFIX+key));
+	}
 	public Map<String, String> getAllUserMeta()
 	{
 		return this.userMetadata;

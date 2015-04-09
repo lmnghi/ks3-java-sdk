@@ -118,8 +118,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		this.setBucketname(bucketname);
 		this.setObjectkey(key);
 		this.setObjectMeta(metadata);
-		this.setRequestBody(new RepeatableInputStream(inputStream,
-				Constants.DEFAULT_STREAM_BUFFER_SIZE));
+		this.setRequestBody(inputStream);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -292,12 +291,6 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	public void setFile(File file) {
 		this.file = file;
 	}
-	
-	public void setInputStream(InputStream inputStream){
-		this.setRequestBody(new RepeatableInputStream(inputStream,
-				Constants.DEFAULT_STREAM_BUFFER_SIZE));
-	}
-
 	public ObjectMetadata getObjectMeta() {
 		return objectMeta;
 	}

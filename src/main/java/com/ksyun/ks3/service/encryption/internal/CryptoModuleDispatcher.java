@@ -16,28 +16,26 @@ package com.ksyun.ks3.service.encryption.internal;
 
 import java.io.File;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.s3.internal.S3Direct;
-import com.amazonaws.services.s3.model.AbortMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadResult;
-import com.amazonaws.services.s3.model.CopyPartRequest;
-import com.amazonaws.services.s3.model.CopyPartResult;
-import com.amazonaws.services.s3.model.CryptoConfiguration;
-import com.amazonaws.services.s3.model.CryptoMode;
-import com.amazonaws.services.s3.model.EncryptionMaterialsProvider;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.UploadPartRequest;
-import com.amazonaws.services.s3.model.UploadPartResult;
+import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
+import com.ksyun.ks3.dto.CopyResult;
+import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
+import com.ksyun.ks3.dto.Ks3Object;
+import com.ksyun.ks3.dto.ObjectMetadata;
+import com.ksyun.ks3.dto.PartETag;
+import com.ksyun.ks3.dto.PutObjectResult;
+import com.ksyun.ks3.exception.Ks3ClientException;
+import com.ksyun.ks3.exception.Ks3ServiceException;
+import com.ksyun.ks3.service.encryption.S3Direct;
+import com.ksyun.ks3.service.encryption.model.CryptoConfiguration;
+import com.ksyun.ks3.service.encryption.model.CryptoMode;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsProvider;
+import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
+import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.CopyPartRequest;
+import com.ksyun.ks3.service.request.GetObjectRequest;
+import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
+import com.ksyun.ks3.service.request.PutObjectRequest;
+import com.ksyun.ks3.service.request.UploadPartRequest;
 
 /**
  * A proxy cryptographic module used to dispatch method calls to the appropriate
@@ -51,35 +49,33 @@ public class CryptoModuleDispatcher extends S3CryptoModule<MultipartUploadContex
     private final S3CryptoModuleAE ae;
 
     public CryptoModuleDispatcher(S3Direct s3,
-            AWSCredentialsProvider credentialsProvider,
             EncryptionMaterialsProvider encryptionMaterialsProvider,
-            ClientConfiguration clientConfig,
             CryptoConfiguration cryptoConfig) {
         CryptoMode cryptoMode = cryptoConfig.getCryptoMode();
         this.defaultCryptoMode = cryptoMode == null ? CryptoMode.EncryptionOnly : cryptoMode;
         switch(defaultCryptoMode) {
             case StrictAuthenticatedEncryption:
-                this.ae = new S3CryptoModuleAEStrict(s3, credentialsProvider,
-                        encryptionMaterialsProvider, clientConfig, cryptoConfig);
+                this.ae = new S3CryptoModuleAEStrict(s3,
+                        encryptionMaterialsProvider, cryptoConfig);
                 this.eo = null;
                 break;
             case AuthenticatedEncryption:
-                this.ae = new S3CryptoModuleAE(s3, credentialsProvider,
-                        encryptionMaterialsProvider, clientConfig, cryptoConfig);
+                this.ae = new S3CryptoModuleAE(s3,
+                        encryptionMaterialsProvider, cryptoConfig);
                 this.eo = null;
                 break;
             default:
-                this.eo = new S3CryptoModuleEO(s3, credentialsProvider,
-                        encryptionMaterialsProvider, clientConfig, cryptoConfig);
-                this.ae = new S3CryptoModuleAE(s3, credentialsProvider,
-                        encryptionMaterialsProvider, clientConfig, cryptoConfig);
+                this.eo = new S3CryptoModuleEO(s3,
+                        encryptionMaterialsProvider, cryptoConfig);
+                this.ae = new S3CryptoModuleAE(s3,
+                        encryptionMaterialsProvider, cryptoConfig);
                 break;
         }
     }
 
     @Override
     public PutObjectResult putObjectSecurely(PutObjectRequest putObjectRequest)
-            throws AmazonClientException, AmazonServiceException {
+            throws Ks3ClientException, Ks3ServiceException {
         return defaultCryptoMode == CryptoMode.EncryptionOnly
              ? eo.putObjectSecurely(putObjectRequest)
              : ae.putObjectSecurely(putObjectRequest)
@@ -87,15 +83,15 @@ public class CryptoModuleDispatcher extends S3CryptoModule<MultipartUploadContex
     }
 
     @Override
-    public S3Object getObjectSecurely(GetObjectRequest req)
-            throws AmazonClientException, AmazonServiceException {
+    public Ks3Object getObjectSecurely(GetObjectRequest req)
+            throws Ks3ClientException, Ks3ServiceException {
         // AE module can handle S3 objects encrypted in either AE or OE format
         return ae.getObjectSecurely(req);
     }
 
     @Override
     public ObjectMetadata getObjectSecurely(GetObjectRequest req, File destinationFile)
-            throws AmazonClientException, AmazonServiceException {
+            throws Ks3ClientException, Ks3ServiceException {
         // AE module can handle S3 objects encrypted in either AE or OE format
         return ae.getObjectSecurely(req, destinationFile);
     }
@@ -103,7 +99,7 @@ public class CryptoModuleDispatcher extends S3CryptoModule<MultipartUploadContex
     @Override
     public CompleteMultipartUploadResult completeMultipartUploadSecurely(
             CompleteMultipartUploadRequest req)
-                    throws AmazonClientException, AmazonServiceException {
+                    throws Ks3ClientException, Ks3ServiceException {
         return defaultCryptoMode == CryptoMode.EncryptionOnly 
              ? eo.completeMultipartUploadSecurely(req)
              : ae.completeMultipartUploadSecurely(req)
@@ -121,7 +117,7 @@ public class CryptoModuleDispatcher extends S3CryptoModule<MultipartUploadContex
     @Override
     public InitiateMultipartUploadResult initiateMultipartUploadSecurely(
             InitiateMultipartUploadRequest req)
-                    throws AmazonClientException, AmazonServiceException {
+                    throws Ks3ClientException, Ks3ServiceException {
         return defaultCryptoMode == CryptoMode.EncryptionOnly 
              ? eo.initiateMultipartUploadSecurely(req)
              : ae.initiateMultipartUploadSecurely(req)
@@ -139,8 +135,8 @@ public class CryptoModuleDispatcher extends S3CryptoModule<MultipartUploadContex
      * context isn't available to use when encrypting the current part.
      */
     @Override
-    public UploadPartResult uploadPartSecurely(UploadPartRequest req)
-        throws AmazonClientException, AmazonServiceException {
+    public PartETag uploadPartSecurely(UploadPartRequest req)
+        throws Ks3ClientException, Ks3ServiceException {
         return defaultCryptoMode == CryptoMode.EncryptionOnly
              ? eo.uploadPartSecurely(req)
              : ae.uploadPartSecurely(req)
@@ -148,7 +144,7 @@ public class CryptoModuleDispatcher extends S3CryptoModule<MultipartUploadContex
     }
 
     @Override
-    public CopyPartResult copyPartSecurely(CopyPartRequest req) {
+    public CopyResult copyPartSecurely(CopyPartRequest req) {
         return defaultCryptoMode == CryptoMode.EncryptionOnly 
              ? eo.copyPartSecurely(req)
              : ae.copyPartSecurely(req)

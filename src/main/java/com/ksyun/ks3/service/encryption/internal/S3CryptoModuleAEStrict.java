@@ -14,11 +14,10 @@
  */
 package com.ksyun.ks3.service.encryption.internal;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.s3.internal.S3Direct;
-import com.amazonaws.services.s3.model.CryptoConfiguration;
-import com.amazonaws.services.s3.model.EncryptionMaterialsProvider;
+import com.ksyun.ks3.service.encryption.S3Direct;
+import com.ksyun.ks3.service.encryption.model.CryptoConfiguration;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsProvider;
+
 
 /**
  * Strict Authenticated encryption (AE) cryptographic module for the S3
@@ -26,21 +25,12 @@ import com.amazonaws.services.s3.model.EncryptionMaterialsProvider;
  */
 class S3CryptoModuleAEStrict extends S3CryptoModuleAE {
     S3CryptoModuleAEStrict(S3Direct s3,
-            AWSCredentialsProvider credentialsProvider,
-            EncryptionMaterialsProvider encryptionMaterialsProvider,
-            ClientConfiguration clientConfig, CryptoConfiguration cryptoConfig) {
-        super(s3, credentialsProvider, encryptionMaterialsProvider,
-                clientConfig, cryptoConfig);
-    }
-
-    /**
-     * Used for testing purposes only.
-     */
-    S3CryptoModuleAEStrict(S3Direct s3,
             EncryptionMaterialsProvider encryptionMaterialsProvider,
             CryptoConfiguration cryptoConfig) {
-        super(s3, encryptionMaterialsProvider, cryptoConfig);
+        super(s3, encryptionMaterialsProvider
+                , cryptoConfig);
     }
+
 
     protected final boolean isStrict() {
         return true;

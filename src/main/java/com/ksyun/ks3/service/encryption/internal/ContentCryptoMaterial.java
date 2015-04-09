@@ -31,10 +31,14 @@ import javax.crypto.spec.SecretKeySpec;
 
 
 
+
+
 import com.ksyun.ks3.dto.Ks3Object;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterials;
+import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsAccessor;
 import com.ksyun.ks3.utils.*;
 
 
