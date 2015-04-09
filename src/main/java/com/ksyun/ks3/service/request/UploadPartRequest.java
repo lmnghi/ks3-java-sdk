@@ -99,6 +99,9 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 		this.setFile(file);
 		this.setPartSize(file.length() - fileoffset < partsize ? file.length()
 				- fileoffset : partsize);
+		if(file.length() - fileoffset <= partsize){
+			this.setLastPart(true);
+		}
 		this.setFileoffset(fileoffset);
 	}
 

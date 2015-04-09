@@ -25,6 +25,7 @@ import com.ksyun.ks3.exception.client.ClientFileNotFoundException;
 import com.ksyun.ks3.exception.serviceside.NotFoundException;
 import com.ksyun.ks3.service.Ks3;
 import com.ksyun.ks3.service.Ks3Client;
+import com.ksyun.ks3.service.encryption.Ks3EncryptionClient;
 import com.ksyun.ks3.service.request.InitiateMultipartUploadRequest;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
@@ -38,18 +39,21 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description 对{@link Ks3Client}的封装,主要用于文件上传
  **/
 public class Ks3UploadClient {
-	private CannedAccessControlList acl = CannedAccessControlList.Private;
+	private CannedAccessControlList acl;
 	// 上传单个文件时最多启动的线程数(注：批量上传时，实际启动的线程数为multipartMaxThread*batchUploadThread)
-	private int multipartMaxThread = 5;
+	private int multipartMaxThread;
 	// 批量上传时最多启动的线程数(注：批量上传时，实际启动的线程数为multipartMaxThread*batchUploadThread)
-	private int batchUploadThread = 10;
+	private int batchUploadThread;
 	// 批量校验是否存在时最多启动的线程数
-	private int batchCheckThread = 30;
+	private int batchCheckThread;
+
+	private boolean isEncryptionClient = false;
+
 	private static final Log log = LogFactory.getLog(Ks3UploadClient.class);
 	Ks3 client = null;
 
 	public Ks3UploadClient(Ks3 client) {
-		this.client = client;
+		this(client, 5, 10, 30, CannedAccessControlList.Private);
 	}
 
 	/**
@@ -64,10 +68,8 @@ public class Ks3UploadClient {
 	 */
 	public Ks3UploadClient(Ks3 client, int multipartMaxThread,
 			int batchUploadThread, int batchCheckThread) {
-		this.client = client;
-		this.multipartMaxThread = multipartMaxThread;
-		this.batchUploadThread = batchUploadThread;
-		this.batchCheckThread = batchCheckThread;
+		this(client, multipartMaxThread, batchUploadThread, batchCheckThread,
+				CannedAccessControlList.Private);
 	}
 
 	/**
@@ -76,8 +78,7 @@ public class Ks3UploadClient {
 	 *            上传上去的文件的访问权限
 	 */
 	public Ks3UploadClient(Ks3 client, CannedAccessControlList acl) {
-		this.client = client;
-		this.acl = acl;
+		this(client, 5, 10, 30, acl);
 	}
 
 	/**
@@ -100,6 +101,9 @@ public class Ks3UploadClient {
 		this.batchUploadThread = batchUploadThread;
 		this.batchCheckThread = batchCheckThread;
 		this.acl = acl;
+		if (client instanceof Ks3EncryptionClient) {
+			this.isEncryptionClient = true;
+		}
 	}
 
 	public CannedAccessControlList getAcl() {
@@ -159,7 +163,11 @@ public class Ks3UploadClient {
 			request.setCannedAcl(acl);
 			client.putObject(request);
 		} else {
-			mutipartUploadByThreads(bucket, key, file);
+			//客户端加密上传的时候不能使用多线程
+			if(this.isEncryptionClient)
+				mutipartUpload(bucket,key,file);
+			else
+				mutipartUploadByThreads(bucket, key, file);
 		}
 	}
 
@@ -524,7 +532,7 @@ public class Ks3UploadClient {
 				.initiateMultipartUpload(request);
 		final List<PartETag> partEtags = new ArrayList<PartETag>();
 
-		int partnums = (int) (length / partSize)
+		final int partnums = (int) (length / partSize)
 				+ (length % partSize == 0 ? 0 : 1);
 
 		final ExecutorService pool = Executors.newFixedThreadPool(threads);
@@ -543,6 +551,9 @@ public class Ks3UploadClient {
 						UploadPartRequest upRequest = new UploadPartRequest(
 								bucket, key, initResult.getUploadId(),
 								partNum + 1, file, partSize, partSize * partNum);
+						if (partNum == partnums - 1) {
+							upRequest.setLastPart(true);
+						}
 						PartETag upResult = client.uploadPart(upRequest);
 						partEtags.add(upResult);
 					} catch (RuntimeException e) {
@@ -583,5 +594,71 @@ public class Ks3UploadClient {
 		} else {
 			throw (RuntimeException) shouldComplete.get("cause");
 		}
+	}
+
+	/**
+	 * 使用单线程进行分块上传
+	 * 
+	 * @param bucket
+	 * @param key
+	 * @param file
+	 */
+	public void mutipartUpload(String bucket, String key, File file) {
+		long length = file.length();
+		long partSize = 0l;
+		if (length == 0)
+			client.putObject(bucket, key, file);
+		if (length < 5 * Constants.MB) {
+			partSize = 100 * Constants.KB;
+		} else {
+			partSize = 5 * Constants.MB;
+		}
+		mutipartUpload(bucket, key, file, partSize);
+	}
+
+	/**
+	 * 使用单线程进行分块上传
+	 * 
+	 * @param bucket
+	 * @param key
+	 * @param file
+	 * @param partSize
+	 *            每块的大小
+	 */
+	public void mutipartUpload(String bucket, String key, File file,
+			long partSize) {
+		long length = file.length();
+		final int maxRetry = 3;
+		InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(
+				bucket, key);
+		request.setCannedAcl(acl);
+		final InitiateMultipartUploadResult initResult = client
+				.initiateMultipartUpload(request);
+		final List<PartETag> partEtags = new ArrayList<PartETag>();
+
+		final int partnums = (int) (length / partSize)
+				+ (length % partSize == 0 ? 0 : 1);
+		// 上传块的线程
+		for (int i = 0; i < partnums; i++) {
+			final int partNum = i;
+			try {
+				UploadPartRequest upRequest = new UploadPartRequest(bucket,
+						key, initResult.getUploadId(), partNum + 1, file,
+						partSize, partSize * partNum);
+				if (partNum == partnums - 1) {
+					upRequest.setLastPart(true);
+				}
+				PartETag upResult = client.uploadPart(upRequest);
+				partEtags.add(upResult);
+			} catch (RuntimeException e) {
+				String errorMsg = String
+						.format("MULTIPART_UPLOAD:bucket %s key %s file %s uploadid %s partNumber %s upload fail ",
+								bucket, key, file.getAbsolutePath(),
+								initResult.getUploadId(), partNum + 1, maxRetry);
+				log.error(errorMsg);
+			}
+		}
+		client.completeMultipartUpload(bucket, key, initResult.getUploadId(),
+				partEtags);
 	}
 }

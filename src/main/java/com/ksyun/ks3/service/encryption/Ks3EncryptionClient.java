@@ -162,6 +162,9 @@ public class Ks3EncryptionClient extends Ks3Client{
 		return this.initiateMultipartUpload(new InitiateMultipartUploadRequest(
 				bucketname, objectkey));
 	}
+    /**
+     * 注意，当使用分块上传时，需要依次按顺序上传各个块，不能多线程并发上传或者上传顺序不对。
+     */
     @Override
     public PartETag uploadPart(UploadPartRequest uploadPartRequest)
             throws Ks3ClientException, Ks3ServiceException {
