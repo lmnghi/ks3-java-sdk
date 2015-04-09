@@ -1,3 +1,9 @@
+2015年4月3号更新
+0.3.1
+1、Ks3Client中添加getBucketCannedACL()和getObjectCannedACL()接口
+2、减少依赖的jar包
+
+
 2015年3月4号更新
 0.3.0-SNAPSHOT
 1、添加callback的支持,可以在put object和complete mulitipart upload时调用request.setCallBackConfiguration(config);设置callback参数

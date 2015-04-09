@@ -14,6 +14,9 @@ import com.ksyun.ks3.http.HttpHeaders;
  * @description 系统常量
  **/
 public class Constants {
+	public final static long KB = 1024;
+	public final static long MB = 1024*KB;
+	public final static long GB = 1024*MB;
 	/**
 	 * xml namespace
 	 */

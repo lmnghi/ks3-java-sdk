@@ -76,7 +76,6 @@ public class Ks3CoreController {
 			log.error(e);
 			throw e;
 		} finally {
-			System.out.println();
 		}
 	}
 

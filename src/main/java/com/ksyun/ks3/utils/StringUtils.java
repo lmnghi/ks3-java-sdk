@@ -1,5 +1,6 @@
 package com.ksyun.ks3.utils;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -255,5 +256,15 @@ public class StringUtils {
 			}
 		}
 		return new String(newChars);
+	}
+	public static String getFileName(File file){
+		String key = file.getAbsolutePath().replace("//", "/")
+				.replace("\\", "/");//统一不同的分隔符为 KS3统一的斜杠
+		if (key.endsWith("/")) {
+			key = key.substring(0, key.length() - 1);
+		}
+		String[] keys = key.split("/");
+		key = keys[keys.length - 1];
+		return key;
 	}
 }
