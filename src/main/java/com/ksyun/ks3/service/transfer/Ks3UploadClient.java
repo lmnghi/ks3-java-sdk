@@ -576,6 +576,10 @@ public class Ks3UploadClient {
 					}
 				}
 			};
+			if((Boolean)shouldComplete.get("flag")==false){
+				pool.shutdownNow();
+				break;
+			}
 			pool.execute(t);
 		}
 		pool.shutdown();

@@ -3,11 +3,13 @@ package com.ksyun.ks3.service.encryption;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Test;
 
 import com.ksyun.ks3.dto.GetObjectResult;
+import com.ksyun.ks3.service.Ks3;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.transfer.Ks3UploadClient;
 import com.ksyun.ks3.utils.Md5Utils;
@@ -51,6 +53,7 @@ public class PutObjectTest extends EncryptionClientTest{
 		checkSimplePutAndGet(sae_file);
 	}
 	
+	
 	private void checkSimplePutAndGet(Ks3EncryptionClient client) throws IOException{
 		PutObjectRequest req = new PutObjectRequest(bucket,key,new File(filepath));
 		client.putObject(req);	
@@ -60,6 +63,70 @@ public class PutObjectTest extends EncryptionClientTest{
 		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
 				Md5Utils.md5AsBase64(new File(filedownpath)));
 	}
+	@Test
+	public void testPutEO_Meta_Range() throws IOException{
+		checkSimplePutAndGetRange(eo_meta);
+	}
+	@Test
+	public void testPutEO_File_Range() throws IOException{
+		checkSimplePutAndGetRange(eo_file);
+	}
+	@Test
+	public void testPutAE_Meta_Range() throws IOException{
+		checkSimplePutAndGetRange(ae_meta);
+	}
+	@Test
+	public void testPutAE_File_Range() throws IOException{
+		checkSimplePutAndGetRange(ae_file);
+	}
+	@Test(expected=SecurityException.class)
+	public void testPutSAE_Meta_Range() throws IOException{
+		checkSimplePutAndGetRange(sae_meta);
+	}
+	@Test(expected=SecurityException.class)
+	public void testPutSAE_File_Range() throws IOException{
+		checkSimplePutAndGetRange(sae_file);
+	}
+	private void checkSimplePutAndGetRange(Ks3EncryptionClient client) throws IOException{
+		PutObjectRequest req = new PutObjectRequest(bucket,key,new File(filepath));
+		client.putObject(req);	
+		super.rangeGetToFile(client, bucket, key, filedownpath);
+		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
+				Md5Utils.md5AsBase64(new File(filedownpath)));
+	}
+	
+	@Test
+	public void testPutEO_Meta_Range_Threads() throws IOException{
+		checkSimplePutAndGetRangeThreads(eo_meta);
+	}
+	@Test
+	public void testPutEO_File_Range_Threads() throws IOException{
+		checkSimplePutAndGetRangeThreads(eo_file);
+	}
+	@Test
+	public void testPutAE_Meta_Range_Threads() throws IOException{
+		checkSimplePutAndGetRangeThreads(ae_meta);
+	}
+	@Test
+	public void testPutAE_File_Range_Threads() throws IOException{
+		checkSimplePutAndGetRangeThreads(ae_file);
+	}
+	@Test(expected=SecurityException.class)
+	public void testPutSAE_Meta_Range_Threads() throws IOException{
+		checkSimplePutAndGetRangeThreads(sae_meta);
+	}
+	@Test(expected=SecurityException.class)
+	public void testPutSAE_File_Range_Threads() throws IOException{
+		checkSimplePutAndGetRangeThreads(sae_file);
+	}
+	private void checkSimplePutAndGetRangeThreads(Ks3 client) throws IOException{
+		PutObjectRequest req = new PutObjectRequest(bucket,key,new File(filepath));
+		client.putObject(req);	
+		super.rangeGetToFileWithThreads(client, bucket, key, filedownpath);
+		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
+				Md5Utils.md5AsBase64(new File(filedownpath)));
+	}
+	
 	
 	@Test
 	public void testDeleteObject_File(){
@@ -111,6 +178,72 @@ public class PutObjectTest extends EncryptionClientTest{
 		
 		GetObjectResult result = client.getObject(bucket, key);
 		super.writeToFile(result.getObject().getObjectContent(), new File(filedownpath));
+		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
+				Md5Utils.md5AsBase64(new File(filedownpath)));
+		
+	}
+	@Test
+	public void testMultiEO_Meta_Range() throws IOException{
+		checkMultipartUploadGetRange(eo_meta);
+	}
+	@Test
+	public void testMultiEO_File_Range() throws IOException{
+		checkMultipartUploadGetRange(eo_file);
+	}
+	@Test
+	public void testMultiAE_Meta_Range() throws IOException{
+		checkMultipartUploadGetRange(ae_meta);
+	}
+	@Test
+	public void testMultiAE_File_Range() throws IOException{
+		checkMultipartUploadGetRange(ae_file);
+	}
+	@Test(expected=SecurityException.class)
+	public void testMultiSAE_Meta_Range() throws IOException{
+		checkMultipartUploadGetRange(sae_meta);
+	}
+	@Test(expected=SecurityException.class)
+	public void testMultiSAE_File_Range() throws IOException{
+		checkMultipartUploadGetRange(sae_file);
+	}
+	private void checkMultipartUploadGetRange(Ks3EncryptionClient client) throws IOException{
+		Ks3UploadClient upClient = new Ks3UploadClient(client);
+		upClient.uploadFile(bucket, key,new File(filepath));
+		
+		super.rangeGetToFile(client, bucket, key, filedownpath);
+		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
+				Md5Utils.md5AsBase64(new File(filedownpath)));
+	}
+	
+	@Test
+	public void testMultiEO_Meta_Range_Threads() throws IOException{
+		checkMultipartUploadGetRangeThreads(eo_meta);
+	}
+	@Test
+	public void testMultiEO_File_Range_Threads() throws IOException{
+		checkMultipartUploadGetRangeThreads(eo_file);
+	}
+	@Test
+	public void testMultiAE_Meta_Range_Threads() throws IOException{
+		checkMultipartUploadGetRangeThreads(ae_meta);
+	}
+	@Test
+	public void testMultiAE_File_Range_Threads() throws IOException{
+		checkMultipartUploadGetRangeThreads(ae_file);
+	}
+	@Test(expected=SecurityException.class)
+	public void testMultiSAE_Meta_Range_Threads() throws IOException{
+		checkMultipartUploadGetRangeThreads(sae_meta);
+	}
+	@Test(expected=SecurityException.class)
+	public void testMultiSAE_File_Range_Threads() throws IOException{
+		checkMultipartUploadGetRangeThreads(sae_file);
+	}
+	private void checkMultipartUploadGetRangeThreads(Ks3EncryptionClient client) throws IOException{
+		Ks3UploadClient upClient = new Ks3UploadClient(client);
+		upClient.uploadFile(bucket, key,new File(filepath));
+		
+		super.rangeGetToFileWithThreads(client, bucket, key, filedownpath);
 		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
 				Md5Utils.md5AsBase64(new File(filedownpath)));
 	}
