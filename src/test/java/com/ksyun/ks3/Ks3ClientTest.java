@@ -79,9 +79,9 @@ import com.ksyun.ks3.utils.Timer;
 public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 	@Test
 	public void url(){
-		ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
-		overrides.setContentType("");
-		System.out.println(client.generatePresignedUrl("beijing.bucket1","work/推送API接口文档.pdf",60,overrides));
+		CreateBucketRequest request = new CreateBucketRequest("other-region1");
+		request.setConfig(new CreateBucketConfiguration(REGION.BEIJING));
+		client.createBucket(request);
 	}
 	 @Test
 	public void ListBuckets() {

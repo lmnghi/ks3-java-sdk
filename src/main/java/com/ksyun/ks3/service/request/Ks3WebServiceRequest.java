@@ -316,4 +316,7 @@ public abstract class Ks3WebServiceRequest {
 	public String getObjectkey() {
 		return objectkey;
 	}
+	public void reset(){
+		
+	}
 }
