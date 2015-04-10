@@ -140,9 +140,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 				objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
 						file));
 			long length = file.length();
-			long lengthInmeta = objectMeta.getContentLength();
-			if(lengthInmeta==0l||lengthInmeta>length)
-				objectMeta.setContentLength(length);
+			objectMeta.setContentLength(length);
 			try {
 				String contentMd5_b64 = Md5Utils.md5AsBase64(file);
 				this.objectMeta.setContentMD5(contentMd5_b64);

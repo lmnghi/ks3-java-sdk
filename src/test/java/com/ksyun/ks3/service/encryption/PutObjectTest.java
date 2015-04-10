@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.ksyun.ks3.dto.GetObjectResult;
+import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.service.Ks3;
 import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.transfer.Ks3UploadClient;
@@ -244,6 +245,22 @@ public class PutObjectTest extends EncryptionClientTest{
 		upClient.uploadFile(bucket, key,new File(filepath));
 		
 		super.rangeGetToFileWithThreads(client, bucket, key, filedownpath);
+		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
+				Md5Utils.md5AsBase64(new File(filedownpath)));
+	}
+	@Test
+	public void testPutEO_Meta_Part() throws IOException{
+		partUploadAndCheck(eo_meta);
+	}
+	private void partUploadAndCheck(Ks3 client) throws IOException{
+		PutObjectRequest req = new PutObjectRequest(bucket,key,new File(filepath));
+		ObjectMetadata meta = new ObjectMetadata();
+		meta.setContentLength(10);
+		req.setObjectMeta(meta);
+		client.putObject(req);	
+		
+		GetObjectResult result = client.getObject(bucket, key);
+		super.writeToFile(result.getObject().getObjectContent(), new File(filedownpath));
 		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
 				Md5Utils.md5AsBase64(new File(filedownpath)));
 	}

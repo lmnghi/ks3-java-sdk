@@ -303,10 +303,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
     		fileLength = request.getFile().length();
         }
     	if(fileLength>=0){
-    		if(lengthInMeta > 0 && lengthInMeta < fileLength)
-    			return lengthInMeta;
-    		else
-    			return fileLength;
+    		return fileLength;
     	}else if(lengthInMeta > 0&&request.getRequestBody()!=null){
     		return lengthInMeta;
     	}

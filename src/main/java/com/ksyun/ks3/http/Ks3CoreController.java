@@ -103,14 +103,16 @@ public class Ks3CoreController {
 			log.info(response.getStatusLine());
 			if(response.getStatusLine().getStatusCode()==307&&response.containsHeader("Location")){
 				String location = response.getHeaders("Location")[0].getValue();
-				log.info("returned 307,retry request to "+location);
-				if(httpRequest instanceof HttpPut){
-					((HttpPut) httpRequest).getEntity().getContent().reset();
-				}else if(httpRequest instanceof HttpPost){
-					((HttpPost) httpRequest).getEntity().getContent().reset();
+				if(location.startsWith("http")){
+					log.info("returned 307,retry request to "+location);
+					if(httpRequest instanceof HttpPut){
+						((HttpPut) httpRequest).getEntity().getContent().reset();
+					}else if(httpRequest instanceof HttpPost){
+						((HttpPost) httpRequest).getEntity().getContent().reset();
+					}
+					httpRequest.setURI(new URI(location));
+					response = client.execute(httpRequest);
 				}
-				httpRequest.setURI(new URI(location));
-				response = client.execute(httpRequest);
 			}
 			log.info("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
