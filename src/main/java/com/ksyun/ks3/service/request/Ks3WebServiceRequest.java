@@ -137,15 +137,16 @@ public abstract class Ks3WebServiceRequest {
 		_objectkey = HttpUtils.urlEncode(objectkey, true);
 		int format = ClientConfig.getConfig().getInt(
 				ClientConfig.CLIENT_URLFORMAT);
+		String scheme = ClientConfig.getConfig().getStr(ClientConfig.HTTP_SCHEME);
 		if (format == 0) {
-			url = new StringBuffer("http://")
+			url = new StringBuffer(scheme+"://")
 					.append(StringUtils.isBlank(bucketname) ? "" : bucketname
 							+ ".").append(url)
 					.append(StringUtils.isBlank(pathVariable) ? "" :"/"+ pathVariable)
 					.append(StringUtils.isBlank(_objectkey) ? "" :"/"+ _objectkey)
 					.toString();
 		} else {
-			url = new StringBuffer("http://")
+			url = new StringBuffer(scheme+"://")
 					.append(url)
 					.append(StringUtils.isBlank(bucketname) ? "" :"/" +bucketname)
 					.append(StringUtils.isBlank(pathVariable) ? "" :"/"+ pathVariable)

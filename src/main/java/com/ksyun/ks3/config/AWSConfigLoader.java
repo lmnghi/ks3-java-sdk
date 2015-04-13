@@ -16,6 +16,7 @@ public class AWSConfigLoader implements ConfigLoader{
 		config.set(ClientConfig.USER_META_PREFIX,"x-kss-amz-");
 		config.set(ClientConfig.GRANTEE_ALLUSER,"http://acs.amazonaws.com/groups/global/AllUsers");
 		config.set(ClientConfig.AUTH_HEADER_PREFIX, "AWS");
+		config.set(ClientConfig.HTTP_SCHEME,"http");
 		return config;
 	}
 }

@@ -36,6 +36,7 @@ public class DefaultConfigLoader implements ConfigLoader{
 		config.set(ClientConfig.USER_META_PREFIX,"x-kss-meta-");
 		config.set(ClientConfig.GRANTEE_ALLUSER,"http://acs.ksyun.com/groups/global/AllUsers");
 		config.set(ClientConfig.AUTH_HEADER_PREFIX, "KSS");
+		config.set(ClientConfig.HTTP_SCHEME,"http");
 		return config;
 	}
 

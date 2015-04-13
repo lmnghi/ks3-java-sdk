@@ -1,4 +1,13 @@
 package com.ksyun.ks3.service.encryption.server;
+
+import java.io.File;
+
+import org.junit.Test;
+
+import com.ksyun.ks3.dto.CannedAccessControlList;
+import com.ksyun.ks3.dto.SSECustomerKey;
+import com.ksyun.ks3.service.request.PutObjectRequest;
+
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
  * 
@@ -7,5 +16,13 @@ package com.ksyun.ks3.service.encryption.server;
  * @description 
  **/
 public class PutObjectTest extends AWSEncryptionTest{
-
+	@Test
+	public void test(){
+		PutObjectRequest request = new PutObjectRequest(bucket,"test",new File("D://secret.key"));
+		
+		request.setSseCustomerKey(new SSECustomerKey(super.symKey));
+/*		request.setCannedAcl(CannedAccessControlList.Private);
+		request.setRedirectLocation("http://www.baidu.com");*/
+		System.out.println(client.putObject(request));
+	}
 }

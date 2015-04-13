@@ -101,7 +101,10 @@ public class ClientConfig {
 	 * httpclient配置  值为配置的key
 	 */
 	public static final String IS_PREEMPTIVE_BASIC_PROXY_AUTH = "httpclient.isPreemptiveBasicProxyAuth";
-	
+	/**
+	 * http 或者 https
+	 */
+	public static final String HTTP_SCHEME = "httpclient.sheme";
 	/**
 	 * Ks3服务地址
 	 */
@@ -138,6 +141,7 @@ public class ClientConfig {
 	 * authoration header prefix
 	 */
 	public static final String AUTH_HEADER_PREFIX = "ks3client.auth.prefix";
+	
  	/**
 	 * 配置加载器列表
 	 */
@@ -197,14 +201,6 @@ public class ClientConfig {
 			}
 		}
 		return instance;
-	}
-	/**
-	 * 该方法获取到的ClientConfig一定是重新调用configLoaders加载过的
-	 */
-	public static ClientConfig reloadConfig()
-	{
-		reload = true;
-		return getConfig();
 	}
 	/**
 	 * 以字符串方式返回配置值

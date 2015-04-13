@@ -9,6 +9,7 @@ import java.util.List;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -19,6 +20,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.http.HttpHeaders;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -83,9 +85,11 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 		InputStream in = null;
 		try {
 			in = response.getEntity().getContent();
+			String xml = StringUtils.inputStream2String(in);
+			LogFactory.getLog(this.getClass()).info(xml);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(in, this);
+			parser.parse(xml, this);
 			return result;
 		} catch (Exception e) {
 			throw new Ks3ClientException("处理http response时出错", e);

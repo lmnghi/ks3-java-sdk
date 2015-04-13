@@ -23,7 +23,7 @@ public class UploadPartResponse extends Ks3WebServiceDefaultResponse<PartETag> i
 		result.seteTag(this.getHeader(HttpHeaders.ETag.toString()));
 		result.setSseAlgorithm(super.getHeader(HttpHeaders.XKssServerSideEncryption.toString()));
 		result.setSseCustomerAlgorithm(super.getHeader(HttpHeaders.XKssServerSideEncryptionCustomerAlgorithm.toString()));
-		result.setSseCustomerKeyMD5(HttpHeaders.XkssServerSideEncryptionCustomerKeyMD5.toString());
+		result.setSseCustomerKeyMD5(super.getHeader(HttpHeaders.XkssServerSideEncryptionCustomerKeyMD5.toString()));
 		result.setSseKMSKeyId(super.getHeader(HttpHeaders.XKssServerSideEncryptionKMSKeyId.toString()));
 	}
 	public String getETag() {
