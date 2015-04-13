@@ -68,6 +68,9 @@ public enum HttpHeaders {
 	XKssServerSideEncryptionCustomerAlgorithm("server-side​-encryption​-customer-algorithm"),
 	XkssServerSideEncryptionCustomerKey("server-side​-encryption​-customer-key"),
 	XkssServerSideEncryptionCustomerKeyMD5("server-side​-encryption​-customer-key-MD5"),
+	XKssCPSourceServerSideEncryptionCustomerAlgorithm("copy-source​-server-side​-encryption​-customer-algorithm"),
+	XkssCPSourceServerSideEncryptionCustomerKey("copy-source​-server-side​-encryption​-customer-key"),
+	XkssCPSourceServerSideEncryptionCustomerKeyMD5("copy-source​-server-side​-encryption​-customer-key-MD5"),
 	/**
 	 * default None
 	 */

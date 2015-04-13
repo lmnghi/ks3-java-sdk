@@ -23,6 +23,7 @@ public class CompleteMultipartUploadResponse extends
 	@Override
 	public void preHandle() {
 		//preHandle在startDocument之前执行
+		result = new CompleteMultipartUploadResult();
 		result.setSseAlgorithm(super.getHeader(HttpHeaders.XKssServerSideEncryption.toString()));
 		result.setSseCustomerAlgorithm(super.getHeader(HttpHeaders.XKssServerSideEncryptionCustomerAlgorithm.toString()));
 		result.setSseCustomerKeyMD5(HttpHeaders.XkssServerSideEncryptionCustomerKeyMD5.toString());
@@ -31,7 +32,6 @@ public class CompleteMultipartUploadResponse extends
 
 	@Override
 	public void startDocument() throws SAXException {
-		result = new CompleteMultipartUploadResult();
 		result.setTaskid(super.getHeader(HttpHeaders.TaskId.toString()));
 	}
 

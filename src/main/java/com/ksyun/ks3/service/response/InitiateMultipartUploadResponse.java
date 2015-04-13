@@ -21,6 +21,7 @@ public class InitiateMultipartUploadResponse extends Ks3WebServiceXmlResponse<In
 
 	@Override
 	public void preHandle() {
+		result = new InitiateMultipartUploadResult();
 		result.setSseAlgorithm(super.getHeader(HttpHeaders.XKssServerSideEncryption.toString()));
 		result.setSseCustomerAlgorithm(super.getHeader(HttpHeaders.XKssServerSideEncryptionCustomerAlgorithm.toString()));
 		result.setSseCustomerKeyMD5(HttpHeaders.XkssServerSideEncryptionCustomerKeyMD5.toString());
@@ -29,7 +30,7 @@ public class InitiateMultipartUploadResponse extends Ks3WebServiceXmlResponse<In
 
 	@Override
 	public void startDocument() throws SAXException {
-		result = new InitiateMultipartUploadResult();
+		
 	}
 
 	@Override

@@ -2,10 +2,13 @@ package com.ksyun.ks3.service.request;
 
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CannedAccessControlList;
+import com.ksyun.ks3.dto.ObjectMetadata;
+import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
+
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 
 
@@ -36,6 +39,18 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 	 * 设置新的object的acl
 	 */
 	private AccessControlList accessControlList;
+	/**
+	 * 设置新的object的元数据
+	 */
+    private ObjectMetadata newObjectMetadata;
+    /**
+     * 如果copy的源object使用客户提供的key加密，则需要提供
+     */
+    private SSECustomerKey sourceSSECustomerKey;
+    /**
+     * 指定目标object的加密
+     */
+    private SSECustomerKey destinationSSECustomerKey;
 	/**
 	 * 
 	 * @param destinationBucket 目标bucket
@@ -81,7 +96,11 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
         if(getCannedAcl()!=null){
             this.addHeader(HttpHeaders.CannedAcl,getCannedAcl().toString());
         }
-
+        //添加元数据
+      	this.getHeader().putAll(HttpUtils.convertMeta2Headers(this.newObjectMetadata));
+      	//添加服务端加密相关
+      	this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(this.destinationSSECustomerKey));
+      	this.getHeader().putAll(HttpUtils.convertCopySourceSSECustomerKey2Headers(this.sourceSSECustomerKey));
         if(this.accessControlList!=null)
         {
             this.getHeader().putAll(HttpUtils.convertAcl2Headers(accessControlList));
@@ -129,6 +148,24 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 
 	public void setAccessControlList(AccessControlList accessControlList) {
 		this.accessControlList = accessControlList;
+	}
+	public ObjectMetadata getNewObjectMetadata() {
+		return newObjectMetadata;
+	}
+	public void setNewObjectMetadata(ObjectMetadata newObjectMetadata) {
+		this.newObjectMetadata = newObjectMetadata;
+	}
+	public SSECustomerKey getSourceSSECustomerKey() {
+		return sourceSSECustomerKey;
+	}
+	public void setSourceSSECustomerKey(SSECustomerKey sourceSSECustomerKey) {
+		this.sourceSSECustomerKey = sourceSSECustomerKey;
+	}
+	public SSECustomerKey getDestinationSSECustomerKey() {
+		return destinationSSECustomerKey;
+	}
+	public void setDestinationSSECustomerKey(SSECustomerKey destinationSSECustomerKey) {
+		this.destinationSSECustomerKey = destinationSSECustomerKey;
 	}
 
 }

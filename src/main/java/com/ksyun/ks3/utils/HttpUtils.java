@@ -253,4 +253,23 @@ public class HttpUtils {
 		else
 			throw ClientIllegalArgumentExceptionGenerator.notNullInCondition("SSECustomerKey."+key,"SSECustomerKey is not null");
 	}
+
+
+	public static Map<? extends String, ? extends String> convertCopySourceSSECustomerKey2Headers(
+			SSECustomerKey key) {
+		Map<String,String> map = new HashMap<String,String>();
+		if(key == null)
+			return map;
+		putAndCheckNotNull(map,HttpHeaders.XKssCPSourceServerSideEncryptionCustomerAlgorithm.toString(),key.getAlgorithm());
+		putAndCheckNotNull(map,HttpHeaders.XkssCPSourceServerSideEncryptionCustomerKey.toString(),key.getBase64EncodedKey());
+		putIfNotNull(map,HttpHeaders.XkssCPSourceServerSideEncryptionCustomerKeyMD5.toString(),key.getBase64EncodedMd5());
+		if (key.getBase64EncodedKey() != null
+                && key.getBase64EncodedMd5() == null) {
+            String encryptionKey_b64 = key.getBase64EncodedKey();
+            byte[] encryptionKey = Base64.decode(encryptionKey_b64);
+            map.put(HttpHeaders.XkssCPSourceServerSideEncryptionCustomerKeyMD5.toString(),
+                    Md5Utils.md5AsBase64(encryptionKey));
+        }
+		return map;
+	}
 }

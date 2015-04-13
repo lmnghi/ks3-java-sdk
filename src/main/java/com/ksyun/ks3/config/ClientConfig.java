@@ -151,8 +151,10 @@ public class ClientConfig {
 	 * @param loader {@link ConfigLoader}
 	 */
 	public static void addConfigLoader(ConfigLoader loader) {
-		reload = true;
-		configLoaders.add(loader);
+		if(getConfigLoader(loader.getClass())==null){
+			reload = true;
+			configLoaders.add(loader);
+		}
 	}
 	public static ConfigLoader getConfigLoader(Class<?> clazz){
 		for(ConfigLoader loader : configLoaders){

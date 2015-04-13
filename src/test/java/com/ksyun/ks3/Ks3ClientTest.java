@@ -66,6 +66,7 @@ import com.ksyun.ks3.service.request.PutObjectRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
 import com.ksyun.ks3.service.response.CompleteMultipartUploadResponse;
 import com.ksyun.ks3.service.response.HeadObjectResponse;
+import com.ksyun.ks3.service.transfer.Ks3UploadClient;
 import com.ksyun.ks3.utils.AuthUtils;
 import com.ksyun.ks3.utils.Timer;
 
@@ -79,9 +80,7 @@ import com.ksyun.ks3.utils.Timer;
 public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 	@Test
 	public void url(){
-		CreateBucketRequest request = new CreateBucketRequest("other-region1");
-		request.setConfig(new CreateBucketConfiguration(REGION.BEIJING));
-		client.createBucket(request);
+		new Ks3UploadClient(super.client1).uploadFile("test-transfer-client","123", new File("D://IMG.jpg"));
 	}
 	 @Test
 	public void ListBuckets() {
