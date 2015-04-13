@@ -8,12 +8,14 @@ import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGener
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.Permission;
+import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.http.Mimetypes;
@@ -43,6 +45,10 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest {
 	 */
 	private CannedAccessControlList cannedAcl;
 	private String redirectLocation;
+	/**
+	 * 使用用户指定的key进行服务端加密
+	 */
+	private SSECustomerKey sseCustomerKey;
 
 	public InitiateMultipartUploadRequest(String bucketname, String objectkey) {
 		this.setBucketname(bucketname);
@@ -65,31 +71,10 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest {
 		if (StringUtils.isBlank(objectMeta.getContentType()))
 			objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
 					super.getObjectkey()));
-		// 添加meta data content-length 是由Apache HTTP框架自动添加的
-		if (!StringUtils.isBlank(this.objectMeta.getContentType()))
-			this.addHeader(HttpHeaders.ContentType,
-					this.objectMeta.getContentType());
-		if (!StringUtils.isBlank(this.objectMeta.getCacheControl()))
-			this.addHeader(HttpHeaders.CacheControl,
-					this.objectMeta.getCacheControl());
-		if (!StringUtils.isBlank(this.objectMeta.getContentDisposition()))
-			this.addHeader(HttpHeaders.ContentDisposition,
-					this.objectMeta.getContentDisposition());
-		if (!StringUtils.isBlank(this.objectMeta.getContentEncoding()))
-			this.addHeader(HttpHeaders.ContentEncoding,
-					this.objectMeta.getContentEncoding());
-		if (this.objectMeta.getHttpExpiresDate() != null)
-			this.addHeader(
-					HttpHeaders.Expires,
-					DateUtils.convertDate2Str(
-							this.objectMeta.getHttpExpiresDate(),
-							DATETIME_PROTOCOL.RFC1123).toString());
-		// 添加user meta
-		for (Entry<String, String> entry : this.objectMeta.getAllUserMeta()
-				.entrySet()) {
-			if (entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
-				this.addHeader(entry.getKey(), entry.getValue());
-		}
+		// 添加meta data
+		this.getHeader().putAll(HttpUtils.convertMeta2Headers(objectMeta));
+		//添加服务端加密相关
+		this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
 		if (this.cannedAcl != null) {
 			this.addHeader(HttpHeaders.CannedAcl.toString(),
 					cannedAcl.toString());
@@ -101,6 +86,9 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest {
 			this.addHeader(HttpHeaders.XKssWebsiteRedirectLocation,
 					this.redirectLocation);
 		}
+		
+		//这个请求是不需要content-length的
+		this.getHeader().remove(HttpHeaders.ContentLength);
 	}
 
 	@Override
@@ -148,6 +136,12 @@ public class InitiateMultipartUploadRequest extends Ks3WebServiceRequest {
 
 	public void setRedirectLocation(String redirectLocation) {
 		this.redirectLocation = redirectLocation;
+	}
+	public SSECustomerKey getSseCustomerKey() {
+		return sseCustomerKey;
+	}
+	public void setSseCustomerKey(SSECustomerKey sseCustomerKey) {
+		this.sseCustomerKey = sseCustomerKey;
 	}
 
 }

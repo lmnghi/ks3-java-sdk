@@ -19,11 +19,13 @@ import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.Constants;
+import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.client.ClientFileNotFoundException;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.service.request.support.MD5CalculateAble;
+import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.Md5Utils;
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -77,6 +79,10 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 	 * 是否为最后一块,客户端数据加密时需要指定该值
 	 */
 	private boolean lastPart = false;
+	/**
+	 * 使用用户指定的key进行服务端加密
+	 */
+	private SSECustomerKey sseCustomerKey;
 	/**
 	 * 
 	 * @param bucketname
@@ -142,6 +148,8 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 				throw new ClientFileNotFoundException(e);
 			}
 		}
+		//添加服务端加密相关
+		this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
 		this.addHeader(HttpHeaders.ContentLength, String.valueOf(this.partSize));
 	}
 
@@ -236,5 +244,13 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements
 
 	public void setLastPart(boolean lastPart) {
 		this.lastPart = lastPart;
+	}
+
+	public SSECustomerKey getSseCustomerKey() {
+		return sseCustomerKey;
+	}
+
+	public void setSseCustomerKey(SSECustomerKey sseCustomerKey) {
+		this.sseCustomerKey = sseCustomerKey;
 	}
 }

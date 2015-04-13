@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.junit.Before;
 
+import com.ksyun.ks3.config.AWSConfigLoader;
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.http.Ks3CoreController;

@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ksyun.ks3.dto.Owner;
+import com.ksyun.ks3.dto.PutObjectResult;
 
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
@@ -131,7 +132,6 @@ public class StringUtils {
 	public static String object2string(Object obj) {
 		return object2string(0, obj,null);
 	}
-
 	private static List<Class<?>> clazzs = Arrays.asList(new Class<?>[] {
 			String.class, Boolean.class, Integer.class, Long.class,
 			Double.class, Float.class, Short.class, Byte.class,
@@ -151,10 +151,15 @@ public class StringUtils {
 		if(index!=0)
 	    	prefixSb.append("       ");
 		prefix = prefixSb.toString();
-		Field[] fields = obj.getClass().getDeclaredFields();
+		
+		List<Field> fields = new ArrayList<Field>();
+		for(Class<?> clazz = obj.getClass();!clazz.equals(Object.class);clazz = clazz.getSuperclass()){
+			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+		}
+	
 		Map<Field,Object> valuesToAdd = new HashMap<Field,Object>();
-		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
+		for (int i = 0; i < fields.size(); i++) {
+			Field field = fields.get(i);
 			field.setAccessible(true);
 			Object fieldValue = null;
 			try {

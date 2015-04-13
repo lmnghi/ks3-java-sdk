@@ -1,4 +1,8 @@
 package com.ksyun.ks3.http;
+
+import com.ksyun.ks3.config.AWSConfigLoader;
+import com.ksyun.ks3.config.ClientConfig;
+
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
  * 
@@ -7,107 +11,124 @@ package com.ksyun.ks3.http;
  * @description 
  **/
 public enum HttpHeaders {
-	RequestId("x-kss-request-id"),
+	RequestId("request-id"),
 	
-	Authorization("Authorization"),
-	Date("Date"),
-	Host("Host"),
-	Server("Server"),
-	UserAgent("User-Agent"),
-	ExtendedRequestId("x-kss-id-2"),
-	ContentMD5("Content-MD5"),
-	Expect("Expect"),
-	IfMatch("If-Match"),
-	IfNoneMatch("If-None-Match"),
-	IfModifiedSince("If-Modified-Since"),
-	IfUnmodifiedSince("If-Unmodified-Since"),
-	XApplicationContext("X-Application-Context"),
-	XNoReferer("X-No-Referer"),
-	XBlackList("X-Black-List"),
-	XWhiteList("X-White-List"),
-	XKssOp("x-kss-Op"),
+	Authorization("Authorization",false),
+	Date("Date",false),
+	Host("Host",false),
+	Server("Server",false),
+	UserAgent("User-Agent",false),
+	ExtendedRequestId("id-2"),
+	ContentMD5("Content-MD5",false),
+	Expect("Expect",false),
+	IfMatch("If-Match",false),
+	IfNoneMatch("If-None-Match",false),
+	IfModifiedSince("If-Modified-Since",false),
+	IfUnmodifiedSince("If-Unmodified-Since",false),
+	XApplicationContext("X-Application-Context",false),
+	XNoReferer("X-No-Referer",false),
+	XBlackList("X-Black-List",false),
+	XWhiteList("X-White-List",false),
+	XKssOp("Op",false),
 	//put object metadata
-	ContentLength("Content-Length"),
-	CacheControl("Cache-Control"),
-	ContentType("Content-Type"),
-	ContentDisposition("Content-Disposition"),
-	ContentEncoding("Content-Encoding"),
-	Expires("Expires"),
-	Range("Range"),
-	ContentRange("Content-Range"),
+	ContentLength("Content-Length",false),
+	CacheControl("Cache-Control",false),
+	ContentType("Content-Type",false),
+	ContentDisposition("Content-Disposition",false),
+	ContentEncoding("Content-Encoding",false),
+	Expires("Expires",false),
+	Range("Range",false),
+	ContentRange("Content-Range",false),
 	//
-	AcceptRanges("Accept-Ranges"),
-	Connection("Connection"),
+	AcceptRanges("Accept-Ranges",false),
+	Connection("Connection",false),
 	//acl
-	CannedAcl("x-kss-acl"),
-    AclPrivate("x-kss-acl-private"),
-    AclPubicRead("x-kss-acl-public-read"),
-    AclPublicReadWrite("x-kss-acl-public-write"),
-    AclPublicAuthenticatedRead("x-kss-acl-public-authenticated-read"),
-	GrantFullControl("x-kss-grant-full-control"),
-	GrantRead("x-kss-grant-read"),
-	GrantWrite("x-kss-grant-write"),
+	CannedAcl("acl"),
+    AclPrivate("acl-private"),
+    AclPubicRead("acl-public-read"),
+    AclPublicReadWrite("acl-public-write"),
+    AclPublicAuthenticatedRead("acl-public-authenticated-read"),
+	GrantFullControl("grant-full-control"),
+	GrantRead("grant-read"),
+	GrantWrite("grant-write"),
 	//
-	ServerSideEncryption("x-kss-server-side-encryption"),
-	//
-	ETag("ETag"),
-	LastModified("Last-Modified"),
+	ETag("ETag",false),
+	LastModified("Last-Modified",false),
 	//get object response
 	/**
 	 *default false
 	 */
-	XKssDeleteMarker("x-kss-delete-marker"),
-	XKssExpiration("x-kss-expiration"),
+	XKssDeleteMarker("delete-marker"),
+	XKssExpiration("expiration"),
 	/**
-	 * default AES256
+	 * 服务端加密
 	 */
-	XKssServerSideEncryption("x-kss-server-side​-encryption"),
-	/**
-	 * default AES256
-	 */
-	XKssServerSideEncryptionCustomerAlgorithm("x-kss-server-side​-encryption​-customer-algorithm"),
-	XkssServerSideEncryptionCustomerKeyMD5("x-kss-server-side​-encryption​-customer-key-MD5"),
-	/**
-	 * default None
-	 */
-	XKssRestore("x-kss-restore"),
+	XKssServerSideEncryption("server-side​-encryption"),
+	XKssServerSideEncryptionKMSKeyId("server-side-encryption-kss-kms-key-id","server-side-encryption-aws-kms-key-id"),
+	XKssServerSideEncryptionCustomerAlgorithm("server-side​-encryption​-customer-algorithm"),
+	XkssServerSideEncryptionCustomerKey("server-side​-encryption​-customer-key"),
+	XkssServerSideEncryptionCustomerKeyMD5("server-side​-encryption​-customer-key-MD5"),
 	/**
 	 * default None
 	 */
-	XKssWebsiteRedirectLocation("x-kss-website-redirect-location"),
-	XKssCopySource("x-kss-copy-source"),
-	XKssCopySourceRange("x-kss-copy-source-range"),
+	XKssRestore("restore"),
+	/**
+	 * default None
+	 */
+	XKssWebsiteRedirectLocation("website-redirect-location"),
+	XKssCopySource("copy-source"),
+	XKssCopySourceRange("copy-source-range"),
 	/**
 	 * callback
 	 */
-	XKssCallbackUrl("x-kss-callbackurl"),
-	XKssCallbackBody("x-kss-callbackbody"),
-	AsynchronousProcessingList("kss-async-process"),
-	NotifyURL("kss-notifyurl"),
-	TaskId("TaskID"),
+	XKssCallbackUrl("callbackurl"),
+	XKssCallbackBody("callbackbody"),
+	AsynchronousProcessingList("kss-async-process",false),
+	NotifyURL("kss-notifyurl",false),
+	TaskId("TaskID",false),
 	/**
 	 * 客户端加密
 	 */
-	CRYPTO_KEY("x-kss-key"),
-	CRYPTO_KEY_V2("x-kss-key-v2"),
-	CRYPTO_IV("x-kss-iv"),
-	MATERIALS_DESCRIPTION("x-kss-matdesc"),
-	UNENCRYPTED_CONTENT_MD5("x-kss-unencrypted-content-md5"),
-	UNENCRYPTED_CONTENT_LENGTH("x-kss-unencrypted-content-length"),
-	CRYPTO_INSTRUCTION_FILE("x-kss-crypto-instr-file"),
-	CRYPTO_CEK_ALGORITHM("x-kss-cek-alg"),
-	CRYPTO_TAG_LENGTH("x-kss-tag-len"),
-	CRYPTO_KEYWRAP_ALGORITHM("x-kss-wrap-alg")
+	CRYPTO_KEY("key"),
+	CRYPTO_KEY_V2("key-v2"),
+	CRYPTO_IV("iv"),
+	MATERIALS_DESCRIPTION("matdesc"),
+	UNENCRYPTED_CONTENT_MD5("unencrypted-content-md5"),
+	UNENCRYPTED_CONTENT_LENGTH("unencrypted-content-length"),
+	CRYPTO_INSTRUCTION_FILE("crypto-instr-file"),
+	CRYPTO_CEK_ALGORITHM("cek-alg"),
+	CRYPTO_TAG_LENGTH("tag-len"),
+	CRYPTO_KEYWRAP_ALGORITHM("wrap-alg")
 	;
 	private String value;
-	
+	private String value2;
+	private boolean isSpecHeader;
 	HttpHeaders(String value)
 	{
+		this(value,value,true);
+	}
+	HttpHeaders(String value,boolean isSpecHeader)
+	{
+		this(value,value,isSpecHeader);
+	}
+	HttpHeaders(String value,String value2){
+		this(value,value2,true);
+	}
+	HttpHeaders(String value,String value2,boolean isSpecHeader){
 		this.value = value;
+		this.value2 = value2;
+		this.isSpecHeader = isSpecHeader;
 	}
 	@Override
 	public String toString()
 	{
-		return this.value;
+		String prefix = "";
+		if(isSpecHeader)
+			prefix = ClientConfig.getConfig().getStr(ClientConfig.HEADER_PREFIX);
+		String value = this.value;
+		if(ClientConfig.isAws())
+			value = this.value2;
+		return prefix+value;
+
 	}
 }

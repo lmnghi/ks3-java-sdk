@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.RepeatableInputStream;
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CallBackConfiguration;
@@ -160,7 +161,7 @@ public class WithOutContentTypePutObjectRequest extends Ks3WebServiceRequest
 			// 添加user meta
 			for (Entry<String, String> entry : this.objectMeta.getAllUserMeta()
 					.entrySet()) {
-				if (entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
+				if (entry.getKey().startsWith(ClientConfig.getConfig().getStr(ClientConfig.USER_META_PREFIX)))
 					this.addHeader(entry.getKey(), entry.getValue());
 			}
 		}

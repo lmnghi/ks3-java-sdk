@@ -107,6 +107,10 @@ public class ClientConfig {
 	 */
 	public static final String END_POINT = "ks3client.endpoint";
 	/**
+	 * KS3 cdn服务地址
+	 */
+	public static final String 	CDN_END_POINT = "ks3client.cdn.endpoint";
+	/**
 	 * ks3 client auth加载器
 	 */
 	public static final String CLIENT_SIGNER = "ks3client.signer";
@@ -117,7 +121,24 @@ public class ClientConfig {
 	 * 1  kss.ksyun.com/bucket
 	 */
 	public static final String CLIENT_URLFORMAT = "ks3client.urlformat";
+	
 	/**
+	 * 特殊header的前缀
+	 */
+	public static final String HEADER_PREFIX = "ks3client.header.prefix";
+	/**
+	 * 用户元数据的前缀
+	 */
+	public static final String USER_META_PREFIX = "ks3client.usermeta.prefix";
+	/**
+	 * grantee alluser
+	 */
+	public static final String GRANTEE_ALLUSER = "ks3client.grantee.alluser";
+	/**
+	 * authoration header prefix
+	 */
+	public static final String AUTH_HEADER_PREFIX = "ks3client.auth.prefix";
+ 	/**
 	 * 配置加载器列表
 	 */
 	private static List<ConfigLoader> configLoaders = new ArrayList<ConfigLoader>();
@@ -132,6 +153,14 @@ public class ClientConfig {
 	public static void addConfigLoader(ConfigLoader loader) {
 		reload = true;
 		configLoaders.add(loader);
+	}
+	public static ConfigLoader getConfigLoader(Class<?> clazz){
+		for(ConfigLoader loader : configLoaders){
+			if(loader.getClass().equals(clazz)){
+				return loader;
+			}
+		}
+		return null;
 	}
 
 	static {
@@ -223,5 +252,8 @@ public class ClientConfig {
 		if ("null".equals(value))
 			value = null;
 		config.put(key.toLowerCase(), value);
+	}
+	public static boolean isAws(){
+		return getConfigLoader(AWSConfigLoader.class)==null?false:true;
 	}
 }

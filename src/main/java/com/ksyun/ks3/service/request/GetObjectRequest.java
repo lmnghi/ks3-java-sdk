@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.ksyun.ks3.dto.ResponseHeaderOverrides;
+import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
 import com.ksyun.ks3.utils.DateUtils;
+import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -49,6 +51,10 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 	 */
 	private ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
 	/**
+	 * 指定服务端加密使用的算法及key
+	 */
+	private SSECustomerKey sseCustomerKey;
+	/**
 	 * 
 	 * @param bucketname
 	 * @param key
@@ -72,6 +78,8 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 		if(this.modifiedSinceConstraint !=null)
 			this.addHeader(HttpHeaders.IfModifiedSince, DateUtils.convertDate2Str(this.modifiedSinceConstraint, DATETIME_PROTOCOL.RFC1123).toString());
 		this.getParams().putAll(this.getOverrides().getOverrides());
+		//添加服务端加密相关
+		this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
 	}
 
 	@Override
@@ -144,6 +152,12 @@ public class GetObjectRequest extends Ks3WebServiceRequest {
 	 */
 	public void setOverrides(ResponseHeaderOverrides overrides) {
 		this.overrides = overrides;
+	}
+	public SSECustomerKey getSseCustomerKey() {
+		return sseCustomerKey;
+	}
+	public void setSseCustomerKey(SSECustomerKey sseCustomerKey) {
+		this.sseCustomerKey = sseCustomerKey;
 	}
 	
 }

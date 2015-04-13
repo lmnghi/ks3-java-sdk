@@ -202,7 +202,7 @@ public abstract class Ks3WebServiceRequest {
 				String length = headrs
 						.get(HttpHeaders.ContentLength.toString());
 				HttpEntity entity = null;
-				if (length == null) {
+				if (length == null||length.trim().equals("0")) {
 					try {
 						entity = new RepeatableInputStreamRequestEntity(
 								requestBody, "-1");

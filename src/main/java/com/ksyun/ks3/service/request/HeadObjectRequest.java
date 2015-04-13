@@ -1,14 +1,18 @@
 package com.ksyun.ks3.service.request;
 
 import java.util.ArrayList;
+
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notCorrect;
+
 import java.util.Date;
 import java.util.List;
 
 import com.ksyun.ks3.dto.ResponseHeaderOverrides;
+import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
 /**
@@ -37,6 +41,10 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 	 */
 	private Date modifiedSinceConstraint;
 	/**
+	 * 指定服务端加密使用的算法及key
+	 */
+	private SSECustomerKey sseCustomerKey;
+	/**
 	 * 修改返回的response的headers
 	 */
 	private ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
@@ -60,6 +68,8 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 		if(this.modifiedSinceConstraint !=null)
 			this.addHeader(HttpHeaders.IfModifiedSince, this.modifiedSinceConstraint.toGMTString());
 		this.getParams().putAll(this.overrides.getOverrides());
+		//添加服务端加密相关
+		this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
 	}
 
 	@Override
@@ -137,6 +147,12 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 	}
 	public void setRange(String range) {
 		this.range = range;
+	}
+	public SSECustomerKey getSseCustomerKey() {
+		return sseCustomerKey;
+	}
+	public void setSseCustomerKey(SSECustomerKey sseCustomerKey) {
+		this.sseCustomerKey = sseCustomerKey;
 	}
 	
 }

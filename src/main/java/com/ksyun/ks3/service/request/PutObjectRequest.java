@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.RepeatableInputStream;
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.AccessControlList;
 import com.ksyun.ks3.dto.CallBackConfiguration;
@@ -30,6 +31,8 @@ import com.ksyun.ks3.dto.Adp;
 import com.ksyun.ks3.dto.Grant;
 import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.Permission;
+import com.ksyun.ks3.dto.SSECustomerKey;
+import com.ksyun.ks3.dto.SSEKssKMSParams;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.client.ClientFileNotFoundException;
 import com.ksyun.ks3.http.HttpHeaders;
@@ -91,7 +94,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	private String notifyURL;
 	private String redirectLocation;
 	
-	private String serverSideEncryption;
+	/**
+	 * 使用用户指定的key进行服务端加密
+	 */
+	private SSECustomerKey sseCustomerKey;
+	
 	/**
 	 * 
 	 * @param bucketname
@@ -156,36 +163,10 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 		if (StringUtils.isBlank(objectMeta.getContentType()))
 			objectMeta.setContentType(Mimetypes.getInstance().getMimetype(
 					super.getObjectkey()));
-		if (!StringUtils.isBlank(this.objectMeta.getContentType()))
-			this.addHeader(HttpHeaders.ContentType,
-					this.objectMeta.getContentType());
-		if (!StringUtils.isBlank(this.objectMeta.getCacheControl()))
-			this.addHeader(HttpHeaders.CacheControl,
-					this.objectMeta.getCacheControl());
-		if (!StringUtils.isBlank(this.objectMeta.getContentDisposition()))
-			this.addHeader(HttpHeaders.ContentDisposition,
-					this.objectMeta.getContentDisposition());
-		if (!StringUtils.isBlank(this.objectMeta.getContentEncoding()))
-			this.addHeader(HttpHeaders.ContentEncoding,
-					this.objectMeta.getContentEncoding());
-		if (this.objectMeta.getContentLength() > 0)
-			this.addHeader(HttpHeaders.ContentLength,
-					String.valueOf(this.objectMeta.getContentLength()));
-		if (this.objectMeta.getHttpExpiresDate() != null)
-			this.addHeader(
-					HttpHeaders.Expires,
-					DateUtils.convertDate2Str(
-							this.objectMeta.getHttpExpiresDate(),
-							DATETIME_PROTOCOL.RFC1123).toString());
-		if (this.objectMeta.getContentMD5() != null)
-			this.addHeader(HttpHeaders.ContentMD5,
-					this.objectMeta.getContentMD5());
-		// 添加user meta
-		for (Entry<String, String> entry : this.objectMeta.getAllUserMeta()
-				.entrySet()) {
-			if (entry.getKey().startsWith(Constants.KS3_USER_META_PREFIX))
-				this.addHeader(entry.getKey(), entry.getValue());
-		}
+		//添加元数据
+		this.getHeader().putAll(HttpUtils.convertMeta2Headers(objectMeta));
+		//添加服务端加密相关
+		this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
 		// acl
 		if (this.cannedAcl != null) {
 			this.addHeader(HttpHeaders.CannedAcl.toString(),
@@ -227,8 +208,6 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 			if (!StringUtils.isBlank(notifyURL))
 				this.addHeader(HttpHeaders.NotifyURL, notifyURL);
 		}
-		if(!StringUtils.isBlank(this.serverSideEncryption))
-			this.addHeader(HttpHeaders.ServerSideEncryption, this.serverSideEncryption);
 		this.setHttpMethod(HttpMethod.PUT);
 	}
 
@@ -355,11 +334,11 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 							.getRequestBody()).getMd5Digest());
 	}
 
-	public String getServerSideEncryption() {
-		return serverSideEncryption;
+	public SSECustomerKey getSseCustomerKey() {
+		return sseCustomerKey;
 	}
 
-	public void setServerSideEncryption(String serverSideEncryption) {
-		this.serverSideEncryption = serverSideEncryption;
+	public void setSseCustomerKey(SSECustomerKey sseCustomerKey) {
+		this.sseCustomerKey = sseCustomerKey;
 	}
 }

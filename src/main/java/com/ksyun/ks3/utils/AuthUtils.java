@@ -19,6 +19,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.utils.DateUtils.DATETIME_PROTOCOL;
@@ -35,7 +36,7 @@ public class AuthUtils {
 	public static String calcAuthorization (Authorization auth,Ks3WebServiceRequest request) throws SignatureException
 	{
 		String signature = calcSignature(auth.getAccessKeySecret(),request);
-		String value = "KSS "+auth.getAccessKeyId()+":"+signature;
+		String value = ClientConfig.getConfig().getStr(ClientConfig.AUTH_HEADER_PREFIX)+" "+auth.getAccessKeyId()+":"+signature;
 		return value;
 	}
 	//post表单时的签名
@@ -146,7 +147,7 @@ public class AuthUtils {
         return resource;
     }
     private static String CanonicalizedKSSHeaders(Ks3WebServiceRequest request) {
-    	String prefix = "x-kss";
+    	String prefix = ClientConfig.getConfig().getStr(ClientConfig.HEADER_PREFIX);
         Map<String, String> headers = request.getHeader();
 
         List<String> headList = new ArrayList<String>();

@@ -25,17 +25,17 @@ public class Constants {
 	
 	
 	public final static String KS3_PACAKAGE = "com.ksyun.ks3";
-	public final static String KS3_USER_META_PREFIX = "x-kss-meta-";
 	
 	public final static String KS3_SDK_USER_AGENT = "ks3-kss-java-sdk/ks3client";
 	public final static String KS3_ENCRYPTION_CLIENT_USER_AGENT = "ks3-kss-java-sdk/ks3encryptionclient";
-	public final static String KS3_CDN_END_POINT = "kssws.ks-cdn.com";
 	public static final int DEFAULT_STREAM_BUFFER_SIZE = 128 * 1024;
 	public static final int minPartNumber = 1;
 	public static final int maxPartNumber = 10000;
 	public static final long minPartSize = 5L*1024*1024;
 	public static final long maxPartSize = 5L*1024*1024*1024;
 	public static final long maxSingleUpload = 5L*1024*1024*1024;
+	
+	public static final String defaultAlgm = "AES256";
 	
 	public static final int corsMaxRules = 100;
 	/**

@@ -95,6 +95,7 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class Ks3Client implements Ks3 {
 	private static final Log log = LogFactory.getLog(Ks3Client.class);
+	private ClientConfig config = ClientConfig.getConfig();
 	
 	private Authorization auth;
 
@@ -391,20 +392,20 @@ public class Ks3Client implements Ks3 {
 				throw new Ks3ClientException("计算用户签名时出错", e);
 			}
 			if (overrides.getOverrides().size() > 0)
-				return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT
+				return "http://" + bucket + "." + config.getStr(ClientConfig.CDN_END_POINT)
 						+ "/" + key + "?AccessKeyId="
 						+ URLEncoder.encode(auth.getAccessKeyId())
 						+ "&Expires=" + expires + "&Signature="
 						+ URLEncoder.encode(signature) + "&"
 						+ HttpUtils.encodeParams(overrides.getOverrides());
 			else
-				return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT
+				return "http://" + bucket + "." + config.getStr(ClientConfig.CDN_END_POINT)
 						+ "/" + key + "?AccessKeyId="
 						+ URLEncoder.encode(auth.getAccessKeyId())
 						+ "&Expires=" + expires + "&Signature="
 						+ URLEncoder.encode(signature);
 		} else {
-			return "http://" + bucket + "." + Constants.KS3_CDN_END_POINT + "/"
+			return "http://" + bucket + "." + config.getStr(ClientConfig.CDN_END_POINT) + "/"
 					+ key + "?"
 					+ HttpUtils.encodeParams(overrides.getOverrides());
 		}
