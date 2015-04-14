@@ -335,6 +335,8 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
         }
         // Set the content-length of the upload
         metadata.setContentLength(bytes.length);
+        //不能使用之前request的content-md5
+        metadata.setContentMD5(null);
         // Set the crypto instruction file header
         metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getObjectkey() + EncryptionUtils.INSTRUCTION_SUFFIX);
         // Update the instruction request

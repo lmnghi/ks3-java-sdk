@@ -386,6 +386,8 @@ public class EncryptionUtils {
 
         // Set the content-length of the upload
         metadata.setContentLength(instructionBytes.length);
+        //不能使用request之前带着的content-md5
+        metadata.setContentMD5(null);
 
         // Set the crypto instruction file header
         metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getObjectkey() + INSTRUCTION_SUFFIX);
@@ -394,7 +396,6 @@ public class EncryptionUtils {
         request.setObjectKey(request.getObjectkey() + INSTRUCTION_SUFFIX);
         request.setObjectMeta(metadata);
         request.setRequestBody(instructionInputStream);
-
         return request;
     }
 

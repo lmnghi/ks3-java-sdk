@@ -2,6 +2,7 @@ package com.ksyun.ks3.service.encryption;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,6 +64,16 @@ public class PutObjectTest extends EncryptionClientTest{
 		super.writeToFile(result.getObject().getObjectContent(), new File(filedownpath));
 		assertEquals(Md5Utils.md5AsBase64(new File(filepath)),
 				Md5Utils.md5AsBase64(new File(filedownpath)));
+	}
+	@Test
+	public void testPutEO_File_Stream(){
+		ObjectMetadata meta = new ObjectMetadata();
+		eo_file.putObject(bucket, key, new ByteArrayInputStream("1234".getBytes()),meta);
+	}
+	@Test
+	public void testPutAE_File_Stream(){
+		ObjectMetadata meta = new ObjectMetadata();
+		ae_file.putObject(bucket, key, new ByteArrayInputStream("1234".getBytes()),meta);
 	}
 	@Test
 	public void testPutEO_Meta_Range() throws IOException{

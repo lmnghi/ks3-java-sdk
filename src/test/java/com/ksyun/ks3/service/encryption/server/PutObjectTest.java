@@ -4,8 +4,10 @@ import java.io.File;
 
 import org.junit.Test;
 
+import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.dto.CannedAccessControlList;
 import com.ksyun.ks3.dto.CompleteMultipartUploadResult;
+import com.ksyun.ks3.dto.HeadObjectResult;
 import com.ksyun.ks3.dto.InitiateMultipartUploadResult;
 import com.ksyun.ks3.dto.ListPartsResult;
 import com.ksyun.ks3.dto.ObjectMetadata;
@@ -80,5 +82,24 @@ public class PutObjectTest extends AWSEncryptionTest{
 		
 		request.setSseCustomerKey(new SSECustomerKey(bytes));
 		client.headObject(request);
+	}
+	@Test
+	public void testUserMeta(){
+		ClientConfig.getConfig().set(ClientConfig.HTTP_SCHEME,"http");
+		PutObjectRequest req = new PutObjectRequest(bucket,"test",new File("D://test.txt"));
+		ObjectMetadata meta = new ObjectMetadata();
+		meta.setUserMeta("test", "example");
+		req.setObjectMeta(meta);
+		client.putObject(req);
+		
+		HeadObjectResult result1 = client.headObject(bucket,"test");
+		
+		PutObjectRequest req1 = new PutObjectRequest(bucket,"test",new File("D://test.txt"));
+		client.putObject(req1);
+		
+		HeadObjectResult result2 = client.headObject(bucket,"test");
+		
+		System.out.println(result1);
+		System.out.println(result2);
 	}
 }

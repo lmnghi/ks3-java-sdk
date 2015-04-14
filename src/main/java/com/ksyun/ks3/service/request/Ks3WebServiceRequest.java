@@ -244,13 +244,13 @@ public abstract class Ks3WebServiceRequest {
 	}
 
 	public HttpRequestBase getHttpRequest() {
+		reset();
 		this.validateParams();
 		configHttpRequestPrivate();
 		configHttpRequest();
 		initHttpRequestBase();
 		return this.httpRequest;
 	}
-
 	private void configHttpRequestPrivate() {
 		url = ClientConfig.getConfig().getStr(ClientConfig.END_POINT);
 		if (url.startsWith("http://") || url.startsWith("https://"))
@@ -313,7 +313,11 @@ public abstract class Ks3WebServiceRequest {
 	public String getObjectkey() {
 		return objectkey;
 	}
-	public void reset(){
-		
-	}
+	private void reset(){
+		if(this.header!=null)
+			this.header.clear();
+		this.httpRequest=null;
+		if(this.params!=null)
+			this.params.clear();
+	}	
 }
