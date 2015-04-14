@@ -38,8 +38,8 @@ public class AWSEncryptionTest {
 		symKey = loadSymmetricAESKey("D://", "AES");     
 
 		ClientConfig.addConfigLoader(new AWSConfigLoader());
-		client = new Ks3Client("AKIAIN3WVZLXKDUS242Q",
-				"5iDtwjnwgFeeKxqXy8OQqs6hTOrx/4Dyk8YBBFwn");
+		client = new Ks3Client("AKIAIN3WVZLXKDUS242Q","5iDtwjnwgFeeKxqXy8OQqs6hTOrx/4Dyk8YBBFwn");
+		//client = new Ks3Client("lMQTr0hNlMpB0iOk/i+x","D4CsYLs75JcWEjbiI22zR3P7kJ/+5B1qdEje7A7I");
 	}
 
 	public static void saveSymmetricKey(String path, SecretKey secretKey)

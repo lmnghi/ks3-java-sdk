@@ -71,5 +71,11 @@ public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implement
 	public void setKeys(String[] keys) {
 		this.keys = keys;
 	}
+	public boolean skipCal() {
+		return false;
+	}
+	public boolean skipCheck() {
+		return true;
+	}
 	
 }

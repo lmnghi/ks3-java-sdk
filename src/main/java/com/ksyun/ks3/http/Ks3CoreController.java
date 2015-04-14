@@ -103,6 +103,7 @@ public class Ks3CoreController {
 			log.info(response.getStatusLine());
 			if(response.getStatusLine().getStatusCode()==307&&response.containsHeader("Location")){
 				String location = response.getHeaders("Location")[0].getValue();
+				//TODO 这个只是为了兼容当前api
 				if(location.startsWith("http")){
 					log.info("returned 307,retry request to "+location);
 					if(httpRequest instanceof HttpPut){
@@ -132,7 +133,6 @@ public class Ks3CoreController {
 					+ " has occured an exception:(" + e + ")", e);
 		}
 		if (!success(response, ksResponse)) {
-			httpRequest.abort();
 			throw new Ks3ServiceException(response, StringUtils.join(
 					ksResponse.expectedStatus(), ",")
 					+ "("
@@ -145,7 +145,8 @@ public class Ks3CoreController {
 		}
 		Y result = ksResponse.handleResponse(httpRequest, response);
 		if (ksResponse instanceof Md5CheckAble
-				&& request instanceof MD5CalculateAble) {
+				&& request instanceof MD5CalculateAble
+				&& !((MD5CalculateAble) request).skipCheck()) {
 			String ETag = ((Md5CheckAble) ksResponse).getETag();
 			String MD5 = ((MD5CalculateAble) request).getMd5();
 			log.info("returned etag is:" + ETag);

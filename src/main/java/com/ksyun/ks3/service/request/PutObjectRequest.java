@@ -341,4 +341,14 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements
 	public void setSseCustomerKey(SSECustomerKey sseCustomerKey) {
 		this.sseCustomerKey = sseCustomerKey;
 	}
+
+	public boolean skipCal() {
+		return false;
+	}
+
+	public boolean skipCheck() {
+		if(this.getSseCustomerKey()!=null)
+			return true;
+		return false;
+	}
 }

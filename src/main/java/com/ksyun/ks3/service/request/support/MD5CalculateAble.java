@@ -8,4 +8,13 @@ package com.ksyun.ks3.service.request.support;
  **/
 public interface MD5CalculateAble {
 	public String getMd5();
+	/**是否跳过计算
+	 * @return
+	 */
+	public boolean skipCal();
+	/**
+	 * 是否跳过校验
+	 * @return
+	 */
+	public boolean skipCheck();
 }

@@ -150,12 +150,18 @@ public class ObjectMetadata implements ServerSideEncryptionResult{
     public String getSseCustomerAlgorithm(){
     	return (String) this.metadata.get(HttpHeaders.XKssServerSideEncryptionCustomerAlgorithm.toString());
     }
+    /**
+     * 仅供内部使用，设置加密请使用</br>{@link PutObjectRequest#setSseCustomerKey(SSECustomerKey key) }</br>{@link UploadPartRequest#setSseCustomerKey(SSECustomerKey key) }
+     */
     public void setSseCustomerAlgorithm(String value){
     	this.metadata.put(HttpHeaders.XkssServerSideEncryptionCustomerKey.toString(), value);
     }
     public String getSseCustomerKeyMD5(){
     	return (String) this.metadata.get(HttpHeaders.XkssServerSideEncryptionCustomerKeyMD5.toString());
     }
+    /**
+     * 仅供内部使用，设置加密请使用</br>{@link PutObjectRequest#setSseCustomerKey(SSECustomerKey key) }</br>{@link UploadPartRequest#setSseCustomerKey(SSECustomerKey key) }
+     */
     public void setSseCustomerKeyMD5(String value){
     	this.metadata.put(HttpHeaders.XkssServerSideEncryptionCustomerKeyMD5.toString(), value);
     }

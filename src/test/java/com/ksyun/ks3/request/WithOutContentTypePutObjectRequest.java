@@ -327,4 +327,14 @@ public class WithOutContentTypePutObjectRequest extends Ks3WebServiceRequest
 					.encodeAsString(((MD5DigestCalculatingInputStream) super
 							.getRequestBody()).getMd5Digest());
 	}
+
+	public boolean skipCal() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean skipCheck() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -128,7 +128,8 @@ public abstract class Ks3WebServiceRequest {
 		}
 		// 准备计算 md5值
 		if (this instanceof MD5CalculateAble && this.getRequestBody() != null
-				&& StringUtils.isBlank(this.getContentMD5()))
+				&& StringUtils.isBlank(this.getContentMD5())
+				&&!((MD5CalculateAble)this).skipCal())
 			if (!(this.getRequestBody() instanceof MD5DigestCalculatingInputStream))
 				this.setRequestBody(new MD5DigestCalculatingInputStream(this
 						.getRequestBody()));
@@ -159,11 +160,7 @@ public abstract class Ks3WebServiceRequest {
 		if (this.getHttpMethod() == HttpMethod.POST) {
 			HttpPost postMethod = new HttpPost(url);
 			if (requestBody == null && params != null) {
-				try {
-					postMethod.setEntity(new StringEntity(encodedParams));
-				} catch (UnsupportedEncodingException e) {
-					throw new Ks3ClientException("无法创建 HTTP entity:" + e, e);
-				}
+				//之前会把参数进行编码放在body中，之后发现这么做没啥用
 			} else {
 				String length = this.getHeader().get(
 						HttpHeaders.ContentLength.toString());
@@ -259,7 +256,6 @@ public abstract class Ks3WebServiceRequest {
 		if (url.startsWith("http://") || url.startsWith("https://"))
 			url = url.replace("http://", "").replace("https://", "");
 		httpMethod = HttpMethod.POST;
-		this.setContentMD5("");
 		if(!this.getHeader().containsKey(HttpHeaders.UserAgent.toString()))
 			this.addHeader(HttpHeaders.UserAgent, Constants.KS3_SDK_USER_AGENT);
 		this.setContentType("text/plain");

@@ -85,11 +85,9 @@ public abstract class Ks3WebServiceXmlResponse<T> extends DefaultHandler impleme
 		InputStream in = null;
 		try {
 			in = response.getEntity().getContent();
-			String xml = StringUtils.inputStream2String(in);
-			LogFactory.getLog(this.getClass()).info(xml);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(xml, this);
+			parser.parse(in, this);
 			return result;
 		} catch (Exception e) {
 			throw new Ks3ClientException("处理http response时出错", e);

@@ -104,5 +104,11 @@ public class PutBucketCorsRequest extends Ks3WebServiceRequest implements MD5Cal
 				.encodeAsString(((MD5DigestCalculatingInputStream)super.getRequestBody())
 						.getMd5Digest());
 	}
+	public boolean skipCal() {
+		return false;
+	}
+	public boolean skipCheck() {
+		return true;
+	}
 
 }
