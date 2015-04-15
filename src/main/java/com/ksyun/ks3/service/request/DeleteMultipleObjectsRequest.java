@@ -1,10 +1,13 @@
 package com.ksyun.ks3.service.request;
 
 import java.io.ByteArrayInputStream;
+
 import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGenerator.notNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.logging.LogFactory;
 
 import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.http.HttpMethod;
@@ -51,7 +54,9 @@ public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implement
 			writer.start("Object").start("Key").value(keys[i]).end().end();
 		}
 		writer.end();
-		this.setRequestBody(new ByteArrayInputStream(writer.toString().getBytes()));
+		String xml = writer.toString();
+		LogFactory.getLog(this.getClass()).info("delete objects :"+xml);
+		this.setRequestBody(new ByteArrayInputStream(xml.getBytes()));
 	}
 
 	@Override

@@ -51,11 +51,11 @@ public class XmlWriter {
     }
 
     public XmlWriter value(String value) {
-        buffer.append(value);
+    	appendEscapedString(value,buffer);
         return this;
     }
     public XmlWriter value(int value) {
-        buffer.append(value);
+    	appendEscapedString(String.valueOf(value),buffer);
         return this;
     }
 
@@ -63,4 +63,55 @@ public class XmlWriter {
     public String toString() {
         return buffer.toString();
     }
+    
+    private void appendEscapedString(String s, StringBuffer builder) {
+        if (s == null)
+            s = "";
+        int pos;
+        int start = 0;
+        int len = s.length();
+        for (pos = 0; pos < len; pos++) {
+            char ch = s.charAt(pos);
+            String escape;
+            switch (ch) {
+            case '\t':
+                escape = "&#9;";
+                break;
+            case '\n':
+                escape = "&#10;";
+                break;
+            case '\r':
+                escape = "&#13;";
+                break;
+            case '&':
+                escape = "&amp;";
+                break;
+            case '"':
+                escape = "&quot;";
+                break;
+            case '<':
+                escape = "&lt;";
+                break;
+            case '>':
+                escape = "&gt;";
+                break;
+            default:
+                escape = null;
+                break;
+            }
+
+            // If we found an escape character, write all the characters up to that
+            // character, then write the escaped char and get back to scanning
+            if (escape != null) {
+                if (start < pos)
+                    builder.append(s, start, pos);
+                buffer.append(escape);
+                start = pos + 1;
+            }
+        }
+
+        // Write anything that's left
+        if (start < pos) buffer.append(s, start, pos);
+    }
+
 }

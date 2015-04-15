@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpRequest;
+
+import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.Owner;
 import com.ksyun.ks3.dto.PutObjectResult;
 
@@ -139,26 +143,34 @@ public class StringUtils {
 		return object2string(0, obj, null);
 	}
 
-	private static List<Class<?>> clazzs = Arrays.asList(new Class<?>[] {
-			String.class, Boolean.class, Integer.class, Long.class,
-			Double.class, Float.class, Short.class, Byte.class,
-			Collection.class, Map.class, HashMap.class, ArrayList.class,
-			HashSet.class, java.util.Date.class });
-
+	private static boolean serializable(Object obj){
+		if(obj instanceof Serializable||
+			obj instanceof Map||
+			obj instanceof Collection||
+			obj instanceof InputStream
+				){
+			return true;
+		}
+		if(obj.getClass().getClass().toString().startsWith(Constants.KS3_PACAKAGE+".dto"))
+			return false;
+		if(obj.getClass().isEnum())
+			return true;
+		return false;
+	}
 	private static String object2string(int index, Object obj, Field fieldF) {
 		StringBuffer value = new StringBuffer();
 		StringBuffer prefixSb = new StringBuffer();
-		for (int i = 0; i < index - 1; i++) {
-			prefixSb.append("       ");
+		for (int i = 0; i < index-1; i++) {
+			prefixSb.append("   ");
 		}
 		String prefix = prefixSb.toString();
 		if (fieldF != null)
-			value.append("\n" + prefix + fieldF.getName() + "="
+			value.append(prefix + fieldF.getName() + "="
 					+ obj.getClass() + "\n");
 		else
-			value.append("\n" + prefix + obj.getClass() + "\n");
+			value.append(prefix + obj.getClass() + "\n");
 		if (index != 0)
-			prefixSb.append("       ");
+			prefixSb.append("   ");
 		prefix = prefixSb.toString();
 
 		List<Field> fields = new ArrayList<Field>();
@@ -182,11 +194,8 @@ public class StringUtils {
 				e1.printStackTrace();
 			}
 			if (fieldValue != null) {
-				if (clazzs.contains(fieldValue.getClass())) {
+				if (serializable(fieldValue)) {
 
-					value.append(prefix + field.getName() + "="
-							+ fieldValue.toString() + "\n");
-				} else if (fieldValue.getClass().isEnum()) {
 					value.append(prefix + field.getName() + "="
 							+ fieldValue.toString() + "\n");
 				} else {

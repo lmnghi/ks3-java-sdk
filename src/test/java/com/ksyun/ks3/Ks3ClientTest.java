@@ -78,10 +78,7 @@ import com.ksyun.ks3.utils.Timer;
  * @description
  **/
 public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
-	@Test
-	public void url(){
-		new Ks3UploadClient(super.client1).uploadFile("test-transfer-client","123", new File("D://IMG.jpg"));
-	}
+
 	 @Test
 	public void ListBuckets() {
 		 System.out.println(client.listBuckets());

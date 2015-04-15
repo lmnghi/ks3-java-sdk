@@ -284,6 +284,8 @@ public class Ks3Client implements Ks3 {
 			}
 			if (keys.size() > 0)
 				this.deleteObjects(keys, bucketName);
+			else
+				break;
 		} while (list.isTruncated());
 		if (dir != null) {
 			boolean exists = true;
