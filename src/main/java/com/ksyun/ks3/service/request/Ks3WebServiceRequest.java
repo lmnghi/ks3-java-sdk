@@ -138,16 +138,16 @@ public abstract class Ks3WebServiceRequest {
 		_objectkey = HttpUtils.urlEncode(objectkey, true);
 		int format = ClientConfig.getConfig().getInt(
 				ClientConfig.CLIENT_URLFORMAT);
-		String scheme = ClientConfig.getConfig().getStr(ClientConfig.HTTP_SCHEME);
+		String protocol = ClientConfig.getConfig().getStr(ClientConfig.HTTP_PROTOCOL);
 		if (format == 0) {
-			url = new StringBuffer(scheme+"://")
+			url = new StringBuffer(protocol+"://")
 					.append(StringUtils.isBlank(bucketname) ? "" : bucketname
 							+ ".").append(url)
 					.append(StringUtils.isBlank(pathVariable) ? "" :"/"+ pathVariable)
 					.append(StringUtils.isBlank(_objectkey) ? "" :"/"+ _objectkey)
 					.toString();
 		} else {
-			url = new StringBuffer(scheme+"://")
+			url = new StringBuffer(protocol+"://")
 					.append(url)
 					.append(StringUtils.isBlank(bucketname) ? "" :"/" +bucketname)
 					.append(StringUtils.isBlank(pathVariable) ? "" :"/"+ pathVariable)

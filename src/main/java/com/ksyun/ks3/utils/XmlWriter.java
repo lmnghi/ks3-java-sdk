@@ -3,6 +3,8 @@ package com.ksyun.ks3.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.LogFactory;
+
 import com.ksyun.ks3.config.Constants;
 
 
@@ -61,7 +63,9 @@ public class XmlWriter {
 
     @Override
     public String toString() {
-        return buffer.toString();
+    	String xml = buffer.toString();
+    	LogFactory.getLog(this.getClass()).debug("xml to send is "+xml);
+        return xml;
     }
     
     private void appendEscapedString(String s, StringBuffer builder) {

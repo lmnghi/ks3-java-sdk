@@ -54,7 +54,7 @@ public class Ks3ServiceException extends Ks3ClientException {
 		try {
 			InputStream  in =  response.getEntity().getContent();
 			String xml = StringUtils.inputStream2String(in);
-			log.info(xml);
+			log.debug(xml);
 			Document document = new XmlReader(xml)
 					.getDocument();
 			try {

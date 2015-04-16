@@ -53,7 +53,7 @@ public class Ks3CoreController {
 			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
 		if (request == null)
 			throw new Ks3ClientException("request can not be null");
-		log.info("Ks3WebServiceRequest:" + request.getClass()
+		log.debug("Ks3WebServiceRequest:" + request.getClass()
 				+ ";Ks3WebServiceResponse:" + clazz);
 		Y result = null;
 		try {
@@ -98,14 +98,14 @@ public class Ks3CoreController {
 			throw new Ks3ClientException("计算签名时发生了一个异常 (" + e + ")", e);
 		}
 		try {
-			log.info(httpRequest.getRequestLine());
+			log.debug(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
-			log.info(response.getStatusLine());
+			log.debug(response.getStatusLine());
 			if(response.getStatusLine().getStatusCode()==307&&response.containsHeader("Location")){
 				String location = response.getHeaders("Location")[0].getValue();
 				//TODO 这个只是为了兼容当前api
 				if(location.startsWith("http")){
-					log.info("returned 307,retry request to "+location);
+					log.debug("returned 307,retry request to "+location);
 					if(httpRequest instanceof HttpPut){
 						((HttpPut) httpRequest).getEntity().getContent().reset();
 					}else if(httpRequest instanceof HttpPost){
@@ -115,7 +115,7 @@ public class Ks3CoreController {
 					response = client.execute(httpRequest);
 				}
 			}
-			log.info("finished send request to ks3 service and recive response from the service : "
+			log.debug("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
 			throw new ClientHttpException(e);
@@ -149,7 +149,7 @@ public class Ks3CoreController {
 				&& !((MD5CalculateAble) request).skipCheck()) {
 			String ETag = ((Md5CheckAble) ksResponse).getETag();
 			String MD5 = ((MD5CalculateAble) request).getMd5();
-			log.info("returned etag is:" + ETag);
+			log.debug("returned etag is:" + ETag);
 			if (!ETag.equals(Converter.MD52ETag(MD5))) {
 				throw new ClientInvalidDigestException(
 						"Unable to verify integrity of data upload.  " +
@@ -157,7 +157,7 @@ public class Ks3CoreController {
                         "You may need to delete the data stored in KS3.");
 			}
 		}
-		log.info("finished handle response : " + Timer.end());
+		log.debug("finished handle response : " + Timer.end());
 		return result;
 	}
 

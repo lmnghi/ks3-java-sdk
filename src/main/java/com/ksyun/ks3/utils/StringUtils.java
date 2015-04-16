@@ -143,7 +143,9 @@ public class StringUtils {
 		return object2string(0, obj, null);
 	}
 
-	private static boolean serializable(Object obj){
+	private static <T> boolean serializable(T obj){
+		if(obj.getClass().getClass().toString().startsWith(Constants.KS3_PACAKAGE+".dto"))
+			return false;
 		if(obj instanceof Serializable||
 			obj instanceof Map||
 			obj instanceof Collection||
@@ -151,8 +153,6 @@ public class StringUtils {
 				){
 			return true;
 		}
-		if(obj.getClass().getClass().toString().startsWith(Constants.KS3_PACAKAGE+".dto"))
-			return false;
 		if(obj.getClass().isEnum())
 			return true;
 		return false;

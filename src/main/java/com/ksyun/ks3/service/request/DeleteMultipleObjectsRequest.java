@@ -55,7 +55,6 @@ public class DeleteMultipleObjectsRequest extends Ks3WebServiceRequest implement
 		}
 		writer.end();
 		String xml = writer.toString();
-		LogFactory.getLog(this.getClass()).info("delete objects :"+xml);
 		this.setRequestBody(new ByteArrayInputStream(xml.getBytes()));
 	}
 

@@ -54,11 +54,11 @@ public class HttpUtils {
 	}
 
 	public static void printHttpRequest(HttpRequestBase request) {
-		log.info("the http request info:");
+		log.debug("the http request info:");
 		for (Header s : request.getAllHeaders()) {
-			log.info("headers:" + s.getName() + " " + s.getValue());
+			log.debug("headers:" + s.getName() + " " + s.getValue());
 		}
-		log.info("requestline:" + request.getRequestLine().getMethod() + " "
+		log.debug("requestline:" + request.getRequestLine().getMethod() + " "
 				+ request.getRequestLine().getUri() + " "
 				+ request.getRequestLine().getProtocolVersion());
 	}

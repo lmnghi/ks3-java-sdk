@@ -154,7 +154,7 @@ public class Ks3UploadClient {
 	 * @param file
 	 */
 	public void uploadFile(String bucket, String key, File file) {
-		log.info(String.format(
+		log.debug(String.format(
 				"UPLOAD_FILE:upload file %s to bucket %s key %s ",
 				file.getAbsolutePath(), bucket, key));
 		long length = file.length();
@@ -208,11 +208,11 @@ public class Ks3UploadClient {
 		Map<String, File> error = toUpload;
 		int i = 0;
 		do {
-			log.info("UPLOAD_DIR_BATCH_START:batch upload rand " + i
+			log.debug("UPLOAD_DIR_BATCH_START:batch upload rand " + i
 					+ ",bucket " + bucket + ",destDir " + destDir
 					+ ",sourceDir " + sourceDir + ",count:" + error.size());
 			error = this.batchUpload(bucket, error, check);
-			log.info("UPLOAD_DIR_BATCH_END:batch upload rand " + i + ",bucket "
+			log.debug("UPLOAD_DIR_BATCH_END:batch upload rand " + i + ",bucket "
 					+ bucket + ",destDir " + destDir + ",sourceDir "
 					+ sourceDir + ",count:" + error.size());
 			i++;
@@ -238,13 +238,13 @@ public class Ks3UploadClient {
 								+ StringUtils.getFileName(file);
 						if (StringUtils.isBlank(baseKey))
 							key = StringUtils.getFileName(file);
-						log.info("found key :" + key);
+						log.debug("found key :" + key);
 						toUpload.put(key, file);
 					}
 				}
 			}
 		} else {
-			log.info("found key :" + baseKey);
+			log.debug("found key :" + baseKey);
 			toUpload.put(baseKey, sourceDir);
 		}
 	}
@@ -344,7 +344,7 @@ public class Ks3UploadClient {
 							faild.put(enrty.getKey(), enrty.getValue());
 						}
 					} else
-						log.info(String
+						log.debug(String
 								.format("UPLOAD_FILE_SKIPPED:upload file %s to bucket %s key %s skipped as it exists",
 										enrty.getValue().getAbsolutePath(),
 										bucket, enrty.getKey()));
@@ -406,7 +406,7 @@ public class Ks3UploadClient {
 				public void run() {
 					int faild = 0;
 					try {
-						log.info(String
+						log.debug(String
 								.format("CHECK_EXISTS:check key %s , bucket %s,times %s",
 										key, bucket, faild));
 						client.headObject(bucket, key);

@@ -104,7 +104,7 @@ public class ClientConfig {
 	/**
 	 * http 或者 https
 	 */
-	public static final String HTTP_SCHEME = "httpclient.sheme";
+	public static final String HTTP_PROTOCOL  = "httpclient.protocol ";
 	/**
 	 * Ks3服务地址
 	 */
@@ -195,7 +195,7 @@ public class ClientConfig {
 				for (int i = 0; i < configLoaders.size(); i++) {
 					ConfigLoader loader = configLoaders.get(i);
 					instance = loader.load(instance);
-					log.info("complete load config from "+loader.getClass());
+					log.debug("complete load config from "+loader.getClass());
 				}
 				reload = false;
 			}

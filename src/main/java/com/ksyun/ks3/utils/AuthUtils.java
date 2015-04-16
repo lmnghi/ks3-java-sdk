@@ -49,7 +49,7 @@ public class AuthUtils {
 	 */
 	public static String calcSignature(String accessKeySecret,String policy) throws SignatureException{
 		String signStr = policy;
-		log.info("StringToSign:"+signStr);
+		log.debug("StringToSign:"+signStr);
 		return calculateRFC2104HMAC(signStr,accessKeySecret);
 	}
 	//post表单时的policy
@@ -64,7 +64,7 @@ public class AuthUtils {
 		String policy = "{\"expiration\": \""
 						+DateUtils.convertDate2Str(expiration, DATETIME_PROTOCOL.ISO8861)
 						+"\",\"conditions\": [ {\"bucket\": \""+bucket+"\"}]}";
-		log.info("policy:"+policy);
+		log.debug("policy:"+policy);
 		try {
 			String _policy = new String(Base64.encodeBase64(policy.getBytes("UTF-8")),"UTF-8");
 			return _policy;
@@ -85,7 +85,7 @@ public class AuthUtils {
 	                requestMethod,"","",String.valueOf(_signDate),resource
 	        }));
 	    String signStr = StringUtils.join(signList.toArray(), "\n");
-	    log.info("StringToSign:"+signStr.replace("\n","\\n"));
+	    log.debug("StringToSign:"+signStr.replace("\n","\\n"));
 		return calculateRFC2104HMAC(signStr, accessKeySecret);
 	}
 	//普通
@@ -114,7 +114,7 @@ public class AuthUtils {
         
         String signStr = StringUtils.join(signList.toArray(), "\n");
         
-        log.info("StringToSign:"+signStr.replace("\n","\\n"));
+        log.debug("StringToSign:"+signStr.replace("\n","\\n"));
         
         String serverSignature = calculateRFC2104HMAC(signStr, accessKeySecret);
         return serverSignature;

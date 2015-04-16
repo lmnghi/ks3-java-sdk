@@ -85,7 +85,7 @@ public class PutObjectTest extends AWSEncryptionTest{
 	}
 	@Test
 	public void testUserMeta(){
-		ClientConfig.getConfig().set(ClientConfig.HTTP_SCHEME,"http");
+		ClientConfig.getConfig().set(ClientConfig.HTTP_PROTOCOL,"http");
 		PutObjectRequest req = new PutObjectRequest(bucket,"test",new File("D://test.txt"));
 		ObjectMetadata meta = new ObjectMetadata();
 		meta.setUserMeta("test", "example");
