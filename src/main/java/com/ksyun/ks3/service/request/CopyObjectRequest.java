@@ -6,6 +6,7 @@ import com.ksyun.ks3.dto.ObjectMetadata;
 import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.http.Request;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -22,6 +23,14 @@ import static com.ksyun.ks3.exception.client.ClientIllegalArgumentExceptionGener
  * <p>public CopyObjectRequest(String destinationBucket,String destinationObject,String sourceBucket,String sourceKey)</p>
  **/
 public class CopyObjectRequest extends Ks3WebServiceRequest{
+	/**
+	 * 目标bucket
+	 */
+	private String destinationBucket;
+	/**
+	 * 目标key
+	 */
+	private String destinationKey;
 	/**
 	 * 源bucket
 	 */
@@ -59,8 +68,8 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 	 * @param sourceKey 源object
 	 */
 	public CopyObjectRequest(String destinationBucket,String destinationObject,String sourceBucket,String sourceKey){
-		super.setBucketname(destinationBucket);
-		super.setObjectkey(destinationObject);
+		this.destinationBucket = destinationBucket;
+		this.destinationKey = destinationObject;
 		this.setSourceBucket(sourceBucket);
 		this.setSourceKey(sourceKey);
 	}
@@ -89,35 +98,6 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 		this.setAccessControlList(accessControlList);
 	}
 	
-	@Override
-	protected void configHttpRequest() {
-		this.setHttpMethod(HttpMethod.PUT);
-		this.addHeader(HttpHeaders.XKssCopySource,"/"+this.getSourceBucket()+"/"+HttpUtils.urlEncode(this.getSourceKey(),true));
-        if(getCannedAcl()!=null){
-            this.addHeader(HttpHeaders.CannedAcl,getCannedAcl().toString());
-        }
-        //添加元数据
-      	this.getHeader().putAll(HttpUtils.convertMeta2Headers(this.newObjectMetadata));
-      	//添加服务端加密相关
-      	this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(this.destinationSSECustomerKey));
-      	this.getHeader().putAll(HttpUtils.convertCopySourceSSECustomerKey2Headers(this.sourceSSECustomerKey));
-        if(this.accessControlList!=null)
-        {
-            this.getHeader().putAll(HttpUtils.convertAcl2Headers(accessControlList));
-        }
-	}
-
-	@Override
-	protected void validateParams() throws IllegalArgumentException {
-		if(StringUtils.isBlank(sourceBucket))
-			throw notNull("sourceBucket");
-		if(StringUtils.isBlank(sourceKey))
-			throw notNull("sourceKey");
-		if(StringUtils.isBlank(this.getBucketname()))
-			throw notNull("destinationBucket");
-		if(StringUtils.isBlank(this.getObjectkey()))
-			throw notNull("destinationObject");
-	}
 
 	public String getSourceBucket() {
 		return sourceBucket;
@@ -166,6 +146,39 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 	}
 	public void setDestinationSSECustomerKey(SSECustomerKey destinationSSECustomerKey) {
 		this.destinationSSECustomerKey = destinationSSECustomerKey;
+	}
+	@Override
+	public void buildRequest(Request request) {
+		request.setBucket(this.destinationBucket);
+		request.setKey(this.destinationKey);
+		request.addHeader(HttpHeaders.XKssCopySource,"/"+this.getSourceBucket()+"/"+HttpUtils.urlEncode(this.getSourceKey(),true));
+        if(getCannedAcl()!=null){
+        	request.addHeader(HttpHeaders.CannedAcl,getCannedAcl().toString());
+        }
+        //添加元数据
+        request.getHeaders().putAll(HttpUtils.convertMeta2Headers(this.newObjectMetadata));
+      	//添加服务端加密相关
+        request.getHeaders().putAll(HttpUtils.convertSSECustomerKey2Headers(this.destinationSSECustomerKey));
+        request.getHeaders().putAll(HttpUtils.convertCopySourceSSECustomerKey2Headers(this.sourceSSECustomerKey));
+        if(this.accessControlList!=null)
+        {
+        	request.getHeaders().putAll(HttpUtils.convertAcl2Headers(accessControlList));
+        }
+	}
+	@Override
+	public HttpMethod getHttpMethod() {
+		return HttpMethod.PUT;
+	}
+	@Override
+	public void validateParams() {
+		if(StringUtils.isBlank(sourceBucket))
+			throw notNull("sourceBucket");
+		if(StringUtils.isBlank(sourceKey))
+			throw notNull("sourceKey");
+		if(StringUtils.isBlank(this.destinationBucket))
+			throw notNull("destinationBucket");
+		if(StringUtils.isBlank(this.destinationKey))
+			throw notNull("destinationKey");
 	}
 
 }

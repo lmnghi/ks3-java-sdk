@@ -13,7 +13,8 @@ import java.util.Map;
  **/
 public class Request {
 	private String endpoint;
-	private String resourcePath;
+	private String bucket;
+	private String key;
 	private Map<String,String> queryParams = new HashMap<String,String>();
 	private Map<String,String> headers = new HashMap<String,String>();
 	private InputStream content;
@@ -23,11 +24,17 @@ public class Request {
 	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
 	}
-	public String getResourcePath() {
-		return resourcePath;
+	public String getBucket() {
+		return bucket;
 	}
-	public void setResourcePath(String resourcePath) {
-		this.resourcePath = resourcePath;
+	public void setBucket(String bucket) {
+		this.bucket = bucket;
+	}
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
 	}
 	public Map<String, String> getQueryParams() {
 		return queryParams;
@@ -43,6 +50,9 @@ public class Request {
 	}
 	public void addHeader(String key,String value){
 		this.headers.put(key, value);
+	}
+	public void addHeader(HttpHeaders key,String value){
+		this.addHeader(key.toString(), value);
 	}
 	public void addHeaderIfNotContains(String key,String value){
 		if(!this.headers.containsKey(key))

@@ -42,7 +42,9 @@ public class AbortMultipartUploadRequest extends Ks3WebServiceRequest{
 			throw notNull("uploadId");
 	}
 	@Override
-	public void buildHttpRequest(Request request) {
+	public void buildRequest(Request request) {
+		request.setBucket(bucket);
+		request.setKey(key);
 		request.addHeader("uploadId",this.uploadId);
 	}
 	@Override

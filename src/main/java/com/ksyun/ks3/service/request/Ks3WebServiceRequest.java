@@ -15,7 +15,7 @@ import com.ksyun.ks3.http.WebServiceRequestConfig;
  **/
 public abstract class Ks3WebServiceRequest {
 	private WebServiceRequestConfig config = new WebServiceRequestConfig();
-	public abstract void buildHttpRequest(Request request);
+	public abstract void buildRequest(Request request);
 	public abstract void validateParams();
 	public abstract HttpMethod getHttpMethod();
 	public WebServiceRequestConfig getConfig() {

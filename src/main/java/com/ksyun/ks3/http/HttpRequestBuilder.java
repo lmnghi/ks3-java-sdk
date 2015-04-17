@@ -21,9 +21,11 @@ import com.ksyun.ks3.RepeatableFileInputStream;
 import com.ksyun.ks3.RepeatableInputStream;
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
+import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
 import com.ksyun.ks3.service.request.support.MD5CalculateAble;
+import com.ksyun.ks3.signer.Signer;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -35,14 +37,21 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description 
  **/
 public class HttpRequestBuilder {
-	public static HttpRequestBase build(Ks3WebServiceRequest ks3Request){	
+	public static HttpRequestBase build(Ks3WebServiceRequest ks3Request,Authorization auth){	
 		ks3Request.validateParams();
 		Request request = new Request();
-		ks3Request.buildHttpRequest(request);
+		ks3Request.buildRequest(request);
 		request.addHeaderIfNotContains(HttpHeaders.UserAgent.toString(),ks3Request.getConfig().getUserAgent());
 		request.addHeaderIfNotContains(HttpHeaders.ContentType.toString(),"application/xml");
 		//sign request
-		//TODO
+		try {
+			String signerString = ClientConfig.getConfig().getStr(
+					ClientConfig.CLIENT_SIGNER);
+			Signer signer = (Signer) Class.forName(signerString).newInstance();
+			signer.sign(auth, request);
+		} catch (Exception e) {
+			throw new Ks3ClientException(e);
+		}
 		//build http request
 		HttpMethod method = ks3Request.getHttpMethod();
 		HttpRequestBase httpRequest = null;
@@ -55,12 +64,32 @@ public class HttpRequestBuilder {
 				&&!((MD5CalculateAble)ks3Request).skipCal())
 			if (!(request.getContent() instanceof MD5DigestCalculatingInputStream))
 				request.setContent(new MD5DigestCalculatingInputStream(request.getContent()));
-		
-		String url = request.getEndpoint();
+		//get request url
+		String url = "";
+		String bucket = request.getBucket();
+		String key = request.getKey();
+		String endpoint = request.getEndpoint();
 		String encodedParams = HttpUtils.encodeParams(request.getQueryParams());
-		if(!StringUtils.isBlank(encodedParams)){
-			url += ("?"+encodedParams);
+		key = HttpUtils.urlEncode(key, true);
+		int format = ClientConfig.getConfig().getInt(
+				ClientConfig.CLIENT_URLFORMAT);
+		String protocol = ClientConfig.getConfig().getStr(ClientConfig.HTTP_PROTOCOL);
+		if (format == 0) {
+			url = new StringBuffer(protocol+"://")
+					.append(StringUtils.isBlank(bucket) ? "" : bucket
+							+ ".").append(endpoint)
+					.append(StringUtils.isBlank(key) ? "" :"/"+ key)
+					.toString();
+		} else {
+			url = new StringBuffer(protocol+"://")
+					.append(endpoint)
+					.append(StringUtils.isBlank(bucket) ? "" :"/" +bucket)
+					.append(StringUtils.isBlank(key) ? "" : "/"+key)
+					.toString();
 		}
+		if (!StringUtils.isBlank(encodedParams))
+			url += "?" + encodedParams;
+		//init http request
 		InputStream requestBody = request.getContent();
 		if (method == HttpMethod.POST) {
 			HttpPost postMethod = new HttpPost(url);
@@ -121,6 +150,7 @@ public class HttpRequestBuilder {
 			throw new Ks3ClientException("Unknow http method : "
 					+ method);
 		}
+		//add headers
 		for (Entry<String, String> aHeader : request.getHeaders().entrySet()) {
 			if (!httpRequest.containsHeader(aHeader.getKey()))
 				httpRequest.setHeader(aHeader.getKey(), aHeader.getValue());

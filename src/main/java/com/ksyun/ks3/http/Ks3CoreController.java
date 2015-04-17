@@ -87,16 +87,7 @@ public class Ks3CoreController {
 		Timer.start();
 		this.client = this.factory.createHttpClient();
 		HttpResponse response = null;
-		HttpRequestBase httpRequest = HttpRequestBuilder.build(request);
-		try {
-			String signerString = ClientConfig.getConfig().getStr(
-					ClientConfig.CLIENT_SIGNER);
-			Signer signer = (Signer) Class.forName(signerString).newInstance();
-			httpRequest.addHeader(HttpHeaders.Authorization.toString(),
-					signer.calculate(auth, request));
-		} catch (Exception e) {
-			throw new Ks3ClientException("计算签名时发生了一个异常 (" + e + ")", e);
-		}
+		HttpRequestBase httpRequest = HttpRequestBuilder.build(request,auth);
 		try {
 			log.debug(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
