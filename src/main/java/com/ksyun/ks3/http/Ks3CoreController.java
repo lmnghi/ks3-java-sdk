@@ -87,7 +87,7 @@ public class Ks3CoreController {
 		Timer.start();
 		this.client = this.factory.createHttpClient();
 		HttpResponse response = null;
-		HttpRequestBase httpRequest = request.getHttpRequest();
+		HttpRequestBase httpRequest = HttpRequestBuilder.build(request);
 		try {
 			String signerString = ClientConfig.getConfig().getStr(
 					ClientConfig.CLIENT_SIGNER);
