@@ -28,6 +28,7 @@ import com.ksyun.ks3.service.encryption.model.EncryptionMaterialsProvider;
 import com.ksyun.ks3.service.encryption.model.StaticEncryptionMaterialsProvider;
 import com.ksyun.ks3.service.request.AbortMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
+import com.ksyun.ks3.service.request.CopyObjectRequest;
 import com.ksyun.ks3.service.request.CopyPartRequest;
 import com.ksyun.ks3.service.request.DeleteObjectRequest;
 import com.ksyun.ks3.service.request.GetObjectRequest;
@@ -98,22 +99,10 @@ public class Ks3EncryptionClient extends Ks3Client{
     public PutObjectResult putObject(PutObjectRequest req) {
         return crypto.putObjectSecurely(req);
     }
-    @Override
-    public PutObjectResult putObject(String bucket,String key,File file){
-    	return this.putObject(new PutObjectRequest(bucket,key,file));
-    }
-    @Override
-    public PutObjectResult putObject(String bucket,String key,InputStream content,ObjectMetadata meta){
-    	return this.putObject(new PutObjectRequest(bucket,key,content,meta));
-    }
 
     @Override
     public GetObjectResult getObject(GetObjectRequest req) {
         return crypto.getObjectSecurely(req);
-    }
-    @Override
-    public GetObjectResult getObject(String bucket,String key) {
-        return this.getObject(new GetObjectRequest(bucket,key));
     }
 
     @Override
@@ -131,8 +120,11 @@ public class Ks3EncryptionClient extends Ks3Client{
         }
     }
     @Override
-    public void deleteObject(String bucket,String key) {
-    	this.deleteObject(new DeleteObjectRequest(bucket,key));
+    public CopyResult copyObject(CopyObjectRequest req){
+    	req.getHeader().put(HttpHeaders.UserAgent.toString(),Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
+    	if(super.objectExists(req.getBucketname(),req.getObjectkey())){
+    	}
+    	return super.copyObject(req);
     }
 
     @Override
@@ -141,32 +133,10 @@ public class Ks3EncryptionClient extends Ks3Client{
         return crypto.completeMultipartUploadSecurely(req);
     }
     @Override
-	public CompleteMultipartUploadResult completeMultipartUpload(
-			ListPartsResult result) throws Ks3ClientException,
-			Ks3ServiceException {
-		return this.completeMultipartUpload(new CompleteMultipartUploadRequest(
-				result));
-	}
-    @Override
-	public CompleteMultipartUploadResult completeMultipartUpload(
-			String bucketname, String objectkey, String uploadId,
-			List<PartETag> partETags) throws Ks3ClientException,
-			Ks3ServiceException {
-		return this.completeMultipartUpload(new CompleteMultipartUploadRequest(
-				bucketname, objectkey, uploadId, partETags));
-	}
-    @Override
     public InitiateMultipartUploadResult initiateMultipartUpload(
             InitiateMultipartUploadRequest req) {
         return crypto.initiateMultipartUploadSecurely(req);
     }
-    @Override
-	public InitiateMultipartUploadResult initiateMultipartUpload(
-			String bucketname, String objectkey) throws Ks3ClientException,
-			Ks3ServiceException {
-		return this.initiateMultipartUpload(new InitiateMultipartUploadRequest(
-				bucketname, objectkey));
-	}
     /**
      * 注意，当使用分块上传时，需要依次按顺序上传各个块，不能多线程并发上传或者上传顺序不对。
      */
@@ -178,6 +148,7 @@ public class Ks3EncryptionClient extends Ks3Client{
 
     @Override
     public CopyResult copyPart(CopyPartRequest copyPartRequest) {
+    	//TODO remove InstructionFile
         return crypto.copyPartSecurely(copyPartRequest);
     }
 
@@ -185,12 +156,6 @@ public class Ks3EncryptionClient extends Ks3Client{
     public void abortMultipartUpload(AbortMultipartUploadRequest req) {
         crypto.abortMultipartUploadSecurely(req);
     }
-    @Override
-	public void abortMultipartUpload(String bucketname, String objectkey,
-			String uploadId) throws Ks3ClientException, Ks3ServiceException {
-		this.abortMultipartUpload(new AbortMultipartUploadRequest(bucketname,
-				objectkey, uploadId));
-	}
 
     // /////////////////// Access to the methods in the super class //////////
     /**
