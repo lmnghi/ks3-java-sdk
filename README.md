@@ -2,7 +2,6 @@
 ---
 ## 注意
 文档中的示例代码仅供参考之用，具体使用的时候请参考KS3 API文档，根据自己的实际情况调节参数。  
-直接使用示例代码中的参数可能会导致最后得到的结果和用户期望的不一致。  
 lib目录下为该项目所依赖的所有jar包，以及将sdk打好的jar包  
 如果您在使用中有任何疑问，请联系lijunwei@kingsoft.com或添加QQ:1448039011
 
@@ -10,17 +9,7 @@ lib目录下为该项目所依赖的所有jar包，以及将sdk打好的jar包
 
 ## 1 概述
 此SDK适用于Java 5及以上版本。基于KS3 API 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到金山云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过KS3存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。  
-com.ksyun.ks3:几个在上传时用到的特殊的流  
-com.ksyun.ks3.config:sdk客户端配置  
-com.ksyun.ks3.dto:数据传输对象  
-com.ksyun.ks3.exception:异常  
-com.ksyun.ks3.exception.serviceside:ks3服务端的异常  
-com.ksyun.ks3.http:http相关内容及对Apache Http Client的封装  
-com.ksyun.ks3.service:Ks3客户端，所有的对API的操作都是在这里进行的  
-com.ksyun.ks3.service.request:对API请求时参数的封装，用户进行使用时首先应该实例化并配置一个request然后通过    com.ksyun.ks3.service包下的客户端进行操作  
-com.ksyun.ks3.service.response:对请求API返回的结果的解析器  
-com.ksyun.ks3.signer:签名生成器，具体使用哪个签名生成器可以在ClientConfig中配置(一般情况下请勿修改)  
-com.ksyun.ks3.utils:工具包  
+
 
 ## 2 环境准备
 配置Java 5 以上开发环境  
@@ -32,6 +21,8 @@ com.ksyun.ks3.utils:工具包
         <artifactId>ks3-kss-java-sdk</artifactId>
         <version>0.3.1</version>
     </dependency>
+    
+或者直接引用lib目录下的所有jar包
     
 ## 3 初始化
 ### 3.1 配置参数
@@ -90,8 +81,19 @@ com.ksyun.ks3.utils:工具包
 
 	ClientConfig.addConfigLoader(new DemoConfigLoader());
 ### 3.2 配置日志
-该SDK使用log4j，请用户自行配置log4j.properties  
-示例配置:
+该SDK使用commons-logging
+
+使用log4j的示例：
+1、引用log4j相关jar包
+	
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+			<scope>test</scope>
+		</dependency>
+		
+2、新建log4j.properties(如下为示例配置)
 
 		log4j.logger.com.ksyun.ks3=DEBUG,stdout
 		log4j.logger.org.apache.http=DEBUG,stdout
