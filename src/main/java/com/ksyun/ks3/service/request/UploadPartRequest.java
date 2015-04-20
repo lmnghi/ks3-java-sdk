@@ -290,7 +290,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements SSECustom
 		}
 		//添加服务端加密相关
 		request.getHeaders().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
-		request.addHeader(HttpHeaders.ContentLength, String.valueOf(this.partSize));
+		request.addHeader(HttpHeaders.ContentLength, String.valueOf(this.getInstancePartSize()));
 		if(!StringUtils.isBlank(ContentMD5)){
 			request.addHeader(HttpHeaders.ContentMD5, ContentMD5);
 		}

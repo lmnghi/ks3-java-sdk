@@ -119,6 +119,7 @@ public class Ks3CoreController {
 					response = client.execute(httpRequest);
 				}
 			}
+			closeInputStream(httpRequest);
 			log.debug("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
@@ -219,5 +220,18 @@ public class Ks3CoreController {
 		map.put("ETag", etag);
 		map.put("MD5", clientmd5);
 		return map;
+	}
+	private void closeInputStream(HttpRequest req) throws IllegalStateException, IOException{
+		HttpEntity entity = null;
+		if(req instanceof HttpPut){
+			entity = ((HttpPut)req).getEntity();
+		}else if(req instanceof HttpPost){
+			entity = ((HttpPost)req).getEntity();
+		}
+		if(entity != null){
+			InputStream input = entity.getContent();
+			if(input!=null)
+				input.close();
+		}
 	}
 }
