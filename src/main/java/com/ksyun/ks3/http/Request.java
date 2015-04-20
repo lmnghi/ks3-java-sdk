@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ksyun.ks3.utils.StringUtils;
+
 /**
  * @author lijunwei[lijunwei@kingsoft.com]  
  * 
@@ -12,6 +14,7 @@ import java.util.Map;
  * @description 
  **/
 public class Request {
+	private HttpMethod method;
 	private String endpoint;
 	private String bucket;
 	private String key;
@@ -42,6 +45,13 @@ public class Request {
 	public void setQueryParams(Map<String, String> queryParams) {
 		this.queryParams = queryParams;
 	}
+	public void addQueryParam(String key,String value){
+		this.queryParams.put(key, value);
+	}
+	public void addQueryParamIfNotNull(String key,String value){
+		if(!StringUtils.isBlank(value))
+			this.addQueryParam(key, value);
+	}
 	public Map<String, String> getHeaders() {
 		return headers;
 	}
@@ -63,6 +73,12 @@ public class Request {
 	}
 	public void setContent(InputStream content) {
 		this.content = content;
+	}
+	public HttpMethod getMethod() {
+		return method;
+	}
+	public void setMethod(HttpMethod method) {
+		this.method = method;
 	}
 	
 }

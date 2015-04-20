@@ -104,7 +104,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
 
         if (encryptedUploadContext.hasFinalPartBeenSeen() == false) {
             throw new Ks3ClientException("Unable to complete an encrypted multipart upload without being told which part was the last.  " +
-                    "Without knowing which part was the last, the encrypted data in Amazon S3 is incomplete and corrupt.");
+                    "Without knowing which part was the last, the encrypted data in KS3 is incomplete and corrupt.");
         }
 
         CompleteMultipartUploadResult result = s3.completeMultipartUpload(completeMultipartUploadRequest);
@@ -163,7 +163,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
         }
 
         InitiateMultipartUploadResult result = s3.initiateMultipartUpload(initiateMultipartUploadRequest);
-        EncryptedUploadContext encryptedUploadContext = new EncryptedUploadContext(initiateMultipartUploadRequest.getBucketname(), initiateMultipartUploadRequest.getObjectkey(), envelopeSymmetricKey);
+        EncryptedUploadContext encryptedUploadContext = new EncryptedUploadContext(initiateMultipartUploadRequest.getBucket(), initiateMultipartUploadRequest.getKey(), envelopeSymmetricKey);
         encryptedUploadContext.setNextInitializationVector(symmetricCipher.getIV());
         encryptedUploadContext.setFirstInitializationVector(symmetricCipher.getIV());
         if (initiateMultipartUploadRequest instanceof EncryptedInitiateMultipartUploadRequest) {
@@ -193,7 +193,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
         boolean isLastPart = uploadPartRequest.isLastPart();
         String uploadId = uploadPartRequest.getUploadId();
 
-        boolean partSizeMultipleOfCipherBlockSize = uploadPartRequest.getPartSize() % JceEncryptionConstants.SYMMETRIC_CIPHER_BLOCK_SIZE == 0;
+        boolean partSizeMultipleOfCipherBlockSize = uploadPartRequest.getInstancePartSize() % JceEncryptionConstants.SYMMETRIC_CIPHER_BLOCK_SIZE == 0;
         if (!isLastPart && !partSizeMultipleOfCipherBlockSize) {
             throw new Ks3ClientException("Invalid part size: part sizes for encrypted multipart uploads must be multiples " +
                     "of the cipher block size (" + JceEncryptionConstants.SYMMETRIC_CIPHER_BLOCK_SIZE + ") with the exception of the last part.  " +
@@ -210,7 +210,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
 
         // Create encrypted input stream
         ByteRangeCapturingInputStream encryptedInputStream = EncryptionUtils.getEncryptedInputStream(uploadPartRequest, cipherFactory);
-        uploadPartRequest.setRequestBody(encryptedInputStream);
+        uploadPartRequest.setInputStream(encryptedInputStream);
 
         // The last part of the multipart upload will contain extra padding from the encryption process
         if (uploadPartRequest.isLastPart()) {

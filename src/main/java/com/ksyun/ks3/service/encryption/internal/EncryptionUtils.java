@@ -341,7 +341,7 @@ public class EncryptionUtils {
         request.setObjectMeta(metadata);
 
         // Create encrypted input stream
-        request.setRequestBody(getEncryptedInputStream(request, instruction.getCipherFactory(), plaintextLength));
+        request.setInputStream(getEncryptedInputStream(request, instruction.getCipherFactory(), plaintextLength));
 
         // Treat all encryption requests as input stream upload requests, not as file upload requests.
         request.setFile(null);
@@ -390,12 +390,12 @@ public class EncryptionUtils {
         metadata.setContentMD5(null);
 
         // Set the crypto instruction file header
-        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getObjectkey() + INSTRUCTION_SUFFIX);
+        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getKey() + INSTRUCTION_SUFFIX);
 
         // Update the instruction request
-        request.setObjectKey(request.getObjectkey() + INSTRUCTION_SUFFIX);
+        request.setKey(request.getKey() + INSTRUCTION_SUFFIX);
         request.setObjectMeta(metadata);
-        request.setRequestBody(instructionInputStream);
+        request.setInputStream(instructionInputStream);
         return request;
     }
 
@@ -420,7 +420,7 @@ public class EncryptionUtils {
      *      A get request to retrieve an instruction file from S3.
      */
     public static GetObjectRequest createInstructionGetRequest(GetObjectRequest request) {
-        return new GetObjectRequest(request.getBucketname(), request.getObjectkey() + INSTRUCTION_SUFFIX);
+        return new GetObjectRequest(request.getBucket(), request.getKey() + INSTRUCTION_SUFFIX);
     }
 
     /**
@@ -432,7 +432,7 @@ public class EncryptionUtils {
      *      A delete request to delete an instruction file in S3.
      */
     public static DeleteObjectRequest createInstructionDeleteObjectRequest(DeleteObjectRequest request) {
-        return new DeleteObjectRequest(request.getBucketname(), request.getObjectkey() + INSTRUCTION_SUFFIX);
+        return new DeleteObjectRequest(request.getBucket(), request.getKey() + INSTRUCTION_SUFFIX);
     }
 
     /**
@@ -636,7 +636,7 @@ public class EncryptionUtils {
             PutObjectRequest request, CipherFactory cipherFactory,
             long plaintextLength) {
         try {
-            InputStream is = request.getRequestBody();
+            InputStream is = request.getInputStream();
             if (request.getFile() != null) {
                 // Historically file takes precedence over the original input
                 // stream
@@ -656,20 +656,20 @@ public class EncryptionUtils {
 
     public static ByteRangeCapturingInputStream getEncryptedInputStream(UploadPartRequest request, CipherFactory cipherFactory) {
         try {
-            InputStream originalInputStream = request.getRequestBody();
+            InputStream originalInputStream = request.getInputStream();
             if (request.getFile() != null) {
                 originalInputStream = new InputSubStream(new RepeatableFileInputStream(request.getFile()),
-                        request.getFileoffset(), request.getPartSize(), request.isLastPart());
+                        request.getFileoffset(), request.getInstancePartSize(), request.isLastPart());
             }
 
             originalInputStream = new RepeatableCipherInputStream(originalInputStream, cipherFactory);
 
             if (request.isLastPart() == false) {
                 // We want to prevent the final padding from being sent on the stream...
-                originalInputStream = new InputSubStream(originalInputStream, 0, request.getPartSize(), false);
+                originalInputStream = new InputSubStream(originalInputStream, 0, request.getInstancePartSize(), false);
             }
 
-            long partSize = request.getPartSize();
+            long partSize = request.getInstancePartSize();
             int cipherBlockSize = cipherFactory.createCipher().getBlockSize();
             return new ByteRangeCapturingInputStream(originalInputStream, partSize - cipherBlockSize, partSize);
         } catch (Exception e) {
@@ -804,10 +804,10 @@ public class EncryptionUtils {
     public static long calculateCryptoContentLength(Cipher symmetricCipher, UploadPartRequest request) {
         long plaintextLength;
         if (request.getFile() != null) {
-            if (request.getPartSize() > 0) plaintextLength = request.getPartSize();
+            if (request.getInstancePartSize() > 0) plaintextLength = request.getInstancePartSize();
             else plaintextLength = request.getFile().length();
-        } else if (request.getRequestBody() != null) {
-            plaintextLength = request.getPartSize();
+        } else if (request.getInputStream() != null) {
+            plaintextLength = request.getInstancePartSize();
         } else {
             return -1;
         }
@@ -836,7 +836,7 @@ public class EncryptionUtils {
         }
     	if(fileLength>=0){
     		return fileLength;
-    	}else if(lengthInMeta > 0&&request.getRequestBody()!=null){
+    	}else if(lengthInMeta > 0&&request.getInputStream()!=null){
     		return lengthInMeta;
     	}
         return -1;

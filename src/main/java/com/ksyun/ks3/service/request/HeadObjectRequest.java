@@ -12,6 +12,7 @@ import com.ksyun.ks3.dto.ResponseHeaderOverrides;
 import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.http.HttpMethod;
+import com.ksyun.ks3.http.Request;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
 
@@ -23,6 +24,8 @@ import com.ksyun.ks3.utils.StringUtils;
  * @description Head请求一个object,可以用来判断一个object是否存在或者是用来获取object的元数据
  **/
 public class HeadObjectRequest extends Ks3WebServiceRequest {
+	private String bucket;
+	private String key;
 	private String range = null;
 	/**
 	 * object的etag能匹配到则返回，否则返回结果的ifPreconditionSuccess为false，metadata为空
@@ -50,33 +53,15 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 	private ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
 	public HeadObjectRequest(String bucketname,String objectkey)
 	{
-		this.setBucketname(bucketname);
-		this.setObjectkey(objectkey);
-	}
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void configHttpRequest() {
-		this.setHttpMethod(HttpMethod.HEAD);
-		if(!StringUtils.isBlank(range))
-			this.addHeader(HttpHeaders.Range,range);
-		if(matchingETagConstraints.size()>0)
-			this.addHeader(HttpHeaders.IfMatch, StringUtils.join(matchingETagConstraints, ","));
-		if(nonmatchingEtagConstraints.size()>0)
-			this.addHeader(HttpHeaders.IfNoneMatch, StringUtils.join(nonmatchingEtagConstraints, ","));
-		if(this.unmodifiedSinceConstraint !=null)
-			this.addHeader(HttpHeaders.IfUnmodifiedSince, this.unmodifiedSinceConstraint.toGMTString());
-		if(this.modifiedSinceConstraint !=null)
-			this.addHeader(HttpHeaders.IfModifiedSince, this.modifiedSinceConstraint.toGMTString());
-		this.getParams().putAll(this.overrides.getOverrides());
-		//添加服务端加密相关
-		this.getHeader().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
+		this.bucket = bucketname;
+		this.key = objectkey;
 	}
 
 	@Override
-	protected void validateParams() throws IllegalArgumentException {
-		if(StringUtils.isBlank(this.getBucketname()))
+	public void validateParams() throws IllegalArgumentException {
+		if(StringUtils.isBlank(this.bucket))
 			throw notNull("bucketname");
-		if(StringUtils.isBlank(this.getObjectkey()))
+		if(StringUtils.isBlank(this.key))
 			throw notNull("objectkey");
 		if(!StringUtils.isBlank(range))
 		{
@@ -84,6 +69,23 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 				throw notCorrect("Range",range," bytes=x-y,y>=x");
 		}
 	}
+	
+	public String getBucket() {
+		return bucket;
+	}
+
+	public void setBucket(String bucket) {
+		this.bucket = bucket;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
 	public String getRange() {
 		return range;
 	}
@@ -153,6 +155,26 @@ public class HeadObjectRequest extends Ks3WebServiceRequest {
 	}
 	public void setSseCustomerKey(SSECustomerKey sseCustomerKey) {
 		this.sseCustomerKey = sseCustomerKey;
+	}
+
+	@Override
+	public void buildRequest(Request request) {
+		request.setMethod(HttpMethod.HEAD);
+		request.setBucket(bucket);
+		request.setKey(key);
+		if(!StringUtils.isBlank(range))
+			request.addHeader(HttpHeaders.Range,range);
+		if(matchingETagConstraints.size()>0)
+			request.addHeader(HttpHeaders.IfMatch, StringUtils.join(matchingETagConstraints, ","));
+		if(nonmatchingEtagConstraints.size()>0)
+			request.addHeader(HttpHeaders.IfNoneMatch, StringUtils.join(nonmatchingEtagConstraints, ","));
+		if(this.unmodifiedSinceConstraint !=null)
+			request.addHeader(HttpHeaders.IfUnmodifiedSince, this.unmodifiedSinceConstraint.toGMTString());
+		if(this.modifiedSinceConstraint !=null)
+			request.addHeader(HttpHeaders.IfModifiedSince, this.modifiedSinceConstraint.toGMTString());
+		request.getQueryParams().putAll(this.overrides.getOverrides());
+		//添加服务端加密相关
+		request.getHeaders().putAll(HttpUtils.convertSSECustomerKey2Headers(sseCustomerKey));
 	}
 	
 }

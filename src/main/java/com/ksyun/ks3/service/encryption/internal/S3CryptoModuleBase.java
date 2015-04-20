@@ -256,7 +256,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
             metadata.setContentLength(ciphertextLength(plaintextLength));
         }
         request.setObjectMeta(metadata);
-        request.setRequestBody(newS3CipherLiteInputStream(
+        request.setInputStream(newS3CipherLiteInputStream(
             request, cekMaterial, plaintextLength));
         // Treat all encryption requests as input stream upload requests, not as
         // file upload requests.
@@ -268,7 +268,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
             PutObjectRequest req, ContentCryptoMaterial cekMaterial,
             long plaintextLength) {
         try {
-            InputStream is = req.getRequestBody();
+            InputStream is = req.getInputStream();
             if (req.getFile() != null)
                 is = new RepeatableFileInputStream(req.getFile());
             if (plaintextLength > -1) {
@@ -304,7 +304,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
         }
     	if(fileLength>=0){
     		return fileLength;
-    	}else if(lengthInMeta > 0&&request.getRequestBody()!=null){
+    	}else if(lengthInMeta > 0&&request.getInputStream()!=null){
     		return lengthInMeta;
     	}
         return -1;
@@ -338,11 +338,11 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
         //不能使用之前request的content-md5
         metadata.setContentMD5(null);
         // Set the crypto instruction file header
-        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getObjectkey() + EncryptionUtils.INSTRUCTION_SUFFIX);
+        metadata.setUserMeta(HttpHeaders.CRYPTO_INSTRUCTION_FILE.toString(), request.getKey() + EncryptionUtils.INSTRUCTION_SUFFIX);
         // Update the instruction request
-        request.setObjectKey(request.getObjectkey() + EncryptionUtils.INSTRUCTION_SUFFIX);
+        request.setKey(request.getKey() + EncryptionUtils.INSTRUCTION_SUFFIX);
         request.setObjectMeta(metadata);
-        request.setRequestBody(is);
+        request.setInputStream(is);
         request.setFile(null);
         return request;
     }
@@ -365,7 +365,7 @@ public abstract class S3CryptoModuleBase<T extends MultipartUploadContext>
      */
     final <X extends Ks3WebServiceRequest> X appendUserAgent(
             X request, String userAgent) {
-        request.getHeader().put(HttpHeaders.UserAgent.toString(), userAgent);
+        request.getRequestConfig().setUserAgent( userAgent);
         return request;
     }
 }

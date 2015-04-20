@@ -596,6 +596,7 @@ public class Ks3UploadClient {
 			client.completeMultipartUpload(bucket, key,
 					initResult.getUploadId(), partEtags);
 		} else {
+			client.abortMultipartUpload(bucket, key, initResult.getUploadId());
 			throw (RuntimeException) shouldComplete.get("cause");
 		}
 	}
@@ -642,6 +643,7 @@ public class Ks3UploadClient {
 
 		final int partnums = (int) (length / partSize)
 				+ (length % partSize == 0 ? 0 : 1);
+		boolean success = true;
 		// 上传块的线程
 		for (int i = 0; i < partnums; i++) {
 			final int partNum = i;
@@ -660,9 +662,13 @@ public class Ks3UploadClient {
 								bucket, key, file.getAbsolutePath(),
 								initResult.getUploadId(), partNum + 1, maxRetry);
 				log.error(errorMsg);
-			}
+				success = false;
+				client.abortMultipartUpload(bucket, key, initResult.getUploadId());
+				throw e;
+			} 
 		}
-		client.completeMultipartUpload(bucket, key, initResult.getUploadId(),
+		if(success)
+			client.completeMultipartUpload(bucket, key, initResult.getUploadId(),
 				partEtags);
 	}
 }

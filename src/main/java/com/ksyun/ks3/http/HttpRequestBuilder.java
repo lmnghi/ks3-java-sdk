@@ -24,7 +24,7 @@ import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.Authorization;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
-import com.ksyun.ks3.service.request.support.MD5CalculateAble;
+import com.ksyun.ks3.service.request.SSECustomerKeyRequest;
 import com.ksyun.ks3.signer.Signer;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
@@ -41,8 +41,9 @@ public class HttpRequestBuilder {
 		ks3Request.validateParams();
 		Request request = new Request();
 		ks3Request.buildRequest(request);
-		request.addHeaderIfNotContains(HttpHeaders.UserAgent.toString(),ks3Request.getConfig().getUserAgent());
+		request.addHeaderIfNotContains(HttpHeaders.UserAgent.toString(),ks3Request.getRequestConfig().getUserAgent());
 		request.addHeaderIfNotContains(HttpHeaders.ContentType.toString(),"application/xml");
+		request.setEndpoint(ClientConfig.getConfig().getStr(ClientConfig.END_POINT));
 		//sign request
 		try {
 			String signerString = ClientConfig.getConfig().getStr(
@@ -53,15 +54,13 @@ public class HttpRequestBuilder {
 			throw new Ks3ClientException(e);
 		}
 		//build http request
-		HttpMethod method = ks3Request.getHttpMethod();
+		HttpMethod method = request.getMethod();
 		HttpRequestBase httpRequest = null;
 		//wrap content
 		if(request.getContent()!=null&&!(request.getContent() instanceof RepeatableInputStream)&&!(request.getContent() instanceof RepeatableFileInputStream))
 			request.setContent(new RepeatableInputStream(request.getContent(),Constants.DEFAULT_STREAM_BUFFER_SIZE));
 		//cal md5 in client
-		if (ks3Request instanceof MD5CalculateAble && request.getContent() != null
-				&& StringUtils.isBlank(request.getHeaders().get(HttpHeaders.ContentMD5.toString()))
-				&&!((MD5CalculateAble)ks3Request).skipCal())
+		if (!skipMD5Check(ks3Request, request))
 			if (!(request.getContent() instanceof MD5DigestCalculatingInputStream))
 				request.setContent(new MD5DigestCalculatingInputStream(request.getContent()));
 		//get request url
@@ -158,5 +157,19 @@ public class HttpRequestBuilder {
 		
 		httpRequest.removeHeaders(HttpHeaders.ContentLength.toString());
 		return httpRequest;
+	}
+	private static boolean skipMD5Check(Ks3WebServiceRequest wsReq,Request req){
+		if(wsReq instanceof SSECustomerKeyRequest){
+			if(((SSECustomerKeyRequest)wsReq).getSseCustomerKey()!=null)
+				return true;
+			if(req.getContent() == null)
+				return true;
+			if(!StringUtils.isBlank(req.getHeaders().get(HttpHeaders.ContentMD5.toString()))){
+				return true;
+			}
+			return false;
+		}else{
+			return true;
+		}
 	}
 }

@@ -3,10 +3,13 @@ package com.ksyun.ks3.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -16,6 +19,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
+import com.ksyun.ks3.MD5DigestCalculatingInputStream;
 import com.ksyun.ks3.config.ClientConfig;
 import com.ksyun.ks3.config.Constants;
 import com.ksyun.ks3.dto.Authorization;
@@ -26,12 +30,12 @@ import com.ksyun.ks3.exception.client.ClientHttpException;
 import com.ksyun.ks3.exception.client.ClientIllegalArgumentException;
 import com.ksyun.ks3.exception.client.ClientInvalidDigestException;
 import com.ksyun.ks3.service.request.Ks3WebServiceRequest;
+import com.ksyun.ks3.service.request.SSECustomerKeyRequest;
 import com.ksyun.ks3.service.request.UploadPartRequest;
-import com.ksyun.ks3.service.request.support.MD5CalculateAble;
 import com.ksyun.ks3.service.response.Ks3WebServiceResponse;
-import com.ksyun.ks3.service.response.support.Md5CheckAble;
 import com.ksyun.ks3.signer.Signer;
 import com.ksyun.ks3.utils.AuthUtils;
+import com.ksyun.ks3.utils.Base64;
 import com.ksyun.ks3.utils.Converter;
 import com.ksyun.ks3.utils.HttpUtils;
 import com.ksyun.ks3.utils.StringUtils;
@@ -59,7 +63,8 @@ public class Ks3CoreController {
 		try {
 			if (auth == null || StringUtils.isBlank(auth.getAccessKeyId())
 					|| StringUtils.isBlank(auth.getAccessKeySecret()))
-				throw new Ks3ClientException("AccessKeyId or AccessKeySecret can't be null");
+				throw new Ks3ClientException(
+						"AccessKeyId or AccessKeySecret can't be null");
 			if (request == null || clazz == null)
 				throw new IllegalArgumentException();
 			result = doExecute(auth, request, clazz);
@@ -78,29 +83,36 @@ public class Ks3CoreController {
 			}
 			log.error(e);
 			throw e;
+		} catch (IOException e) {
+			log.error(e);
+			throw new Ks3ClientException(e);
 		} finally {
 		}
 	}
 
 	private <X extends Ks3WebServiceResponse<Y>, Y> Y doExecute(
-			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz) {
+			Authorization auth, Ks3WebServiceRequest request, Class<X> clazz)
+			throws IllegalStateException, IOException {
 		Timer.start();
 		this.client = this.factory.createHttpClient();
 		HttpResponse response = null;
-		HttpRequestBase httpRequest = HttpRequestBuilder.build(request,auth);
+		HttpRequestBase httpRequest = HttpRequestBuilder.build(request, auth);
 		try {
 			log.debug(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
 			log.debug(response.getStatusLine());
-			if(response.getStatusLine().getStatusCode()==307&&response.containsHeader("Location")){
+			if (response.getStatusLine().getStatusCode() == 307
+					&& response.containsHeader("Location")) {
 				String location = response.getHeaders("Location")[0].getValue();
-				//TODO 这个只是为了兼容当前api
-				if(location.startsWith("http")){
-					log.debug("returned 307,retry request to "+location);
-					if(httpRequest instanceof HttpPut){
-						((HttpPut) httpRequest).getEntity().getContent().reset();
-					}else if(httpRequest instanceof HttpPost){
-						((HttpPost) httpRequest).getEntity().getContent().reset();
+				// TODO 这个只是为了兼容当前api
+				if (location.startsWith("http")) {
+					log.debug("returned 307,retry request to " + location);
+					if (httpRequest instanceof HttpPut) {
+						((HttpPut) httpRequest).getEntity().getContent()
+								.reset();
+					} else if (httpRequest instanceof HttpPost) {
+						((HttpPost) httpRequest).getEntity().getContent()
+								.reset();
 					}
 					httpRequest.setURI(new URI(location));
 					response = client.execute(httpRequest);
@@ -109,6 +121,8 @@ public class Ks3CoreController {
 			log.debug("finished send request to ks3 service and recive response from the service : "
 					+ Timer.end());
 		} catch (Exception e) {
+			if(e instanceof Ks3ClientException)
+				throw (Ks3ClientException)e;
 			throw new ClientHttpException(e);
 		}
 		Ks3WebServiceResponse<Y> ksResponse = null;
@@ -135,19 +149,19 @@ public class Ks3CoreController {
 							.getValue());
 		}
 		Y result = ksResponse.handleResponse(httpRequest, response);
-		if (ksResponse instanceof Md5CheckAble
-				&& request instanceof MD5CalculateAble
-				&& !((MD5CalculateAble) request).skipCheck()) {
-			String ETag = ((Md5CheckAble) ksResponse).getETag();
-			String MD5 = ((MD5CalculateAble) request).getMd5();
-			log.debug("returned etag is:" + ETag);
-			if (!ETag.equals(Converter.MD52ETag(MD5))) {
+		Map<String, String> ret = skipMD5Check(response, httpRequest);
+		if (ret.size() == 2) {
+			log.debug("returned etag is:" + ret.get("ETag"));
+			if (!ret.get("ETag").equals(Converter.MD52ETag(ret.get("MD5")))) {
 				throw new ClientInvalidDigestException(
-						"Unable to verify integrity of data upload.  " +
-                        "Client calculated content hash didn't match hash calculated by KS3.  " +
-                        "You may need to delete the data stored in KS3.");
+						"Unable to verify integrity of data upload.  "
+								+ "Client calculated content hash didn't match hash calculated by KS3.  "
+								+ "You may need to delete the data stored in KS3.");
 			}
+		} else {
+			log.debug("client MD5 check skipped");
 		}
+
 		log.debug("finished handle response : " + Timer.end());
 		return result;
 	}
@@ -172,5 +186,34 @@ public class Ks3CoreController {
 				return true;
 		}
 		return false;
+	}
+
+	private Map<String, String> skipMD5Check(HttpResponse rep, HttpRequest hpReq) {
+		Map<String, String> map = new HashMap<String, String>();
+		if (!(hpReq instanceof HttpPut)) {
+			return map;
+		}
+		HttpPut hpPut = (HttpPut) hpReq;
+		InputStream content = null;
+		try {
+			content = hpPut.getEntity().getContent();
+		} catch (Exception e) {
+			throw new Ks3ClientException(e);
+		}
+		if (content == null
+				|| !(content instanceof MD5DigestCalculatingInputStream))
+			return map;
+		String clientmd5 = Base64
+				.encodeAsString(((MD5DigestCalculatingInputStream) content)
+						.getMd5Digest());
+		Header etagHeader = rep.getFirstHeader(HttpHeaders.ETag.toString());
+		if (etagHeader == null)
+			return map;
+		String etag = etagHeader.getValue();
+		if (StringUtils.isBlank(etag) || StringUtils.isBlank(clientmd5))
+			return map;
+		map.put("ETag", etag);
+		map.put("MD5", clientmd5);
+		return map;
 	}
 }

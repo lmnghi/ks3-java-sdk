@@ -107,7 +107,7 @@ public class Ks3EncryptionClient extends Ks3Client{
 
     @Override
     public void deleteObject(DeleteObjectRequest req) {
-        req.getHeader().put(HttpHeaders.UserAgent.toString(),Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
+        req.getRequestConfig().setUserAgent(Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
         // Delete the object
         super.deleteObject(req);
         // If it exists, delete the instruction file.
@@ -121,8 +121,8 @@ public class Ks3EncryptionClient extends Ks3Client{
     }
     @Override
     public CopyResult copyObject(CopyObjectRequest req){
-    	req.getHeader().put(HttpHeaders.UserAgent.toString(),Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
-    	if(super.objectExists(req.getBucketname(),req.getObjectkey())){
+    	req.getRequestConfig().setUserAgent(Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
+    	if(super.objectExists(req.getDestinationBucket(),req.getDestinationKey())){
     	}
     	return super.copyObject(req);
     }

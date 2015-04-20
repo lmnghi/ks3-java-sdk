@@ -164,6 +164,7 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 	}
 	@Override
 	public void buildRequest(Request request) {
+		request.setMethod(HttpMethod.POST);
 		request.setBucket(bucket);
 		request.setKey(key);
 		XmlWriter writer = new XmlWriter();
@@ -202,10 +203,6 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 			if(!StringUtils.isBlank(notifyURL))
 				request.addHeader(HttpHeaders.NotifyURL.toString(), notifyURL);
 		}
-	}
-	@Override
-	public HttpMethod getHttpMethod() {
-		return HttpMethod.POST;
 	}
 	@Override
 	public void validateParams() throws IllegalArgumentException {

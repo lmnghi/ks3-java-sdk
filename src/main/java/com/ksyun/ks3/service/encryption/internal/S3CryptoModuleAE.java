@@ -341,7 +341,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
 
         if (uploadContext.hasFinalPartBeenSeen() == false) {
             throw new Ks3ClientException("Unable to complete an encrypted multipart upload without being told which part was the last.  " +
-                    "Without knowing which part was the last, the encrypted data in Amazon S3 is incomplete and corrupt.");
+                    "Without knowing which part was the last, the encrypted data in KS3 is incomplete and corrupt.");
         }
 
         CompleteMultipartUploadResult result = s3.completeMultipartUpload(req);
@@ -377,7 +377,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
         }
         InitiateMultipartUploadResult result = s3.initiateMultipartUpload(req);
         MultipartUploadCryptoContext uploadContext = new MultipartUploadCryptoContext(
-                req.getBucketname(), req.getObjectkey(), cekMaterial);
+                req.getBucket(), req.getKey(), cekMaterial);
         multipartUploadContexts.put(result.getUploadId(), uploadContext);
         return result;
     }
@@ -399,7 +399,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
         final int blockSize = contentCryptoScheme.getBlockSizeInBytes();
         final boolean isLastPart = req.isLastPart();
         final String uploadId = req.getUploadId();
-        final long partSize = req.getPartSize();
+        final long partSize = req.getInstancePartSize();
         final boolean partSizeMultipleOfCipherBlockSize = 0 == (partSize % blockSize);
         if (!isLastPart && !partSizeMultipleOfCipherBlockSize) {
             throw new Ks3ClientException(
@@ -417,7 +417,7 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
         }
 
         CipherLite cipherLite = uploadContext.getCipherLite();
-        req.setRequestBody(newMultipartS3CipherInputStream(req, cipherLite));
+        req.setInputStream(newMultipartS3CipherInputStream(req, cipherLite));
         // Treat all encryption requests as input stream upload requests, not as
         // file upload requests.
         req.setFile(null);
@@ -441,13 +441,13 @@ class S3CryptoModuleAE extends S3CryptoModuleBase<MultipartUploadCryptoContext> 
     protected final CipherLiteInputStream newMultipartS3CipherInputStream(
             UploadPartRequest req, CipherLite cipherLite) {
         try {
-            InputStream is = req.getRequestBody();
+            InputStream is = req.getInputStream();
             if (req.getFile() != null) {
                 is = new InputSubStream(
                     new RepeatableFileInputStream(
                         req.getFile()),
                         req.getFileoffset(), 
-                        req.getPartSize(),
+                        req.getInstancePartSize(),
                         req.isLastPart());
             }
             return new CipherLiteInputStream(is, cipherLite,

@@ -24,10 +24,10 @@ import com.ksyun.ks3.utils.Md5Utils;
  * @description 
  **/
 public class PutObjectTest extends EncryptionClientTest{
-	//String filepath = "D://IMG.jpg";
-	//String filedownpath = "D://IMG-down.jpg";
-	String filepath = "D://test.txt";
-	String filedownpath = "D://test-down.txt";
+	String filepath = "D://IMG.jpg";
+	String filedownpath = "D://IMG-down.jpg";
+	//String filepath = "D://test.txt";
+	//String filedownpath = "D://test-down.txt";
 	String key = "IMG.jpg";
 	String instruction = "IMG.jpg.instruction";
 	@Test

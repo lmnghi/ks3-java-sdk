@@ -99,6 +99,18 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 	}
 	
 
+	public String getDestinationBucket() {
+		return destinationBucket;
+	}
+	public void setDestinationBucket(String destinationBucket) {
+		this.destinationBucket = destinationBucket;
+	}
+	public String getDestinationKey() {
+		return destinationKey;
+	}
+	public void setDestinationKey(String destinationKey) {
+		this.destinationKey = destinationKey;
+	}
 	public String getSourceBucket() {
 		return sourceBucket;
 	}
@@ -149,6 +161,7 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
 	}
 	@Override
 	public void buildRequest(Request request) {
+		request.setMethod(HttpMethod.PUT);
 		request.setBucket(this.destinationBucket);
 		request.setKey(this.destinationKey);
 		request.addHeader(HttpHeaders.XKssCopySource,"/"+this.getSourceBucket()+"/"+HttpUtils.urlEncode(this.getSourceKey(),true));
@@ -164,10 +177,6 @@ public class CopyObjectRequest extends Ks3WebServiceRequest{
         {
         	request.getHeaders().putAll(HttpUtils.convertAcl2Headers(accessControlList));
         }
-	}
-	@Override
-	public HttpMethod getHttpMethod() {
-		return HttpMethod.PUT;
 	}
 	@Override
 	public void validateParams() {

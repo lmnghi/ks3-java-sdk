@@ -43,13 +43,10 @@ public class AbortMultipartUploadRequest extends Ks3WebServiceRequest{
 	}
 	@Override
 	public void buildRequest(Request request) {
+		request.setMethod(HttpMethod.DELETE);
 		request.setBucket(bucket);
 		request.setKey(key);
-		request.addHeader("uploadId",this.uploadId);
-	}
-	@Override
-	public HttpMethod getHttpMethod() {
-		return HttpMethod.DELETE;
+		request.addQueryParam("uploadId",this.uploadId);
 	}
 	/**
 	 * 通过Init Multipart Upload 初始化得到的uploadId

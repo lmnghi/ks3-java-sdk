@@ -248,7 +248,7 @@ public class Ks3Client implements Ks3 {
 			throws Ks3ClientException, Ks3ServiceException {
 		Bucket bucket = client.execute(auth, request,
 				CreateBucketResponse.class);
-		bucket.setName(request.getBucketname());
+		bucket.setName(request.getBucket());
 		return bucket;
 	}
 
@@ -344,10 +344,10 @@ public class Ks3Client implements Ks3 {
 
 	public GetObjectResult getObject(GetObjectRequest request)
 			throws Ks3ClientException, Ks3ServiceException {
-		String objectkey = request.getObjectkey();
+		String objectkey = request.getKey();
 		GetObjectResult object = client.execute(auth, request,
 				GetObjectResponse.class);
-		object.getObject().setBucketName(request.getBucketname());
+		object.getObject().setBucketName(request.getBucket());
 		object.getObject().setKey(objectkey);
 		return object;
 	}
@@ -517,10 +517,10 @@ public class Ks3Client implements Ks3 {
 	public InitiateMultipartUploadResult initiateMultipartUpload(
 			InitiateMultipartUploadRequest request) throws Ks3ClientException,
 			Ks3ServiceException {
-		String objectkey = request.getObjectkey();
+		String objectkey = request.getKey();
 		InitiateMultipartUploadResult result = client.execute(auth, request,
 				InitiateMultipartUploadResponse.class);
-		result.setBucket(request.getBucketname());
+		result.setBucket(request.getBucket());
 		result.setKey(objectkey);
 		return result;
 	}
