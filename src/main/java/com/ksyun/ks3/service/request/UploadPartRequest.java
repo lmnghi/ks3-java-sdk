@@ -92,6 +92,10 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements SSECustom
 	 * 要上传的内容的MD5值
 	 */
 	private String ContentMD5;
+	public UploadPartRequest(String bucketname,String objectkey){
+		this.bucket = bucketname;
+		this.key = objectkey;
+	}
 	/**
 	 * 
 	 * @param bucketname
@@ -161,8 +165,8 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements SSECustom
 							String.valueOf(file.length()));
 			}
 		}
-		if (this.partSize > Constants.maxPartSize) {
-			throw between("partsize",String.valueOf(this.partSize),"0",
+		if (this.partSize > Constants.maxPartSize||this.partSize==0) {
+			throw between("partsize",String.valueOf(this.partSize),"1",
 					String.valueOf(Constants.maxPartSize));
 		}
 	}

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -194,9 +195,12 @@ public class Ks3CoreController {
 			return map;
 		}
 		HttpPut hpPut = (HttpPut) hpReq;
+		HttpEntity entity = null;
 		InputStream content = null;
 		try {
-			content = hpPut.getEntity().getContent();
+			entity = hpPut.getEntity();
+			if(entity!=null)
+				content = entity.getContent();
 		} catch (Exception e) {
 			throw new Ks3ClientException(e);
 		}
