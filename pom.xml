@@ -8,6 +8,25 @@
 	<version>0.3.1</version>
 	<name>ks3-kss-java-sdk</name>
 	<url>http://maven.apache.org</url>
+	<description>Java SDK for KS3</description>
+	<scm>
+		<connection>scm:git:git@github.com:ks3sdk/ks3-java-sdk.git</connection>
+		<developerConnection>scm:git:git@github.com:ks3sdk/ks3-java-sdk.git</developerConnection>
+		<url>https://github.com/ks3sdk/ks3-java-sdk</url>
+	</scm>
+	<developers>
+		<developer>
+			<name>lijunwei</name>
+			<email>lijunwei@kingsoft.com</email>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -42,17 +61,37 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>install</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<encoding>UTF-8</encoding>
+						</configuration>
+					</execution>
+				</executions>
 				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>com.allen.capturewebdata.Main</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
+					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
