@@ -508,7 +508,8 @@ public class AdpTest extends Ks3ClientTest{
 		PutAdpRequest request = new PutAdpRequest(bucketName,key);
 		List<Adp> fops = new ArrayList<Adp>();
 		Adp fop12 = new Adp();
-		fop12.setCommand("tag=batchoperate&objectkey="+Base64.encodeBase64String("testdelete/".getBytes())+"&operation=refresh");
+		String url = "http://"+bucketName+".kssws.ks-cdn.com/testdelete/";
+		fop12.setCommand("tag=batchoperate&objectkey="+Base64.encodeBase64String("testdelete/".getBytes())+"&operation=refresh&url="+Base64.encodeBase64String(url.getBytes()));
 		fops.add(fop12);
 		
 		request.setAdps(fops);

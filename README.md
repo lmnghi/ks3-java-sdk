@@ -28,7 +28,7 @@ com.ksyun.ks3.utils:工具包
 添加Maven依赖
 
     <dependency>
-        <groupId>com.ksyun.ks3</groupId>
+        <groupId>com.ksyun</groupId>
         <artifactId>ks3-kss-java-sdk</artifactId>
         <version>0.3.1</version>
     </dependency>
