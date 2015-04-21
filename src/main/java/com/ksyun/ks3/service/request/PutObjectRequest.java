@@ -131,6 +131,8 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements SSECustome
 	 */
 	public PutObjectRequest(String bucketname, String key,
 			InputStream inputStream, ObjectMetadata metadata) {
+		if(metadata == null)
+			metadata = new ObjectMetadata();
 		this.bucket = bucketname;
 		this.key = key;
 		this.setObjectMeta(metadata);
