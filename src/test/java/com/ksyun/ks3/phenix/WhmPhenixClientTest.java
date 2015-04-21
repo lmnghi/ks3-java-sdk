@@ -14,7 +14,7 @@ import com.ksyun.ks3.utils.Md5Utils;
 /**
  * @author whm[wanghaiming1@kingsoft.com]  
  * 
- * @date 2014年10月15日 上午10:28:53
+ * @date 2015年04月20日 上午10:28:53
  * 
  * @description
  **/
