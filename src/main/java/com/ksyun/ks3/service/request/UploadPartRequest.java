@@ -280,7 +280,7 @@ public class UploadPartRequest extends Ks3WebServiceRequest implements SSECustom
 			}
 			try {
 				request.setContent(new LengthCheckInputStream(new InputSubStream(new RepeatableFileInputStream(
-						this.file), this.fileoffset, truesize, true),truesize,true));
+						this.file), this.fileoffset, truesize, false),truesize,true));
 
 			} catch (FileNotFoundException e) {
 				throw new ClientFileNotFoundException(e);

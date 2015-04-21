@@ -1,17 +1,3 @@
-/*
- * Copyright 2014-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
 package com.ksyun.ks3;
 
 import java.io.FilterInputStream;
@@ -59,8 +45,8 @@ public class LengthCheckInputStream extends FilterInputStream {
      * @param includeSkipped
      *            true if bytes skipped are to be considered as part of the data
      *            length; false otherwise. Typically, this parameter should be
-     *            set to false for uploading data to AWS, but set to true for
-     *            receiving data from AWS.
+     *            set to false for uploading data to KS3, but set to true for
+     *            receiving data from KS3.
      */
     public LengthCheckInputStream(InputStream in, long expectedLength,
             boolean includeSkipped) {
@@ -74,7 +60,7 @@ public class LengthCheckInputStream extends FilterInputStream {
     /**
      * {@inheritDoc}
      * 
-     * @throws AmazonClientException
+     * @throws KS3ClientException
      *             if the data length read has exceeded the expected total, or
      *             if the total data length is not the same as the expected
      *             total.
@@ -91,7 +77,7 @@ public class LengthCheckInputStream extends FilterInputStream {
     /**
      * {@inheritDoc}
      * 
-     * @throws AmazonClientException
+     * @throws KS3ClientException
      *             if the data length read has exceeded the expected total, or
      *             if the total data length is not the same as the expected
      *             total.
@@ -124,7 +110,7 @@ public class LengthCheckInputStream extends FilterInputStream {
      * @param eof
      *            true if end of stream has been encountered; false otherwise
      * 
-     * @throws AmazonClientException
+     * @throws KS3ClientException
      *             if the data length read has exceeded the expected total, or
      *             if the total data length is not the same as the expected
      *             total.
@@ -145,7 +131,7 @@ public class LengthCheckInputStream extends FilterInputStream {
     /**
      * {@inheritDoc}
      * 
-     * @throws AmazonClientException
+     * @throws KS3ClientException
      *             if {@link #includeSkipped} is true and the data length
      *             skipped has exceeded the expected total.
      */

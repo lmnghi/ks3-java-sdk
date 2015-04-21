@@ -1,17 +1,4 @@
-/*
- * Copyright 2010-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
+
 package com.ksyun.ks3.service.encryption.model;
 
 import java.security.Provider;
@@ -20,7 +7,7 @@ import com.ksyun.ks3.service.encryption.internal.CryptoRuntime;
 
 /**
  * Stores configuration parameters that will be used during encryption and
- * decryption by the Amazon S3 Encryption Client. With this object, you can set
+ * decryption by the KS3 Encryption Client. With this object, you can set
  * the encryption client to use Instruction Files or Object Metadata for storing
  * encryption information. You can also specify your own crypto provider to be
  * used during encryption and decryption.

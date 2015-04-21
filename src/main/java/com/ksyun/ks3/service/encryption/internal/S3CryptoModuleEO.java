@@ -1,17 +1,4 @@
-/*
- * Copyright 2013-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
+
 package com.ksyun.ks3.service.encryption.internal;
 
 
@@ -180,7 +167,7 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
      * <p>
      * <b>NOTE:</b> Because the encryption process requires context from block
      * N-1 in order to encrypt block N, parts uploaded with the
-     * AmazonS3EncryptionClient (as opposed to the normal AmazonS3Client) must
+     * KS3EncryptionClient (as opposed to the normal KS3Client) must
      * be uploaded serially, and in order. Otherwise, the previous encryption
      * context isn't available to use when encrypting the current part.
      */
@@ -256,15 +243,15 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
      *
      * @param putObjectRequest
      *      The request object containing all the parameters to upload a
-     *      new object to Amazon S3.
+     *      new object to KS3.
      * @return
      *      A {@link PutObjectResult} object containing the information
-     *      returned by Amazon S3 for the new, created object.
+     *      returned by KS3 for the new, created object.
      * @throws Ks3ClientException
      *      If any errors are encountered on the client while making the
      *      request or handling the response.
      * @throws Ks3ServiceException
-     *      If any errors occurred in Amazon S3 while processing the
+     *      If any errors occurred in KS3 while processing the
      *      request.
      */
     private PutObjectResult putObjectUsingMetadata(PutObjectRequest putObjectRequest)
@@ -287,15 +274,15 @@ class S3CryptoModuleEO extends S3CryptoModuleBase<EncryptedUploadContext> {
      *
      * @param putObjectRequest
      *      The request object containing all the parameters to upload a
-     *      new object to Amazon S3.
+     *      new object to KS3.
      * @return
      *      A {@link PutObjectResult} object containing the information
-     *      returned by Amazon S3 for the new, created object.
+     *      returned by KS3 for the new, created object.
      * @throws Ks3ClientException
      *      If any errors are encountered on the client while making the
      *      request or handling the response.
      * @throws Ks3ServiceException
-     *      If any errors occurred in Amazon S3 while processing the
+     *      If any errors occurred in KS3 while processing the
      *      request.
      */
     private PutObjectResult putObjectUsingInstructionFile(PutObjectRequest putObjectRequest)

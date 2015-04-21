@@ -1,17 +1,4 @@
-/*
- * Copyright 2014-2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
+
 package com.ksyun.ks3.service.encryption.model;
 
 import java.io.File;
@@ -27,10 +14,10 @@ import com.ksyun.ks3.service.request.PutObjectRequest;
  * <p>
  * This class is an extension of {@link PutObjectRequest} to allow additional encryption material description
  * to be specified on a per-request basis.In particular, {@link EncryptedPutObjectRequest} is only recognized 
- * by {@link AmazonS3EncryptionJavaClient}.
+ * by {@link KS3EncryptionJavaClient}.
  * </p>
  * <p>
- * If {@link EncryptedPutObjectRequest} is used against the non-encrypting {@link AmazonS3JavaClient}, the additional 
+ * If {@link EncryptedPutObjectRequest} is used against the non-encrypting {@link KS3JavaClient}, the additional 
  * attributes will be ignored.
  * </p>
  */

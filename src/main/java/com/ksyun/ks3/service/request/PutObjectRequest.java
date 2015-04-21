@@ -326,7 +326,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements SSECustome
 		}
 		long length = objectMeta.getContentLength();
 		if(length > 0)
-			request.setContent(new LengthCheckInputStream(input,length,true));
+			request.setContent(new LengthCheckInputStream(input,length,false));
 		else{
 			request.setContent(input);
 		}

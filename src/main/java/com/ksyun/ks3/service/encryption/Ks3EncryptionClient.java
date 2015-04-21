@@ -171,7 +171,7 @@ public class Ks3EncryptionClient extends Ks3Client{
     // /////////////////// Access to the methods in the super class //////////
     /**
      * An internal implementation used to provide limited but direct access to
-     * the underlying methods of AmazonS3Client without any encryption or
+     * the underlying methods of KS3Client without any encryption or
      * decryption operations.
      */
     private final class S3DirectImpl extends S3Direct {
