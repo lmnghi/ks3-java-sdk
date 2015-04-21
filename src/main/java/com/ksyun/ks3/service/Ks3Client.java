@@ -260,7 +260,7 @@ public class Ks3Client implements Ks3 {
 	public void makeDir(String bucketName, String dir)
 			throws Ks3ClientException, Ks3ServiceException {
 		if (!dir.endsWith("/"))
-			throw ClientIllegalArgumentExceptionGenerator.notCorrect("dir", dir,"以/结尾");
+			throw ClientIllegalArgumentExceptionGenerator.notCorrect("dir", dir,"ends with /");
 		PutObjectRequest request = new PutObjectRequest(bucketName, dir,
 				new ByteArrayInputStream(new byte[] {}), null);
 		this.putObject(request);
@@ -269,7 +269,7 @@ public class Ks3Client implements Ks3 {
 	public void removeDir(String bucketName, String dir)
 			throws Ks3ClientException, Ks3ServiceException {
 		if (dir != null && !dir.endsWith("/") && !StringUtils.isBlank(dir))
-			throw ClientIllegalArgumentExceptionGenerator.notCorrect("dir", dir,"以/结尾或空");
+			throw ClientIllegalArgumentExceptionGenerator.notCorrect("dir", dir,"ends with / or blank");
 		String marker = null;
 		ObjectListing list = null;
 		do {

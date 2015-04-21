@@ -97,7 +97,8 @@ public class Ks3CoreController {
 		Timer.start();
 		this.client = this.factory.createHttpClient();
 		HttpResponse response = null;
-		HttpRequestBase httpRequest = HttpRequestBuilder.build(request, auth);
+		Request req = new Request();
+		HttpRequestBase httpRequest = HttpRequestBuilder.build(request,req, auth);
 		try {
 			log.debug(httpRequest.getRequestLine());
 			response = client.execute(httpRequest);
@@ -151,7 +152,7 @@ public class Ks3CoreController {
 							.getValue());
 		}
 		Y result = ksResponse.handleResponse(httpRequest, response);
-		Map<String, String> ret = skipMD5Check(response, httpRequest);
+		Map<String, String> ret = skipMD5Check(response, req);
 		if (ret.size() == 2) {
 			log.debug("returned etag is:" + ret.get("ETag"));
 			if (!ret.get("ETag").equals(Converter.MD52ETag(ret.get("MD5")))) {
@@ -190,21 +191,9 @@ public class Ks3CoreController {
 		return false;
 	}
 
-	private Map<String, String> skipMD5Check(HttpResponse rep, HttpRequest hpReq) {
+	private Map<String, String> skipMD5Check(HttpResponse rep, Request req) {
 		Map<String, String> map = new HashMap<String, String>();
-		if (!(hpReq instanceof HttpPut)) {
-			return map;
-		}
-		HttpPut hpPut = (HttpPut) hpReq;
-		HttpEntity entity = null;
-		InputStream content = null;
-		try {
-			entity = hpPut.getEntity();
-			if(entity!=null)
-				content = entity.getContent();
-		} catch (Exception e) {
-			throw new Ks3ClientException(e);
-		}
+		InputStream content = req.getContent();
 		if (content == null
 				|| !(content instanceof MD5DigestCalculatingInputStream))
 			return map;

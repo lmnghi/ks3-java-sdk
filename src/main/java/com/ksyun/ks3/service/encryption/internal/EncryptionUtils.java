@@ -66,7 +66,7 @@ import com.ksyun.ks3.utils.StringUtils;
 public class EncryptionUtils {
 
     /** Suffix appended to the end of instruction file names */
-    static final String INSTRUCTION_SUFFIX = ".instruction";
+    public static final String INSTRUCTION_SUFFIX = ".instruction";
 
     /**
      * Returns an updated request where the metadata contains encryption information and the input stream contains

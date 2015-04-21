@@ -123,7 +123,18 @@ public class Ks3EncryptionClient extends Ks3Client{
     public CopyResult copyObject(CopyObjectRequest req){
     	req.getRequestConfig().setUserAgent(Constants.KS3_ENCRYPTION_CLIENT_USER_AGENT);
     	if(super.objectExists(req.getDestinationBucket(),req.getDestinationKey())){
+    		throw new Ks3ClientException("copy faild,destination key exists!");
     	}
+    	boolean copyinstruction = false;
+    	if(super.objectExists(req.getSourceBucket(),req.getSourceKey()+EncryptionUtils.INSTRUCTION_SUFFIX)){
+    		if(super.objectExists(req.getDestinationBucket(), req.getDestinationKey()+EncryptionUtils.INSTRUCTION_SUFFIX))
+    			throw new Ks3ClientException("copy faild,destination instruction file exists");
+    		else
+    			copyinstruction = true;
+    	}
+    	if(copyinstruction)
+    		super.copyObject(req.getDestinationBucket(), req.getDestinationKey()+EncryptionUtils.INSTRUCTION_SUFFIX,
+    				req.getSourceBucket(), req.getSourceKey()+EncryptionUtils.INSTRUCTION_SUFFIX);
     	return super.copyObject(req);
     }
 
