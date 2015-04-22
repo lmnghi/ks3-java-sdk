@@ -77,6 +77,7 @@ public class AuthUtils {
 	{
 		String paramsToSign = encodeParams(params);
 		String resource = "/"+bucket+"/"+key;
+		resource = resource.replace("//", "/%2F");
 		if(!StringUtils.isBlank(paramsToSign))
 			resource+="?"+paramsToSign;
 		 List<String> signList = new ArrayList<String>();

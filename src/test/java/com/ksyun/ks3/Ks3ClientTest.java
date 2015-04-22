@@ -79,9 +79,12 @@ import com.ksyun.ks3.utils.Timer;
 public class Ks3ClientTest extends com.ksyun.ks3.service.Ks3ClientTest{
 	@Test
 	public void url(){
+		
+		client1.putObject("test1-zzy-jr","/中test.txt",new ByteArrayInputStream("1234".getBytes()),null);
+		
 		ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
 		overrides.setContentType("");
-		System.out.println(client.generatePresignedUrl("beijing.bucket1","work/推送API接口文档.pdf",60,overrides));
+		System.out.println(client1.generatePresignedUrl("test1-zzy-jr","/中test.txt",60,overrides));
 	}
 	 @Test
 	public void ListBuckets() {
