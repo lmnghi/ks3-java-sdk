@@ -120,10 +120,15 @@ public class HttpPostEmulator {
 			InputStream stream = null;
 			int length = 0;
 			String name = ufi.getFileName();
-			
+			try{
 				File file = new File(ufi.getFileName());
 				stream = new FileInputStream(file);
 				length = (int) file.length();
+			}
+			catch(Exception e){
+				stream = new ByteArrayInputStream(name.getBytes());
+				length = name.length();
+			}
 		
 
 			DataInputStream dis = new DataInputStream(stream);
