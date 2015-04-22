@@ -607,6 +607,24 @@ GET Object为用户提供了object的下载，用户可以通过控制Range实�
 		
 		return result;
 	}
+
+如果文件是通过用户提供key的方式进行服务端加密的
+
+	SecretKey sourceKey= ??//当初加密时用的key
+	request.setSseCustomerKey(new SSECustomerKey(sourceKey));
+
+生成文件的外链地址
+
+	//生成一个在1000秒后过期的外链
+	client.generatePresignedUrl(<bucket>,<key>,1000);
+	
+	//生成一个1000秒后过期并重写返回的heade的外链
+	ResponseHeaderOverrides overrides = new ResponseHeaderOverrides();
+	overrides.setContentType("text/html");
+	//.......
+	//overrides.setContentEncoding("gzip");
+	client.generatePresignedUrl(<bucket>,<key>,1000,overrides);
+
 ##### 5.3.3.2 特殊异常
 |异常|说明|
 | :-------- | :--------|
@@ -746,7 +764,8 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 #### 5.3.7 PUT Object
 使用PUT方式上传文件
 ##### 5.3.7.1 使用示例
-注意：使用第二、第三种方法之前请先查看KS3 API文档了解权限、元数据、callback、异步数据处理任务（ADP）的作用，如果用户不需要的话请勿设置。否则可能会导致一些无法预料的问题。
+
+通过文件上传
 
     /**
     *将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
@@ -756,129 +775,84 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 				"<object key>", new File("<filePath>"));
 	    client.putObject(request);
     }
+
+通过流上传
+
 	/**
-	 * 将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
-	 * 同时设置权限、元数据和callback
-	 */
-	public void putObjectWithFile() {
-		PutObjectRequest request = new PutObjectRequest("<bucket名称>",
-				"<object key>", new File("<filePath>"));
-		// 设置将要上传的object为公开读的
-		request.setCannedAcl(CannedAccessControlList.PublicRead);
-
+	    *将new File("<filePath>")这个文件上传至<bucket名称>这个存储空间下，并命名为<object key>
+    */
+    public void putObjectSimple(){
 		ObjectMetadata meta = new ObjectMetadata();
-		// 设置将要上传的object的用户元数据
-		//meta.setUserMeta("x-kss-meta-example", "example");
-		// 设置将要上传的object的元数据
-		//meta.setContentType("text/html");
-		//meta.setContentEncoding("gzip");
-		//meta.setCacheControl("no-cache");
-		//meta.setHttpExpiresDate(new Date());
-		//meta.setContentDisposition("attachment; filename=fname.ext");
-
-		request.setObjectMeta(meta);
-		//设置callBack
-		CallBackConfiguration config = new CallBackConfiguration();
-		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
-		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
-		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
-		magicVariables.put("bucket", MagicVariables.bucket);
-		magicVariables.put("createTime", MagicVariables.createTime);
-		magicVariables.put("etag", MagicVariables.etag);
-		magicVariables.put("key", MagicVariables.key);
-		magicVariables.put("mimeType", MagicVariables.mimeType);
-		magicVariables.put("objectSize", MagicVariables.objectSize);
-		
-		config.setBodyMagicVariables(magicVariables);
-		
-		Map<String,String> kssVariables = new HashMap<String,String>();
-		
-		kssVariables.put("user", "lijunwei");
-		kssVariables.put("time", "20150222");
-		kssVariables.put("location", "beijing");
-		request.setCallBackConfiguration(config);
-
-
-		//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
-		List<Adp> adps= new ArrayList<Adp>();
-		Adp adp= new Adp();
-		adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
-		adp.setKey("野生动物-转码.3gp");
-		adps.add(adp);
-		request.setAdps(adps);
-		request.setNotifyURL("http://10.4.2.38:19090/");
-		
-		client.putObject(request);
-	}
-
-	public void putObjectWithInputStream() {
-		ObjectMetadata meta = new ObjectMetadata();
-		// 设置将要上传的object的用户元数据
-		//meta.setUserMeta("x-kss-meta-example", "example");
-		// 设置将要上传的object的元数据
-		//meta.setContentType("text/html");
-		//meta.setContentEncoding("gzip");
-		//meta.setCacheControl("no-cache");
-		//meta.setHttpExpiresDate(new Date());
-		//meta.setContentDisposition("attachment; filename=fname.ext");
-
 		PutObjectRequest request = new PutObjectRequest("<bucket名称>",
 				"<object key>", new ByteArrayInputStream("1234".getBytes()),
 				meta);
-
 		// 可以指定内容的长度，否则程序会把整个输入流缓存起来，可能导致jvm内存溢出
 		meta.setContentLength(4);
-		// 可以指定内容的md5摘要，程序将在ks3服务端进行md5值校验，否则程序只会在客户端进行md5值校验
-		//meta.setContentMD5("gdyb21LQTcIANtvYMT7QVQ==");
-
-		AccessControlList acl = new AccessControlList();
-		// 设置用户id为12345678的用户对object的读权限
-		Grant grant1 = new Grant();
-		grant1.setGrantee(new GranteeId("12345678"));
-		grant1.setPermission(Permission.Read);
-		acl.addGrant(grant1);
-		// 设置用户id为123456789的用户对object完全控制
-		Grant grant2 = new Grant();
-		grant2.setGrantee(new GranteeId("123456789"));
-		grant2.setPermission(Permission.FullControl);
-		acl.addGrant(grant2);
-
-		// 设置acl.(也可以通过CannedAccessControlList设置)
-		request.setAcl(acl);
-
-		//设置callBack
-		CallBackConfiguration config = new CallBackConfiguration();
-		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
-		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
-		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
-		magicVariables.put("bucket", MagicVariables.bucket);
-		magicVariables.put("createTime", MagicVariables.createTime);
-		magicVariables.put("etag", MagicVariables.etag);
-		magicVariables.put("key", MagicVariables.key);
-		magicVariables.put("mimeType", MagicVariables.mimeType);
-		magicVariables.put("objectSize", MagicVariables.objectSize);
-		
-		config.setBodyMagicVariables(magicVariables);
-		
-		Map<String,String> kssVariables = new HashMap<String,String>();
-		
-		kssVariables.put("user", "lijunwei");
-		kssVariables.put("time", "20150222");
-		kssVariables.put("location", "beijing");
-		request.setCallBackConfiguration(config);
-
-
-		//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
-		List<Adp> adps= new ArrayList<Adp>();
-		Adp adp= new Adp();
-		adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
-		adp.setKey("野生动物-转码.3gp");
-		adps.add(adp);
-		request.setAdps(adps);
-		request.setNotifyURL("http://10.4.2.38:19090/");
-
 		client.putObject(request);
 	}
+
+上传文件时设置元数据
+
+	ObjectMetadata meta = new ObjectMetadata();
+	// 设置将要上传的object的用户元数据
+	//meta.setUserMeta("x-kss-meta-example", "example");
+	//设置将要上传的object的元数据
+	//meta.setContentType("text/html");
+	//meta.setContentEncoding("gzip");
+	//meta.setCacheControl("no-cache");
+	//meta.setHttpExpiresDate(new Date());
+	//meta.setContentDisposition("attachment; filename=fname.ext");
+	request.setObjectMeta(meta);
+
+设置回调
+
+	CallBackConfiguration config = new CallBackConfiguration();
+	config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
+	//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
+	Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
+	magicVariables.put("bucket", MagicVariables.bucket);
+	magicVariables.put("createTime", MagicVariables.createTime);
+	magicVariables.put("etag", MagicVariables.etag);
+	magicVariables.put("key", MagicVariables.key);
+	magicVariables.put("mimeType", MagicVariables.mimeType);
+	magicVariables.put("objectSize", MagicVariables.objectSize);
+		
+	config.setBodyMagicVariables(magicVariables);
+		
+	Map<String,String> kssVariables = new HashMap<String,String>();
+		
+	kssVariables.put("user", "lijunwei");
+	kssVariables.put("time", "20150222");
+	kssVariables.put("location", "beijing");
+	request.setCallBackConfiguration(config);
+
+设置异步数据处理任务
+
+	//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其	他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
+	List<Adp> adps= new ArrayList<Adp>();
+	Adp adp= new Adp();
+	adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
+	adp.setKey("野生动物-转码.3gp");
+	adps.add(adp);
+	request.setAdps(adps);
+	request.setNotifyURL("http://10.4.2.38:19090/");
+
+设置服务端加密
+
+	ObjectMetadata meta = new ObjectMetadata();
+	meta.setSseAlgorithm("AES256");
+	request.setObjectMeta(meta);
+
+设置用户提供key的服务端加密
+
+	//生成一个秘钥，这个秘钥需要自己保存好，加密解密都需要
+	KeyGenerator symKeyGenerator = KeyGenerator.getInstance("AES");
+	symKeyGenerator.init(256); 
+	SecretKey symKey = symKeyGenerator.generateKey();
+	
+	SSECustomerKey ssec = new SSECustomerKey(symKey);
+	request.setSseCustomerKey(ssec);
+
 ##### 5.3.7.2 特殊异常
 |异常|说明|
 | :-------- | :--------|
@@ -953,6 +927,29 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		CopyObjectRequest request = new CopyObjectRequest("sourceBucket","destinationObject","sourceBucket","sourceKey");
 		client.copyObject(request);
 	}
+
+copy后的文件以服务端加密方式存储
+
+	ObjectMetadata meta = new ObjectMetadata();
+	meta.setSseAlgorithm("AES256");
+	request.setNewObjectMetadata(meta);
+
+copy的文件以用户提供key的方式进行服务端加密，并设置新的文件的服务端加密
+
+	//生成一个秘钥，这个秘钥需要自己保存好，加密解密都需要
+	KeyGenerator symKeyGenerator = KeyGenerator.getInstance("AES");
+	symKeyGenerator.init(256); 
+	SecretKey destKey= symKeyGenerator.generateKey();
+
+	SecretKey sourceKey= ??//当初加密时用的key
+	
+	//指定被拷贝的数据是用sourceKey进行加密的，拷贝时将用该key先对数据解密
+	request.setSourceSSECustomerKey(new SSECustomerKey(sourceKey));
+	//指定拷贝生成的新数据的加密方式
+	request.setDestinationSSECustomerKey(new SSECustomerKey(destKey));
+	
+	
+setNewObjectMetadata
 
 ##### 5.3.9.2 特殊错误
 |异常|说明|
@@ -1084,26 +1081,6 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		//***********************完成分块上传，使服务端将块合并成一个文件*****************************************
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 				tags);//提供了一个简便的方式
-		//设置callBack
-		CallBackConfiguration config = new CallBackConfiguration();
-		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
-		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
-		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
-		magicVariables.put("bucket", MagicVariables.bucket);
-		magicVariables.put("createTime", MagicVariables.createTime);
-		magicVariables.put("etag", MagicVariables.etag);
-		magicVariables.put("key", MagicVariables.key);
-		magicVariables.put("mimeType", MagicVariables.mimeType);
-		magicVariables.put("objectSize", MagicVariables.objectSize);
-		
-		config.setBodyMagicVariables(magicVariables);
-		
-		Map<String,String> kssVariables = new HashMap<String,String>();
-		
-		kssVariables.put("user", "lijunwei");
-		kssVariables.put("time", "20150222");
-		kssVariables.put("location", "beijing");
-		request.setCallBackConfiguration(config);
 		client.completeMultipartUpload(request);
 	}
 	public void multipartUploadWithInputStream(){
@@ -1168,39 +1145,67 @@ SDK中提供的POST Object可以获取POST Object时需要的KSSAccessKeyId、Po
 		//***********************完成分块上传，使服务端将块合并成一个文件*****************************************
 		CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest(
 				tags);
-	    //设置callBack
-		CallBackConfiguration config = new CallBackConfiguration();
-		config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
-		//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
-		Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
-		magicVariables.put("bucket", MagicVariables.bucket);
-		magicVariables.put("createTime", MagicVariables.createTime);
-		magicVariables.put("etag", MagicVariables.etag);
-		magicVariables.put("key", MagicVariables.key);
-		magicVariables.put("mimeType", MagicVariables.mimeType);
-		magicVariables.put("objectSize", MagicVariables.objectSize);
-		
-		config.setBodyMagicVariables(magicVariables);
-		
-		Map<String,String> kssVariables = new HashMap<String,String>();
-		
-		kssVariables.put("user", "lijunwei");
-		kssVariables.put("time", "20150222");
-		kssVariables.put("location", "beijing");
-		request.setCallBackConfiguration(config);
-
-
-		//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
-		List<Adp> adps= new ArrayList<Adp>();
-		Adp adp= new Adp();
-		adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
-		adp.setKey("野生动物-转码.3gp");
-		adps.add(adp);
-		request.setAdps(adps);
-		request.setNotifyURL("http://10.4.2.38:19090/");
-		
 		client.completeMultipartUpload(request);
 	}
+
+init multipart upload时设置服务端加密
+
+	ObjectMetadata meta = new ObjectMetadata();
+	meta.setSseAlgorithm("AES256");
+	request.setObjectMeta(meta);
+
+init multipart upload时设置用户提供key的服务端加密
+
+	//生成一个秘钥，这个秘钥需要自己保存好，加密解密都需要
+	KeyGenerator symKeyGenerator = KeyGenerator.getInstance("AES");
+	symKeyGenerator.init(256); 
+	SecretKey symKey = symKeyGenerator.generateKey();
+	
+	SSECustomerKey ssec = new SSECustomerKey(symKey);
+	request.setSseCustomerKey(ssec);
+
+upload part时设置用户提供key的服务端加密
+
+	//当init multipart upload时指定了用户提供key的服务端加密，在upload part时也需要指定相同的加密信息
+	SecretKey symKey = ??//init时的key
+	SSECustomerKey ssec = new SSECustomerKey(symKey);
+	request.setSseCustomerKey(ssec);
+
+complete multipart upload时添加回调
+
+	//设置callBack
+	CallBackConfiguration config = new CallBackConfiguration();
+	config.setCallBackUrl("http://10.4.2.38:19090/");//KS3服务器回调的地址
+	//以下为KS3服务器访问http://10.4.2.38:19090/时body中的参数
+	Map<String,MagicVariables> magicVariables = new HashMap<String,MagicVariables>();
+	magicVariables.put("bucket", MagicVariables.bucket);
+	magicVariables.put("createTime", MagicVariables.createTime);
+	magicVariables.put("etag", MagicVariables.etag);
+	magicVariables.put("key", MagicVariables.key);
+	magicVariables.put("mimeType", MagicVariables.mimeType);
+	magicVariables.put("objectSize", MagicVariables.objectSize);
+		
+	config.setBodyMagicVariables(magicVariables);
+		
+	Map<String,String> kssVariables = new HashMap<String,String>();
+		
+	kssVariables.put("user", "lijunwei");
+	kssVariables.put("time", "20150222");
+	kssVariables.put("location", "beijing");
+	request.setCallBackConfiguration(config);
+
+complete multipart upload时添加异步数据处理
+
+	//设置异步数据处理任务,该任务的作用是当文件上传成功后，对上传的文件进行视频转码功能（以下代码中是视频转码，当然还有其他各种各样的功能），将转码后的视频存储为“野生动物-转码.3gp”，并且将转码结果信息发送到http://10.4.2.38:19090/   。具体参考API文档，异步数据处理。
+	List<Adp> adps= new ArrayList<Adp>();
+	Adp adp= new Adp();
+	adp.setCommand("tag=avop&f=mp4&res=1280x720&vbr=1000k&abr=128k");
+	adp.setKey("野生动物-转码.3gp");
+	adps.add(adp);
+	request.setAdps(adps);
+	request.setNotifyURL("http://10.4.2.38:19090/");
+
+
 ##### 5.3.12.2 特殊异常
 Init Multipart Upload
 
