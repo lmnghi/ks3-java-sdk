@@ -109,13 +109,7 @@ public class Ks3CoreController {
 				// TODO 这个只是为了兼容当前api
 				if (location.startsWith("http")) {
 					log.debug("returned 307,retry request to " + location);
-					if (httpRequest instanceof HttpPut) {
-						((HttpPut) httpRequest).getEntity().getContent()
-								.reset();
-					} else if (httpRequest instanceof HttpPost) {
-						((HttpPost) httpRequest).getEntity().getContent()
-								.reset();
-					}
+					restRequest(httpRequest);
 					httpRequest.setURI(new URI(location));
 					response = client.execute(httpRequest);
 				}
@@ -221,6 +215,23 @@ public class Ks3CoreController {
 			InputStream input = entity.getContent();
 			if(input!=null)
 				input.close();
+		}
+	}
+	private void restRequest(HttpRequest req) throws IllegalStateException, IOException{
+		HttpEntity entity = null;
+		if(req instanceof HttpPut){
+			entity = ((HttpPut)req).getEntity();
+		}else if(req instanceof HttpPost){
+			entity = ((HttpPost)req).getEntity();
+		}
+		if(entity != null){
+			InputStream input = entity.getContent();
+			if(input!=null){
+				if(input.markSupported()){
+					input.reset();
+					input.mark(-1);
+				}
+			}
 		}
 	}
 }
