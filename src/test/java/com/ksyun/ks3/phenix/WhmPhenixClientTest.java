@@ -2,14 +2,17 @@ package com.ksyun.ks3.phenix;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.junit.Test;
 
+import com.ksyun.ks3.AutoAbortInputStream;
 import com.ksyun.ks3.dto.GetObjectResult;
 import com.ksyun.ks3.exception.Ks3ClientException;
 import com.ksyun.ks3.exception.Ks3ServiceException;
 import com.ksyun.ks3.utils.Md5Utils;
+import com.ksyun.ks3.utils.StringUtils;
 
 /**
  * @author whm[wanghaiming1@kingsoft.com]  
@@ -20,7 +23,7 @@ import com.ksyun.ks3.utils.Md5Utils;
  **/
 public class WhmPhenixClientTest extends PhenixClientTest {
 
-	@Test
+	//@Test
 	public void test() throws Ks3ServiceException, Ks3ClientException, IOException {
 //		client.createBucket("murongyifei");//只创建一次,相当于/home/murongyifei这样的概念,   如果有拒绝创建,409 Conflict代表已经存在
 		
@@ -31,5 +34,39 @@ public class WhmPhenixClientTest extends PhenixClientTest {
 		GetObjectResult object = client.getObject("murongyifei", "test1");
 		String newMd5 = Md5Utils.md5AsBase64(object.getObject().getObjectContent());
 		System.out.println("newMd5:"+newMd5);
+	}
+	
+//	@Test
+	public void createBucket() {
+		String bucketName = "murongyifei.0";
+		boolean b = client.bucketExists(bucketName);
+		if (!b) {
+			System.out.println(client.createBucket(bucketName));
+		}
+	}
+	
+	@Test
+	public void get() throws IOException {
+		String bucketName = "murongyifei.0";
+		String key = bucketName + "_" + 0 + "128k";
+		GetObjectResult object = client.getObject(bucketName, key);
+		
+		String filePath = "/Users/whm/Desktop";
+		File file = new File(filePath + "/getObjectTest1003.txt");
+		FileOutputStream fos = null;
+
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		AutoAbortInputStream is = object.getObject().getObjectContent();
+		fos = new FileOutputStream(file);
+		int ch;
+		while ((ch = is.read()) != -1) {
+			fos.write(ch);
+		}
+		
+		fos.close();
+		is.close();
 	}
 }
