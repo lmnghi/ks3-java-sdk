@@ -106,7 +106,7 @@ public class PutAdpRequest extends Ks3WebServiceRequest{
 		request.addQueryParam("adp", "");
 		request.addHeader(HttpHeaders.AsynchronousProcessingList, URLEncoder.encode(HttpUtils.convertAdps2String(adps)));
 		if(!StringUtils.isBlank(notifyURL))
-			request.addHeader(HttpHeaders.NotifyURL, notifyURL);
+			request.addHeader(HttpHeaders.NotifyURL, HttpUtils.urlEncode(notifyURL,false));
 	}
 
 }

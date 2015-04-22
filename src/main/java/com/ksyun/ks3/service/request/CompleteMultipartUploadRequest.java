@@ -201,7 +201,7 @@ public class CompleteMultipartUploadRequest extends Ks3WebServiceRequest {
 		if(this.adps!=null&&adps.size()>0){
 			request.addHeader(HttpHeaders.AsynchronousProcessingList.toString(), URLEncoder.encode(HttpUtils.convertAdps2String(adps)));
 			if(!StringUtils.isBlank(notifyURL))
-				request.addHeader(HttpHeaders.NotifyURL.toString(), notifyURL);
+				request.addHeader(HttpHeaders.NotifyURL.toString(), HttpUtils.urlEncode(notifyURL,false));
 		}
 	}
 	@Override

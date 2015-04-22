@@ -379,7 +379,7 @@ public class PutObjectRequest extends Ks3WebServiceRequest implements SSECustome
 			request.addHeader(HttpHeaders.AsynchronousProcessingList,
 					URLEncoder.encode(HttpUtils.convertAdps2String(adps)));
 			if (!StringUtils.isBlank(notifyURL))
-				request.addHeader(HttpHeaders.NotifyURL, notifyURL);
+				request.addHeader(HttpHeaders.NotifyURL, HttpUtils.urlEncode(notifyURL,false));
 		}
 	}
 }
