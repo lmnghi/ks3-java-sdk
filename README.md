@@ -19,7 +19,7 @@ lib目录下为该项目所依赖的所有jar包，以及将sdk打好的jar包
     <dependency>
         <groupId>com.ksyun</groupId>
         <artifactId>ks3-kss-java-sdk</artifactId>
-        <version>0.3.1</version>
+        <version>0.4.0</version>
     </dependency>
     
 或者直接引用lib目录下的所有jar包
@@ -90,7 +90,6 @@ lib目录下为该项目所依赖的所有jar包，以及将sdk打好的jar包
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
-			<scope>test</scope>
 		</dependency>
 		
 2、新建log4j.properties(如下为示例配置)
@@ -1247,3 +1246,177 @@ Complete Multipart Upload
 |EntityTooSmallException|除最后一块外的块大小 小于KS3要求的最小值|
 |CallbackFailException|KS3服务端回调用户提供的callbackurl时出错|
 |CallbackTimeoutException|KS3服务端回调用户提供的callbackurl超时|
+
+
+### 5.4 客户端数据加密
+用户可以使用sdk将数据加密后再上传到ks3
+
+#### 5.4.1 环境配置(以JDK7示例)
+下载[UnlimitedJCEPolicyJDK7](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/jce-7-download-432124.html )，将local_policy.jar和US_export_policy.jar放在{JAVA_HOME}\jre\lib\security目录下，覆盖原有的。
+
+下载[bcprov-jdk15on-152.jar](http://www.bouncycastle.org/latest_releases.html)，放在{JAVA_HOME}\jre\lib\ext目录下
+
+#### 5.4.2 初始化主秘钥
+使用对称主密钥
+
+	import java.io.File;
+	import java.io.FileInputStream;
+	import java.io.FileOutputStream;
+	import java.io.IOException;
+	import java.security.InvalidKeyException;
+	import java.security.NoSuchAlgorithmException;
+	import java.security.spec.InvalidKeySpecException;
+	import java.security.spec.X509EncodedKeySpec;
+	import java.util.Arrays;
+	import javax.crypto.KeyGenerator;
+	import javax.crypto.SecretKey;
+	import javax.crypto.spec.SecretKeySpec;
+
+	import org.junit.Assert;
+
+	public class GenerateSymmetricMasterKey {
+
+	    private static final String keyDir  = System.getProperty("java.io.tmpdir"); 
+	    private static final String keyName = "secret.key";
+    
+	    public static void main(String[] args) throws Exception {
+        
+	        //Generate symmetric 256 bit AES key.
+	        KeyGenerator symKeyGenerator = KeyGenerator.getInstance("AES");
+	        symKeyGenerator.init(256); 
+	        SecretKey symKey = symKeyGenerator.generateKey();
+ 
+	        //Save key.
+	        saveSymmetricKey(keyDir, symKey);
+        
+	        //Load key.
+	        SecretKey symKeyLoaded = loadSymmetricAESKey(keyDir, "AES");           
+	        Assert.assertTrue(Arrays.equals(symKey.getEncoded(), symKeyLoaded.getEncoded()));
+	    }
+
+	    public static void saveSymmetricKey(String path, SecretKey secretKey) 
+	        throws IOException {
+	        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
+	                secretKey.getEncoded());
+	        FileOutputStream keyfos = new FileOutputStream(path + "/" + keyName);
+	        keyfos.write(x509EncodedKeySpec.getEncoded());
+	        keyfos.close();
+	    }
+    
+	    public static SecretKey loadSymmetricAESKey(String path, String algorithm) 
+	        throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException{
+	        //Read private key from file.
+	        File keyFile = new File(path + "/" + keyName);
+	        FileInputStream keyfis = new FileInputStream(keyFile);
+	        byte[] encodedPrivateKey = new byte[(int)keyFile.length()];
+	        keyfis.read(encodedPrivateKey);
+	        keyfis.close(); 
+
+	        //Generate secret key.
+	        return new SecretKeySpec(encodedPrivateKey, "AES");
+	    }
+	}
+使用非对称主密钥
+
+	import static org.junit.Assert.assertTrue;
+	import java.io.File;
+	import java.io.FileInputStream;
+	import java.io.FileOutputStream;
+	import java.io.IOException;
+	import java.security.KeyFactory;
+	import java.security.KeyPair;
+	import java.security.KeyPairGenerator;
+	import java.security.NoSuchAlgorithmException;
+	import java.security.PrivateKey;
+	import java.security.PublicKey;
+	import java.security.SecureRandom;
+	import java.security.spec.InvalidKeySpecException;
+	import java.security.spec.PKCS8EncodedKeySpec;
+	import java.security.spec.X509EncodedKeySpec;
+	import java.util.Arrays;
+
+	public class GenerateAsymmetricMasterKey {
+	    private static final String keyDir  = System.getProperty("java.io.tmpdir");
+	    private static final SecureRandom srand = new SecureRandom();
+
+	    public static void main(String[] args) throws Exception {
+	        // Generate RSA key pair of 1024 bits
+	        KeyPair keypair = genKeyPair("RSA", 1024);
+	        // Save to file system
+	        saveKeyPair(keyDir, keypair);
+	        // Loads from file system
+	        KeyPair loaded = loadKeyPair(keyDir, "RSA");
+	        // Sanity check
+	        assertTrue(Arrays.equals(keypair.getPublic().getEncoded(), loaded
+                .getPublic().getEncoded()));
+	        assertTrue(Arrays.equals(keypair.getPrivate().getEncoded(), loaded
+                .getPrivate().getEncoded()));
+	    }
+
+	    public static KeyPair genKeyPair(String algorithm, int bitLength)
+            throws NoSuchAlgorithmException {
+	        KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(algorithm);
+	        keyGenerator.initialize(1024, srand);
+	        return keyGenerator.generateKeyPair();
+	    }
+
+	    public static void saveKeyPair(String dir, KeyPair keyPair)
+            throws IOException {
+	        PrivateKey privateKey = keyPair.getPrivate();
+	        PublicKey publicKey = keyPair.getPublic();
+
+	        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
+                publicKey.getEncoded());
+	        FileOutputStream fos = new FileOutputStream(dir + "/public.key");
+	        fos.write(x509EncodedKeySpec.getEncoded());
+	        fos.close();
+
+	        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
+                privateKey.getEncoded());
+	        fos = new FileOutputStream(dir + "/private.key");
+	        fos.write(pkcs8EncodedKeySpec.getEncoded());
+	        fos.close();
+	    }
+
+	    public static KeyPair loadKeyPair(String path, String algorithm)
+            throws IOException, NoSuchAlgorithmException,
+            InvalidKeySpecException {
+	        // read public key from file
+	        File filePublicKey = new File(path + "/public.key");
+	        FileInputStream fis = new FileInputStream(filePublicKey);
+	        byte[] encodedPublicKey = new byte[(int) filePublicKey.length()];
+	        fis.read(encodedPublicKey);
+	        fis.close();
+	
+	        // read private key from file
+	        File filePrivateKey = new File(path + "/private.key");
+	        fis = new FileInputStream(filePrivateKey);
+	        byte[] encodedPrivateKey = new byte[(int) filePrivateKey.length()];
+	        fis.read(encodedPrivateKey);
+	        fis.close();
+
+	        // Convert them into KeyPair
+	        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+	        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
+                encodedPublicKey);
+	        PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+
+	        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(
+                encodedPrivateKey);
+	        PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+
+	        return new KeyPair(publicKey, privateKey);
+	    }
+	}
+
+#### 5.4.3 初始化客户端
+
+	SecretKey symKey = ??//主密钥
+	EncryptionMaterials keyMaterials = new EncryptionMaterials(symKey);
+	Ks3  client = new Ks3EncryptionClient("<accesskeyid>","<accesskeysecret>",keyMaterials);
+
+#### 5.4.4 注意事项
+1、上传上去的文件是经过加密的。  
+2、下载文件只能通过该客户端getObject方法下载，用其他方法下载下来的文件是经过加密的。    
+3、分块上传时必须依次上传每一块。当上传最后一块时必须通过request.setLastPart指定最后一块。上传顺序不能错乱，不能使用多线程分块上传。  
+4、请妥善保管自己的主密钥，如果主密钥丢失，将无法解密数据。  

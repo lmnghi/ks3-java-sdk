@@ -629,6 +629,8 @@ public class EncryptionUtils {
                 // stream
                 is = new RepeatableFileInputStream(request.getFile());
             }
+            //这个和put object request中的并不冲突，put object中指定的是加密后的长度，因为put object request中的inputstream
+            //是对 RepeatableCipherInputStream的封装，而这里的是还没有加密的
             if (plaintextLength > -1) {
                 // This ensures the plain-text read from the underlying data
                 // stream has the same length as the expected total
