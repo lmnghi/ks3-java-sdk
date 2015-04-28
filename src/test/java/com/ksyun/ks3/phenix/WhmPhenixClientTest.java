@@ -23,10 +23,10 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class WhmPhenixClientTest extends PhenixClientTest {
 
-	//@Test
+	@Test
 	public void test() throws Ks3ServiceException, Ks3ClientException, IOException {
 //		client.createBucket("murongyifei");//只创建一次,相当于/home/murongyifei这样的概念,   如果有拒绝创建,409 Conflict代表已经存在
-		
+
 		client.putObject("murongyifei", "test1", new FileInputStream(new File("/Users/whm/Desktop/test")),null);
 		
 		String oldMd5 = Md5Utils.md5AsBase64(new File("/Users/whm/Desktop/test"));
@@ -45,7 +45,7 @@ public class WhmPhenixClientTest extends PhenixClientTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void get() throws IOException {
 		String bucketName = "murongyifei.0";
 		String key = bucketName + "_" + 0 + "128k";
