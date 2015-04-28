@@ -9,10 +9,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,6 +23,7 @@ import java.util.concurrent.Executors;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.Before;
 
@@ -49,17 +52,19 @@ public class EncryptionClientTest extends Ks3ClientTest{
 	protected Ks3EncryptionClient sae_meta;
 	protected String bucket = "test-encryption";
 	@Before
-	public void initEncryption() throws NoSuchAlgorithmException{
-		client1.clearBucket(bucket);
+	public void initEncryption() throws NoSuchAlgorithmException, InvalidKeyException, InvalidKeySpecException, IOException{
+	//	client1.clearBucket(bucket);
 /*		KeyGenerator symKeyGenerator = KeyGenerator.getInstance("AES");
 	    symKeyGenerator.init(256); 
 	    SecretKey symKey = symKeyGenerator.generateKey();
 	    EncryptionMaterials keyMaterials = new EncryptionMaterials(symKey);*/
-		SecureRandom srand = new SecureRandom();
+/*		SecureRandom srand = new SecureRandom();
 		KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance("RSA");
         keyGenerator.initialize(1024, srand);
         KeyPair pair = keyGenerator.generateKeyPair();
-        EncryptionMaterials keyMaterials = new EncryptionMaterials(pair);
+        EncryptionMaterials keyMaterials = new EncryptionMaterials(pair);*/
+		SecretKey symKey = this.loadSymmetricAESKey("D://", "AES");
+		 EncryptionMaterials keyMaterials = new EncryptionMaterials(symKey);
 	    
 		CryptoConfiguration eo_file_config = new CryptoConfiguration();
 		eo_file_config.setCryptoMode(CryptoMode.EncryptionOnly);
@@ -90,6 +95,19 @@ public class EncryptionClientTest extends Ks3ClientTest{
 		sae_meta_config.setCryptoMode(CryptoMode.StrictAuthenticatedEncryption);
 		sae_meta_config.setStorageMode(CryptoStorageMode.ObjectMetadata);
 		this.sae_meta = new Ks3EncryptionClient(super.auth1.getAccessKeyId(),super.auth1.getAccessKeySecret(),keyMaterials,sae_meta_config);
+	}
+	public static SecretKey loadSymmetricAESKey(String path, String algorithm)
+			throws IOException, NoSuchAlgorithmException,
+			InvalidKeySpecException, InvalidKeyException {
+		// Read private key from file.
+		File keyFile = new File(path + "/secret.key");
+		FileInputStream keyfis = new FileInputStream(keyFile);
+		byte[] encodedPrivateKey = new byte[(int) keyFile.length()];
+		keyfis.read(encodedPrivateKey);
+		keyfis.close();
+
+		// Generate secret key.
+		return new SecretKeySpec(encodedPrivateKey, "AES");
 	}
 	protected void writeToFile(InputStream content,File file) throws IOException{
 		OutputStream os = new FileOutputStream(file);

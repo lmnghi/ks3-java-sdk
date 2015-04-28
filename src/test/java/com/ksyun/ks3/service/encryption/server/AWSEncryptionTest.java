@@ -29,8 +29,8 @@ import com.ksyun.ks3.service.Ks3Client;
  **/
 public class AWSEncryptionTest {
 	protected Ks3 client;
-	//protected String bucket = "buckettestsrunner-awsputbucketwithnameandregion-24c3p0p";
-	protected String bucket = "test1-zzy-jr";
+	protected String bucket = "buckettestsrunner-awsputbucketwithnameandregion-24c3p0p";
+	//protected String bucket = "test1-zzy-jr";
 	protected SecretKey symKey;
 	private static final String keyName = "secret.key";
 	
@@ -38,9 +38,9 @@ public class AWSEncryptionTest {
 	public void init() throws NoSuchAlgorithmException, InvalidKeyException, InvalidKeySpecException, IOException {
 		symKey = loadSymmetricAESKey("D://", "AES");     
 
-		//ClientConfig.addConfigLoader(new AWSConfigLoader());
-		//client = new Ks3Client("AKIAIN3WVZLXKDUS242Q","5iDtwjnwgFeeKxqXy8OQqs6hTOrx/4Dyk8YBBFwn");
-		client = new Ks3Client("lMQTr0hNlMpB0iOk/i+x","D4CsYLs75JcWEjbiI22zR3P7kJ/+5B1qdEje7A7I");
+		ClientConfig.addConfigLoader(new AWSConfigLoader());
+		client = new Ks3Client("AKIAIN3WVZLXKDUS242Q","5iDtwjnwgFeeKxqXy8OQqs6hTOrx/4Dyk8YBBFwn");
+		//client = new Ks3Client("lMQTr0hNlMpB0iOk/i+x","D4CsYLs75JcWEjbiI22zR3P7kJ/+5B1qdEje7A7I");
 	}
 
 	public static void saveSymmetricKey(String path, SecretKey secretKey)

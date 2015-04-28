@@ -40,10 +40,7 @@
 				<version>2.4</version>
 				<configuration>
 					<excludes>
-						<exclude>**/*.properties</exclude>
-						<exclude>**/*.jpeg</exclude>
-						<exclude>**/*.xml</exclude>
-						<exclude>**/*.exe</exclude>
+						<exclude>**/test/resource/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

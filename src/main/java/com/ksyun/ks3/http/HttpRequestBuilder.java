@@ -39,6 +39,7 @@ import com.ksyun.ks3.utils.StringUtils;
 public class HttpRequestBuilder {
 	public static HttpRequestBase build(Ks3WebServiceRequest ks3Request,Request request,Authorization auth){	
 		ks3Request.validateParams();
+		request.getHeaders().putAll(ks3Request.getRequestConfig().getExtendHeaders());
 		ks3Request.buildRequest(request);
 		request.addHeaderIfNotContains(HttpHeaders.UserAgent.toString(),ks3Request.getRequestConfig().getUserAgent());
 		request.addHeaderIfNotContains(HttpHeaders.ContentType.toString(),"application/xml");

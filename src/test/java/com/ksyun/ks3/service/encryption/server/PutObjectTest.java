@@ -102,4 +102,12 @@ public class PutObjectTest extends AWSEncryptionTest{
 		System.out.println(result1);
 		System.out.println(result2);
 	}
+	@Test
+	public void testCopy1(){
+		PutObjectRequest req = new PutObjectRequest(bucket,"test",new File("D://test.txt"));
+		req.setSseCustomerKey(new SSECustomerKey(this.symKey));
+		client.putObject(req);
+		
+		System.out.println(client.headObject(bucket, "test"));
+	}
 }

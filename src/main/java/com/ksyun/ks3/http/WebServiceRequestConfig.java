@@ -1,5 +1,8 @@
 package com.ksyun.ks3.http;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ksyun.ks3.config.Constants;
 
 /**
@@ -11,6 +14,7 @@ import com.ksyun.ks3.config.Constants;
  **/
 public class WebServiceRequestConfig {
 	private String userAgent = Constants.KS3_SDK_USER_AGENT;
+	private Map<String,String> extendHeaders = new HashMap<String,String>();
 
 	public String getUserAgent() {
 		return userAgent;
@@ -18,5 +22,13 @@ public class WebServiceRequestConfig {
 
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
+	}
+
+	public Map<String,String> getExtendHeaders() {
+		return extendHeaders;
+	}
+
+	public void setExtendHeaders(Map<String,String> extendHeaders) {
+		this.extendHeaders = extendHeaders;
 	}
 }
