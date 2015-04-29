@@ -37,6 +37,7 @@ import com.ksyun.ks3.dto.SSECustomerKey;
 import com.ksyun.ks3.exception.serviceside.InvalidArgumentException;
 import com.ksyun.ks3.exception.serviceside.MissingCustomerKeyException;
 import com.ksyun.ks3.exception.serviceside.Md5ErrorForCustomerKeyException;
+import com.ksyun.ks3.exception.serviceside.*;
 import com.ksyun.ks3.http.HttpHeaders;
 import com.ksyun.ks3.service.request.CompleteMultipartUploadRequest;
 import com.ksyun.ks3.service.request.CopyObjectRequest;
@@ -89,7 +90,7 @@ public class EncryptionTest extends Ks3ClientTest{
 		this.rangeGetToFileWithThreads(bucket, key,this.destFile);
 		this.checkFileMd5(file, new File(this.destFile));
 	}
-	@Test(expected=InvalidArgumentException.class)
+	@Test(expected=AlgorithmInvalidForS3Exception.class)
 	public void putObjectWithSSES3WithErrorAlgm(){
 		PutObjectRequest req = new PutObjectRequest(bucket,key,file);
 		ObjectMetadata meta = new ObjectMetadata();
@@ -212,11 +213,15 @@ public class EncryptionTest extends Ks3ClientTest{
 		
 		CopyObjectRequest copyReq = new CopyObjectRequest(bucket,key+"_copy",bucket,key);
 		SSECustomerKey destKey = new SSECustomerKey(this.symKey);
-		copyReq.setSourceSSECustomerKey(destKey);
+		copyReq.setDestinationSSECustomerKey(destKey);
 		client1.copyObject(copyReq);
 		
-		ObjectMetadata meta1 = client1.headObject(bucket, key+"_copy").getObjectMetadata();
-		ObjectMetadata meta2 = client1.getObject(bucket, key+"_copy").getObject().getObjectMetadata();
+		HeadObjectRequest hreq = new HeadObjectRequest(bucket, key+"_copy");
+		hreq.setSseCustomerKey(destKey);
+		ObjectMetadata meta1 = client1.headObject(hreq).getObjectMetadata();
+		GetObjectRequest greq = new GetObjectRequest(bucket,key+"_copy");
+		greq.setSseCustomerKey(destKey);
+		ObjectMetadata meta2 = client1.getObject(greq).getObject().getObjectMetadata();
 		assertEquals(destKey.getAlgorithm(),meta1.getSseCustomerAlgorithm());
 		assertEquals(Md5Utils.md5AsBase64(Base64.decode(destKey.getBase64EncodedKey())),meta1.getSseCustomerKeyMD5());
 		assertEquals(destKey.getAlgorithm(),meta2.getSseCustomerAlgorithm());
@@ -231,7 +236,7 @@ public class EncryptionTest extends Ks3ClientTest{
 		req.setSseCustomerKey(key);
 		client1.putObject(req);
 	}
-	@Test(expected=InvalidArgumentException.class)
+	@Test(expected=AlgorithmInvalidForCustomerKeyException.class)
 	public void putObjectWithSSECWithErrorAlgm(){
 		PutObjectRequest req = new PutObjectRequest(bucket,"test",file);
 		SSECustomerKey key = new SSECustomerKey(this.symKey);
@@ -303,7 +308,7 @@ public class EncryptionTest extends Ks3ClientTest{
 		getReq.setSseCustomerKey(new SSECustomerKey(this.symKey1));
 		client1.headObject(getReq);
 	}
-	@Test(expected=InvalidArgumentException.class)
+	@Test(expected=MissingCustomerKeyException.class)
 	public void putObjectWithSSECAndCopyWithNone(){
 		PutObjectRequest req = new PutObjectRequest(bucket,"test",file);
 		SSECustomerKey key = new SSECustomerKey(this.symKey);
@@ -488,7 +493,7 @@ public class EncryptionTest extends Ks3ClientTest{
 		
 		CompleteMultipartUploadRequest comReq = new CompleteMultipartUploadRequest(client1.listParts(bucket, key, initRet.getUploadId()));
 		CompleteMultipartUploadResult comret = client1.completeMultipartUpload(comReq);
-		assertEquals("AES256",comret);
+		assertEquals("AES256",comret.getSseAlgorithm());
 		
 		GetObjectResult gret = client1.getObject(bucket, key);
 		assertEquals("AES256",gret.getObject().getObjectMetadata().getSseAlgorithm());
@@ -516,10 +521,12 @@ public class EncryptionTest extends Ks3ClientTest{
 		CompleteMultipartUploadResult comret = client1.completeMultipartUpload(comReq);
 		assertEquals(sse.getAlgorithm(),comret.getSseCustomerAlgorithm());
 		
-		GetObjectResult gret = client1.getObject(bucket, key);
+		GetObjectRequest getReq = new GetObjectRequest(bucket, key);
+		getReq.setSseCustomerKey(sse);
+		GetObjectResult gret = client1.getObject(getReq);
 		assertEquals(sse.getAlgorithm(),gret.getObject().getObjectMetadata().getSseCustomerAlgorithm());
 		assertEquals(Md5Utils.md5AsBase64(Base64.decode(sse.getBase64EncodedKey())),gret.getObject().getObjectMetadata().getSseCustomerKeyMD5());
-		this.rangeGetToFileWithThreads(bucket, key,this.destFile);
+		this.rangeGetToFileWithThreads(bucket, key,sse,this.destFile);
 		this.checkFileMd5(file, new File(this.destFile));
 	}
 	private void checkFileMd5(File fie,File file1) throws FileNotFoundException, IOException{
