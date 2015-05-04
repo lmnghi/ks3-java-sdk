@@ -32,7 +32,7 @@ public class PhenixClientTest {
 	public void init() throws IOException {
 
 		ClientConfig.getConfig().set(ClientConfig.CLIENT_URLFORMAT, "1");
-		ClientConfig.getConfig().set(ClientConfig.END_POINT, "kss.duphenixnginx.com");
+		ClientConfig.getConfig().set(ClientConfig.END_POINT, "kss.phenixksyun.com");
 		
 		
 		final Properties credential = new Properties();
