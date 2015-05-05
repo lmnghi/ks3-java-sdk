@@ -23,7 +23,7 @@ import com.ksyun.ks3.utils.StringUtils;
  **/
 public class WhmPhenixClientTest extends PhenixClientTest {
 
-	@Test
+//	@Test
 	public void test() throws Ks3ServiceException, Ks3ClientException, IOException {
 //		client.createBucket("murongyifei");//只创建一次,相当于/home/murongyifei这样的概念,   如果有拒绝创建,409 Conflict代表已经存在
 
@@ -45,10 +45,12 @@ public class WhmPhenixClientTest extends PhenixClientTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void get() throws IOException {
-		String bucketName = "murongyifei.0";
-		String key = bucketName + "_" + 0 + "128k";
+		String bucketName = "murongyifei1.0";
+		//murongyifei1.0_1634m
+		String key = "murongyifei1.0_1634m";
+		
 		GetObjectResult object = client.getObject(bucketName, key);
 		
 		String filePath = "/Users/whm/Desktop";
